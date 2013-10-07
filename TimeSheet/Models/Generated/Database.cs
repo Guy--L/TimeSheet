@@ -141,7 +141,7 @@ namespace timesheet
 	}
 
 	[TableName("tblEmployee")]
-	[PrimaryKey("EmployeeNumber", AutoIncrement=false)]
+	[PrimaryKey("EmployeeNumber")]
 	[ExplicitColumns]
     public partial class tblEmployee : timesheetDB.Record<tblEmployee>  
     {		
