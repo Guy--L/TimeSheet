@@ -54,4 +54,10 @@
   <ItemGroup>
     <Folder Include="Properties" />
   </ItemGroup>
+  <ItemGroup>
+    <Build Include="Level.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Database1.refactorlog" />
+  </ItemGroup>
 </Project>
