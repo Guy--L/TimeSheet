@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TimeSheet.Models;
 
 namespace TimeSheet.Controllers
 {
@@ -10,9 +12,25 @@ namespace TimeSheet.Controllers
     {
         public ActionResult Index()
         {
-            ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
+            timesheetDB db = new timesheetDB();
 
-            return View();
+            tblEmployee emp = db.FirstOrDefault<tblEmployee>("where ionname = @0", "steiner.ma");
+            Sheet ts = new Sheet() { employee = emp };
+
+            Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+            DateTime init = DateTime.Today.AddDays(-14);
+            ts.weekNumber = calendar.GetWeekOfYear(
+                init,
+                CalendarWeekRule.FirstDay,
+                DayOfWeek.Monday
+            );
+            int nextSunday = init.DayOfWeek == DayOfWeek.Sunday ? 0 : (7 - (int) init.DayOfWeek);
+            ts.sunday = init.AddDays(nextSunday).ToString("mm/dd/yyyy");
+
+            if (ts.User == "")
+                ts.User = "Guy Lister";
+
+            return View(ts);
         }
 
         public ActionResult About()

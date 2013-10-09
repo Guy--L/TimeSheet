@@ -1,45 +1,217 @@
-﻿@{
+﻿@model TimeSheet.Models.Sheet
+@{
     ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@section featured {
-    <section class="featured">
-        <div class="content-wrapper">
-            <hgroup class="title">
-                <h1>@ViewBag.Title.</h1>
-                <h2>@ViewBag.Message</h2>
-            </hgroup>
-            <p>
-                To learn more about ASP.NET MVC visit
-                <a href="http://asp.net/mvc" title="ASP.NET MVC Website">http://asp.net/mvc</a>.
-                The page features <mark>videos, tutorials, and samples</mark> to help you get the most from ASP.NET MVC.
-                If you have any questions about ASP.NET MVC visit
-                <a href="http://forums.asp.net/1146.aspx/1?MVC" title="ASP.NET MVC Forum">our forums</a>.
-            </p>
+<nav class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/Home/">RDSS Timesheet</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav">
+            <li><a href="#about">About</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <ul class="nav navbar-nav pull-right">
+            <li><a href="#"><i class="icon-user icon-white"></i>@Model.User</a></li>
+            <li><a href="#"><i class="icon-question icon-white"></i></a></li>
+        </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <form class="form-horizontal" id="sheetform">
+                <div class="form-group">
+                    <label class="control-label col-md-3">Employee</label>
+                    <div class="col-md-8">
+                        <p class="form-control-static">@Model.employee.FirstName @Model.employee.LastName</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-3">Number</label>
+                    <div class="col-md-8">
+                        <p class="form-control-static">@Model.employee.EmployeeNumber</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-3">Period Ending</label>
+                    <div class="col-md-6">
+                        <input type="text" class="datepicker input-sm form-control" id="periodEnding" placeholder="on Sundays">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-success col-md-2 col-md-offset-1" id="priorsheet">
+                        <i class="icon-step-backward icon-large"></i>
+                    </button>
+                    <button class="btn btn-success col-md-2" id="nextsheet">
+                        <i class="icon-step-forward icon-large"></i>
+                    </button>
+                </div>
+            </form>
         </div>
-    </section>
+        <div class="col-md-6">
+            <table class="table table-condensed pull-right" id="hours">
+                <thead>
+                    <tr>
+                        <th id="fromto"></th>
+                        <th>
+                            <p class="subtime">Hours</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Demand</td>
+                        <td>
+                            <p class="subtime" id="timed">32.5</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Non-Demand</td>
+                        <td>
+                            <p class="subtime" id="timen">23.4</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Overtime</td>
+                        <td>
+                            <p class="subtime" id="timeo">4.0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>Total</b></td>
+                        <td><b>
+                            <p class="subtime" id="timet">59.9</p>
+                        </b></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="content">
+        <table id="demandlist" class="table table-striped table-hover table-condensed">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Cust Acct</th>
+                    <th>GL Acct</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<div id="weekline" class="modal hide">
+    <form id="addweek" class="form-horizontal">
+        <div class="col-lg-6">
+            <div class="input-group">
+                <input type="text" class="form-control">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
+                    <ul class="dropdown-menu pull-right">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                    </ul>
+                </div>
+                <!-- /btn-group -->
+            </div>
+            <!-- /input-group -->
+        </div>
+        <!-- /.col-lg-6 -->
+    </form>
+</div>
+
+@section scripts {
+    var week;
+    var sunday = '@Model.sunday';
+    var sheet;
+    var empno = '@Model.employee.EmployeeNumber';
+
+/* For a given date, get the ISO week number
+ *
+ * Based on information at:
+ *
+ *    http://www.merlyn.demon.co.uk/weekcalc.htm#WNR
+ *
+ * Algorithm is to find nearest thursday, it's year
+ * is the year of the week number. Then get weeks
+ * between that date and the first day of that year.
+ *
+ * Note that dates in one year can be weeks of previous
+ * or next year, overlap is up to 3 days.
+ *
+ * e.g. 2014/12/29 is Monday in week  1 of 2015
+ *      2012/1/1   is Sunday in week 52 of 2011
+ */
+function getWeekNumber(d) {
+    // Copy date so don't modify original
+    d = new Date(d);
+    d.setHours(0,0,0);
+    // Set to nearest Thursday: current date + 4 - current day number
+    // Make Sunday's day number 7
+    d.setDate(d.getDate() + 4 - (d.getDay()||7));
+    // Get first day of year
+    var yearStart = new Date(d.getFullYear(),0,1);
+    // Calculate full weeks to nearest Thursday
+    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7)
+    // Return array of year and week number
+    return [d.getFullYear(), weekNo];
 }
-<h3>We suggest the following:</h3>
-<ol class="round">
-    <li class="one">
-        <h5>Getting Started</h5>
-        ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-        enables a clean separation of concerns and that gives you full control over markup
-        for enjoyable, agile development. ASP.NET MVC includes many features that enable
-        fast, TDD-friendly development for creating sophisticated applications that use
-        the latest web standards.
-        <a href="http://go.microsoft.com/fwlink/?LinkId=245151">Learn more…</a>
-    </li>
+       function getSheet() {
+            sheet = $('#demandlist').dataTable({
+                "sDom": "t",
+                "bPaginate": false,
+                "aoColumnDefs": [{ "bVisible": false, "aTargets": [0] }, { "bVisible": false, "aTargets": [1] }],
+                "sAjaxSource": 'api/Hours/' + empno +'/'+ week + ''
+            });
+        }
 
-    <li class="two">
-        <h5>Add NuGet packages and jump-start your coding</h5>
-        NuGet makes it easy to install and update free libraries and tools.
-        <a href="http://go.microsoft.com/fwlink/?LinkId=245153">Learn more…</a>
-    </li>
 
-    <li class="three">
-        <h5>Find Web Hosting</h5>
-        You can easily find a web hosting company that offers the right mix of features
-        and price for your applications.
-        <a href="http://go.microsoft.com/fwlink/?LinkId=245157">Learn more…</a>
-    </li>
-</ol>
+  $(function() {
+    $('.datepicker').datepicker({
+        beforeShowDay: function(date){ return [date.getDay() == 0,""]}
+        ,firstDay: 1
+    });
+    $('.datepicker').on('change', function(e) {
+        var test = new Date(e.target.value);
+        if (test.getDay() != 0) {
+            test.setDate(test.getDate() + 7 - test.getDay());
+            e.target.value = $.datepicker.formatDate('mm/dd/yy', test);
+        }
+        console.log($.datepicker.iso8601Week(test));
+    });
+    $('#tabs').tab();
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        console.log(e.target);
+        console.log(e.relatedTarget); // previous tab
+    });
+    week = @Model.weekNumber;
+    getSheet();
+  });
+}

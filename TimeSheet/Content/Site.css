@@ -12,6 +12,7 @@ body {
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
     margin: 0;
     padding: 0;
+    padding-top: 40px;
 }
 
 a {
@@ -753,4 +754,31 @@ tr.pager td {
         footer p {
             margin: 0;
         }
+}
+.subtime
+{
+    text-align: right;
+}
+p.subtime
+{
+    margin: 0;
+}
+input#periodEnding
+{
+    max-width: 150px;
+}
+table#hours
+{
+    margin-top: 0;
+    max-width: 200px !important;
+}
+
+#sheetform .form-group {
+    margin-bottom: 0px;
+}
+
+#sheetform button
+{
+    margin-top: 8px;
+    margin-right: 12px;
 }

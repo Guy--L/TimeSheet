@@ -36,7 +36,7 @@ using System.Linq;
 using System.Web;
 using PetaPoco;
 
-namespace timesheet
+namespace TimeSheet.Models
 {
 	public partial class timesheetDB : Database
 	{
