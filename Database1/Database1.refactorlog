@@ -7,4 +7,39 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="LevelId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="708028ff-4db9-4729-be90-7c1bf406d8d9" ChangeDateTime="10/09/2013 19:32:30">
+    <Property Name="ElementName" Value="[dbo].[Role].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Role]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RoleId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="31de0ca3-2024-4234-b174-3a9e62d94a34" ChangeDateTime="10/09/2013 19:51:24">
+    <Property Name="ElementName" Value="[dbo].[Facility].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Facility]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FacilityId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bf2a0ceb-70e9-4a07-9c69-8f2349caa40e" ChangeDateTime="10/09/2013 19:54:08">
+    <Property Name="ElementName" Value="[dbo].[WorkDept].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[WorkDept]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="WorkDeptId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="52e0cdce-683c-4786-ba24-80b0174afabc" ChangeDateTime="10/09/2013 20:03:51">
+    <Property Name="ElementName" Value="[dbo].[Worker].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Worker]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="WorkerId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fc05e3a7-db5f-4fec-bc69-2b6895e7699f" ChangeDateTime="10/09/2013 22:27:06">
+    <Property Name="ElementName" Value="[dbo].[Week].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Week]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="WeekId" />
+  </Operation>
 </Operations>

@@ -56,6 +56,11 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Level.sql" />
+    <Build Include="Role.sql" />
+    <Build Include="Facility.sql" />
+    <Build Include="WorkDept.sql" />
+    <Build Include="Worker.sql" />
+    <Build Include="Week.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Database1.refactorlog" />
