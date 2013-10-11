@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[Site]
+(
+	[SiteId] INT NOT NULL PRIMARY KEY IDENTITY, 
+    [Site] NVARCHAR(10) NOT NULL, 
+    [SiteName] NVARCHAR(50) NULL
+)

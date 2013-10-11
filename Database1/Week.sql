@@ -3,7 +3,7 @@
 	[WeekId] INT NOT NULL PRIMARY KEY IDENTITY, 
     [WeekNumber] INT NOT NULL, 
     [Year] INT NOT NULL, 
-    [EmployeeId] INT NOT NULL, 
+    [WorkerId] INT NOT NULL, 
     [DescriptionId] INT NOT NULL, 
     [Comments] NVARCHAR(MAX) NULL, 
     [IsOvertime] BIT NOT NULL, 
@@ -14,5 +14,13 @@
     [Friday] MONEY NULL, 
     [Saturday] MONEY NULL, 
     [Sunday] MONEY NULL, 
-    [Submitted] DATETIME NULL
+    [Submitted] DATETIME NULL, 
+    [NewRequest] BIT NOT NULL, 
+    [SiteId] INT NULL, 
+    [WorkAreaId] INT NULL, 
+    [PartnerId] INT NULL, 
+    [InternalNumberId] INT NULL, 
+    [CostCenterId] INT NULL, 
+    [CapitalNumber] NVARCHAR(50) NULL, 
+    [CustomerId] INT NULL
 )

@@ -24,9 +24,9 @@ namespace TimeSheet.Controllers
 
         public dynamic Get(string id, int week)
         {
-            timesheetDB db = new timesheetDB();
+            tsDB db = new tsDB();
 
-            var sheet = db.Fetch<timesheet_buffer>(string.Format("select * from timesheet_buffer where employeenumber = '{0}' and weeknumber = '{1}'", id, week));
+            var sheet = db.Fetch<Week>(string.Format("select * from Week where workerid = '{0}' and weeknumber = '{1}'", id, week));
             var records = sheet.Select(a => a.serialize()).ToArray();
             return new
             {

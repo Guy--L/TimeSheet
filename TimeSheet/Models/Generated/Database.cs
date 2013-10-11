@@ -23,9 +23,9 @@
 // 
 // The following connection settings were used to generate this file
 // 
-//     Connection String Name: `timesheet`
+//     Connection String Name: `ts`
 //     Provider:               `System.Data.SqlClient`
-//     Connection String:      `Data Source=GUYLISTERC90F\DEV;Initial Catalog=timesheet;Integrated Security=True`
+//     Connection String:      `Data Source=(localdb)\Projects;Initial Catalog=TimeSheetDB;Integrated Security=True;Pooling=False;Connect Timeout=30`
 //     Schema:                 ``
 //     Include Views:          `False`
 
@@ -38,15 +38,15 @@ using PetaPoco;
 
 namespace TimeSheet.Models
 {
-	public partial class timesheetDB : Database
+	public partial class tsDB : Database
 	{
-		public timesheetDB() 
-			: base("timesheet")
+		public tsDB() 
+			: base("ts")
 		{
 			CommonConstruct();
 		}
 
-		public timesheetDB(string connectionStringName) 
+		public tsDB(string connectionStringName) 
 			: base(connectionStringName)
 		{
 			CommonConstruct();
@@ -56,11 +56,11 @@ namespace TimeSheet.Models
 		
 		public interface IFactory
 		{
-			timesheetDB GetInstance();
+			tsDB GetInstance();
 		}
 		
 		public static IFactory Factory { get; set; }
-        public static timesheetDB GetInstance()
+        public static tsDB GetInstance()
         {
 			if (_instance!=null)
 				return _instance;
@@ -68,10 +68,10 @@ namespace TimeSheet.Models
 			if (Factory!=null)
 				return Factory.GetInstance();
 			else
-				return new timesheetDB();
+				return new tsDB();
         }
 
-		[ThreadStatic] static timesheetDB _instance;
+		[ThreadStatic] static tsDB _instance;
 		
 		public override void OnBeginTransaction()
 		{
@@ -87,7 +87,7 @@ namespace TimeSheet.Models
         
 		public class Record<T> where T:new()
 		{
-			public static timesheetDB repo { get { return timesheetDB.GetInstance(); } }
+			public static tsDB repo { get { return tsDB.GetInstance(); } }
 			public bool IsNew() { return repo.IsNew(this); }
 			public object Insert() { return repo.Insert(this); }
 			public void Save() { repo.Save(this); }
@@ -125,101 +125,184 @@ namespace TimeSheet.Models
 	}
 	
 
-	[TableName("NewRequest")]
+	[TableName("Customer")]
+	[PrimaryKey("CustomerId")]
 	[ExplicitColumns]
-    public partial class NewRequest : timesheetDB.Record<NewRequest>  
+    public partial class Customer : tsDB.Record<Customer>  
     {		
-		[Column] public string Text { get; set; } 	
+		[Column] public int CustomerId { get; set; } 		
+		[Column] public int WorkerId { get; set; } 		
+		[Column] public string CustomerName { get; set; } 	
 	}
 
-	[TableName("ProjectGate")]
+	[TableName("Description")]
+	[PrimaryKey("DescriptionId")]
 	[ExplicitColumns]
-    public partial class ProjectGate : timesheetDB.Record<ProjectGate>  
+    public partial class Description : tsDB.Record<Description>  
     {		
-		[Column("ProjectGate")] public string _ProjectGate { get; set; }
-	
-	}
-
-	[TableName("tblEmployee")]
-	[PrimaryKey("EmployeeNumber")]
-	[ExplicitColumns]
-    public partial class tblEmployee : timesheetDB.Record<tblEmployee>  
-    {		
-		[Column] public string EmployeeNumber { get; set; } 		
-		[Column] public string CurrentLevel { get; set; } 		
-		[Column] public int? LaborTypeID { get; set; } 		
-		[Column] public string WorkDept { get; set; } 		
-		[Column] public int? FacilityID { get; set; } 		
-		[Column] public string FirstName { get; set; } 		
-		[Column] public string LastName { get; set; } 		
-		[Column] public bool IsManager { get; set; } 		
-		[Column] public bool IsPartTime { get; set; } 		
-		[Column] public bool OnDisability { get; set; } 		
-		[Column] public bool IsInActive { get; set; } 		
-		[Column] public string IonName { get; set; } 	
-	}
-
-	[TableName("timesheet_buffer")]
-	[ExplicitColumns]
-    public partial class timesheet_buffer : timesheetDB.Record<timesheet_buffer>  
-    {		
-		[Column] public string WeekNumber { get; set; } 		
-		[Column] public string EmployeeNumber { get; set; } 		
-		[Column] public string TimesheetType { get; set; } 		
-		[Column] public string Description { get; set; } 		
-		[Column] public string AccountingNumber { get; set; } 		
-		[Column] public string GLnumber { get; set; } 		
-		[Column] public string Monday_hours { get; set; } 		
-		[Column] public string Tuesday_hours { get; set; } 		
-		[Column] public string Wednesday_hours { get; set; } 		
-		[Column] public string Thursday_hours { get; set; } 		
-		[Column] public string Friday_hours { get; set; } 		
-		[Column] public string Saturday_hours { get; set; } 		
-		[Column] public string Sunday_hours { get; set; } 		
-		[Column] public string WeekTotal { get; set; } 		
-		[Column] public string ProjectGate { get; set; } 		
-		[Column] public string WorkArea { get; set; } 		
-		[Column] public string NewRequest { get; set; } 		
-		[Column] public string Partner { get; set; } 		
-		[Column] public string Site { get; set; } 		
-		[Column] public string CustomerName { get; set; } 		
-		[Column] public string ID { get; set; } 		
-		[Column] public string TimeType { get; set; } 	
-	}
-
-	[TableName("WorkType")]
-	[ExplicitColumns]
-    public partial class WorkType : timesheetDB.Record<WorkType>  
-    {		
-		[Column] public string Work_Type { get; set; } 	
-	}
-
-	[TableName("CostCenter")]
-	[ExplicitColumns]
-    public partial class CostCenter : timesheetDB.Record<CostCenter>  
-    {		
-		[Column] public float? IndexNum { get; set; } 		
-		[Column("CostCenter")] public string _CostCenter { get; set; }
+		[Column] public int DescriptionId { get; set; } 		
+		[Column] public int WorkerId { get; set; } 		
+		[Column("Description")] public string _Description { get; set; }
 		
-		[Column] public string LegalEnitity { get; set; } 	
+		[Column] public string AccountNumber { get; set; } 		
+		[Column] public int HashCode { get; set; } 		
+		[Column] public bool IsActive { get; set; } 		
+		[Column] public DateTime? DateLastUsed { get; set; } 	
 	}
 
-	[TableName("CustomerType")]
+	[TableName("Facility")]
+	[PrimaryKey("FacilityId")]
 	[ExplicitColumns]
-    public partial class CustomerType : timesheetDB.Record<CustomerType>  
+    public partial class Facility : tsDB.Record<Facility>  
     {		
-		[Column("CustomerType")] public string _CustomerType { get; set; }
+		[Column] public int FacilityId { get; set; } 		
+		[Column("Facility")] public string _Facility { get; set; }
 		
-		[Column] public int? IndexNum { get; set; } 	
+		[Column] public string AccountsPayableID { get; set; } 	
 	}
 
 	[TableName("InternalNumber")]
+	[PrimaryKey("InternalNumberId", autoIncrement=false)]
 	[ExplicitColumns]
-    public partial class InternalNumber : timesheetDB.Record<InternalNumber>  
+    public partial class InternalNumber : tsDB.Record<InternalNumber>  
     {		
-		[Column] public float? IndexNum { get; set; } 		
+		[Column] public int InternalNumberId { get; set; } 		
 		[Column] public string InternalOrder { get; set; } 		
-		[Column] public string LegalEnitity { get; set; } 	
+		[Column] public string LegalEntity { get; set; } 	
+	}
+
+	[TableName("Level")]
+	[PrimaryKey("LevelId")]
+	[ExplicitColumns]
+    public partial class Level : tsDB.Record<Level>  
+    {		
+		[Column] public int LevelId { get; set; } 		
+		[Column("Level")] public string _Level { get; set; }
+		
+		[Column] public decimal RegularRate { get; set; } 		
+		[Column] public decimal OvertimeRate { get; set; } 	
+	}
+
+	[TableName("Partner")]
+	[PrimaryKey("PartnerId")]
+	[ExplicitColumns]
+    public partial class Partner : tsDB.Record<Partner>  
+    {		
+		[Column] public int PartnerId { get; set; } 		
+		[Column("Partner")] public string _Partner { get; set; }
+	
+	}
+
+	[TableName("Role")]
+	[PrimaryKey("RoleId")]
+	[ExplicitColumns]
+    public partial class Role : tsDB.Record<Role>  
+    {		
+		[Column] public int RoleId { get; set; } 		
+		[Column("Role")] public string _Role { get; set; }
+	
+	}
+
+	[TableName("Site")]
+	[PrimaryKey("SiteId")]
+	[ExplicitColumns]
+    public partial class Site : tsDB.Record<Site>  
+    {		
+		[Column] public int SiteId { get; set; } 		
+		[Column("Site")] public string _Site { get; set; }
+		
+		[Column] public string SiteName { get; set; } 	
+	}
+
+	[TableName("WorkArea")]
+	[PrimaryKey("WorkAreaId")]
+	[ExplicitColumns]
+    public partial class WorkArea : tsDB.Record<WorkArea>  
+    {		
+		[Column] public int WorkAreaId { get; set; } 		
+		[Column("WorkArea")] public string _WorkArea { get; set; }
+	
+	}
+
+	[TableName("WorkDept")]
+	[PrimaryKey("WorkDeptId")]
+	[ExplicitColumns]
+    public partial class WorkDept : tsDB.Record<WorkDept>  
+    {		
+		[Column] public int WorkDeptId { get; set; } 		
+		[Column("WorkDept")] public string _WorkDept { get; set; }
+		
+		[Column] public string WorkDeptDesc { get; set; } 		
+		[Column] public int? ProcessId { get; set; } 	
+	}
+
+	[TableName("__RefactorLog")]
+	[PrimaryKey("OperationKey", autoIncrement=false)]
+	[ExplicitColumns]
+    public partial class __RefactorLog : tsDB.Record<__RefactorLog>  
+    {		
+		[Column] public Guid OperationKey { get; set; } 	
+	}
+
+	[TableName("CostCenter")]
+	[PrimaryKey("CostCenterId")]
+	[ExplicitColumns]
+    public partial class CostCenter : tsDB.Record<CostCenter>  
+    {		
+		[Column] public int CostCenterId { get; set; } 		
+		[Column("CostCenter")] public string _CostCenter { get; set; }
+		
+		[Column] public string LegalEntity { get; set; } 	
+	}
+
+	[TableName("Week")]
+	[PrimaryKey("WeekId")]
+	[ExplicitColumns]
+    public partial class Week : tsDB.Record<Week>  
+    {		
+		[Column] public int WeekId { get; set; } 		
+		[Column] public int WeekNumber { get; set; } 		
+		[Column] public int Year { get; set; } 		
+		[Column] public int EmployeeId { get; set; } 		
+		[Column] public int DescriptionId { get; set; } 		
+		[Column] public string Comments { get; set; } 		
+		[Column] public bool IsOvertime { get; set; } 		
+		[Column] public decimal? Monday { get; set; } 		
+		[Column] public decimal? Tuesday { get; set; } 		
+		[Column] public decimal? Wednesday { get; set; } 		
+		[Column] public decimal? Thursday { get; set; } 		
+		[Column] public decimal? Friday { get; set; } 		
+		[Column] public decimal? Saturday { get; set; } 		
+		[Column] public decimal? Sunday { get; set; } 		
+		[Column] public DateTime? Submitted { get; set; } 		
+		[Column] public bool NewRequest { get; set; } 		
+		[Column] public int? SiteId { get; set; } 		
+		[Column] public int? WorkAreaId { get; set; } 		
+		[Column] public int? PartnerId { get; set; } 		
+		[Column] public int? InternalNumberId { get; set; } 		
+		[Column] public int? CostCenterId { get; set; } 		
+		[Column] public string CapitalNumber { get; set; } 		
+		[Column] public int? CustomerId { get; set; } 	
+	}
+
+	[TableName("Worker")]
+	[PrimaryKey("WorkerId")]
+	[ExplicitColumns]
+    public partial class Worker : tsDB.Record<Worker>  
+    {		
+		[Column] public int WorkerId { get; set; } 		
+		[Column] public string EmployeeNumber { get; set; } 		
+		[Column] public int? LevelId { get; set; } 		
+		[Column] public int? WorkDeptId { get; set; } 		
+		[Column] public int? FacilityId { get; set; } 		
+		[Column] public int? RoleId { get; set; } 		
+		[Column] public string FirstName { get; set; } 		
+		[Column] public string LastName { get; set; } 		
+		[Column] public bool IsManager { get; set; } 		
+		[Column] public bool IsActive { get; set; } 		
+		[Column] public bool IsPartTime { get; set; } 		
+		[Column] public bool OnDisability { get; set; } 		
+		[Column] public string IonName { get; set; } 	
 	}
 
 }

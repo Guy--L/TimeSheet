@@ -52,6 +52,9 @@
       <HintPath>..\packages\Elmah.MVC.2.1.1\lib\net40\Elmah.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Portable.Licensing">
+      <HintPath>..\packages\Portable.Licensing.1.1.0\lib\portable-net40+sl4+wp7+win8\Portable.Licensing.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
@@ -143,6 +146,12 @@
       <Private>True</Private>
       <HintPath>..\packages\System.Spatial.5.2.0\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
+    <Reference Include="T4MVCExtensions">
+      <HintPath>..\packages\T4MVCExtensions.3.6.5\lib\net40\T4MVCExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="TwitterBootstrapMVC">
+      <HintPath>..\packages\TwitterBootstrapMVC.3.4.4\lib\net40\TwitterBootstrapMVC.dll</HintPath>
+    </Reference>
     <Reference Include="WebActivatorEx">
       <HintPath>..\packages\WebActivatorEx.2.0.3\lib\net40\WebActivatorEx.dll</HintPath>
     </Reference>
@@ -172,6 +181,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\bootstrap-modal-bs3patch.css" />
+    <Content Include="Content\bootstrap-modal.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -188,6 +199,17 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\font\fontawesome-webfont.svg" />
     <Content Include="Content\images\animated-overlay.gif" />
+    <Content Include="Content\images\back_disabled.png" />
+    <Content Include="Content\images\back_enabled.png" />
+    <Content Include="Content\images\back_enabled_hover.png" />
+    <Content Include="Content\images\forward_disabled.png" />
+    <Content Include="Content\images\forward_enabled.png" />
+    <Content Include="Content\images\forward_enabled_hover.png" />
+    <Content Include="Content\images\sort_asc.png" />
+    <Content Include="Content\images\sort_asc_disabled.png" />
+    <Content Include="Content\images\sort_both.png" />
+    <Content Include="Content\images\sort_desc.png" />
+    <Content Include="Content\images\sort_desc_disabled.png" />
     <Content Include="Content\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -203,6 +225,7 @@
     <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\jquery-ui.min.css" />
+    <Content Include="Content\jquery.dataTables.css" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -288,6 +311,8 @@
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="Scripts\bootstrap-inputmask.js" />
     <Content Include="Scripts\bootstrap-inputmask.min.js" />
+    <Content Include="Scripts\bootstrap-modal.js" />
+    <Content Include="Scripts\bootstrap-modalmanager.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\DT_bootstrap.js" />
@@ -335,6 +360,7 @@
     <Content Include="Views\Web.config" />
     <Content Include="packages.config" />
     <None Include="readme.txt" />
+    <Content Include="TwitterBootstrapMvcLicense.lic" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -767,9 +767,9 @@ input#periodEnding
 {
     max-width: 150px;
 }
-table#hours
+
+.hoursum
 {
-    margin-top: 0;
     max-width: 200px !important;
 }
 
@@ -781,4 +781,9 @@ table#hours
 {
     margin-top: 8px;
     margin-right: 12px;
+}
+
+#weekline
+{
+    width: 400px;
 }

@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0C2F03
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Database1", "Database1\Database1.sqlproj", "{6796AF6C-6223-4E03-85EE-CAE384CBCB99}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "TimeSheetDB", "Database1\TimeSheetDB.sqlproj", "{6796AF6C-6223-4E03-85EE-CAE384CBCB99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

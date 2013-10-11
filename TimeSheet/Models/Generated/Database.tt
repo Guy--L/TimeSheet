@@ -1,8 +1,8 @@
 <#@ include file="PetaPoco.Core.ttinclude" #>
 <#
 	// Settings
-    ConnectionStringName = "";			// Uses last connection string in config if not specified
-    Namespace = "";
+    ConnectionStringName = "ts";			// Uses last connection string in config if not specified
+    Namespace = "TimeSheet.Models";
     RepoName = "";
     GenerateOperations = true;
 	GeneratePocos = true;
@@ -14,6 +14,7 @@
     // Read schema
 	var tables = LoadTables();
 
+	/*
 	List<string> timesheet = new List<string> {
 		 "tblEmployee"
 		,"CustomerType"
@@ -28,6 +29,7 @@
 			
 	foreach (var table in tables)
 		table.Ignore = !timesheet.Contains(table.Name);
+		*/
 
 /*
 	// Tweak Schema
