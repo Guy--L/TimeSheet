@@ -13,14 +13,18 @@ namespace TimeSheet.App_Start
 			// Add @Scripts.Render("~/bundles/bootstrap") after jQuery in your _Layout.cshtml view
 			// When <compilation debug="true" />, MVC4 will render the full readable version. When set to <compilation debug="false" />, the minified version will be rendered automatically
 			BundleTable.Bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                "~/Scripts/bootstrap.js",
-                "~/Scripts/bootstrap-modal.js",
-                "~/Scripts/bootstrap-modalmanager.js"
+                "~/Scripts/bootstrap.js"
+                ,"~/Scripts/bootstrap-inputmask.js"
+                ,"~/Scripts/bootstrap-combobox.js"
+                //"~/Scripts/bootstrap-modal.js",
+                //"~/Scripts/bootstrap-modalmanager.js"
                 //,"~/Scripts/bootstrap-datepicker.js"
                 ));
 			BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/base").Include(
                 "~/Content/bootstrap.css"
-                ,"~/Content/bootstrap-modal.css"
+                ,"~/Content/bootstrap-combobox.css"
+                //,"~/Content/bootstrap-modal-bs3patch.css"
+                //,"~/Content/bootstrap-modal.css"
                 ,"~/Content/datepicker.css"
                 ,"~/Content/font-awesome.css"
                 ));

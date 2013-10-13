@@ -34,21 +34,28 @@ namespace TimeSheet.Controllers
             Sheet.descriptions = db.Fetch<Description>("where workerid = @0", emp.WorkerId).ToDictionary(d=>d.DescriptionId, d=>d._Description);
             Sheet.customers = db.Fetch<Customer>("where workerid = @0", emp.WorkerId).ToDictionary(c => c.CustomerId, c => c.CustomerName);
 
+            if (!Sheet.descriptions.Any())
+            {
+                Sheet.descriptions = new Dictionary<int, string>(2);
+                Sheet.descriptions[1] = "Test One asdf asdf asdf as d asdfasdf asdf asd  asdf asdf asdf asdfasdfasdf  asdf";
+                Sheet.descriptions[2] = "Test Two asdfjjsadfjjas  asdf as d as dfa sdf  fasdf asdf  asdflaskdf  fasdfasfd";
+            }
             Sheet ts = new Sheet() { employee = emp };
 
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
-            DateTime init = DateTime.Today.AddDays(-14);
+            DateTime init = DateTime.Today;
             ts.weekNumber = calendar.GetWeekOfYear(
                 init,
                 CalendarWeekRule.FirstDay,
                 DayOfWeek.Monday
             );
             int nextSunday = init.DayOfWeek == DayOfWeek.Sunday ? 0 : (7 - (int) init.DayOfWeek);
-            ts.sunday = init.AddDays(nextSunday).ToString("mm/dd/yyyy");
+            ts.sunday = init.AddDays(nextSunday).ToString("MM/dd/yyyy");
 
             if (ts.User == "")
                 ts.User = "Guy Lister";
-            ts.edit = new Week();
+            ts.normal = new Week();
+            ts.overtime = new Week();
 
             return View(ts);
         }

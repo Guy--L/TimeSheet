@@ -181,6 +181,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\bootstrap-combobox.css" />
     <Content Include="Content\bootstrap-modal-bs3patch.css" />
     <Content Include="Content\bootstrap-modal.css" />
     <Content Include="Content\bootstrap-theme.css" />
@@ -309,6 +310,7 @@
     <Content Include="Content\font\FontAwesome.otf" />
     <Content Include="Content\images\Thumbs.db" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="Scripts\bootstrap-combobox.js" />
     <Content Include="Scripts\bootstrap-inputmask.js" />
     <Content Include="Scripts\bootstrap-inputmask.min.js" />
     <Content Include="Scripts\bootstrap-modal.js" />

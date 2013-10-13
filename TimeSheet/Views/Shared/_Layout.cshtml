@@ -10,17 +10,16 @@
     @Styles.Render("~/Content/bootstrap/base")
     @Styles.Render("~/Content/bootstrap/theme")
     @Styles.Render("~/Content/dataTables")
-
 </head>
 <body>
-    @RenderBody()
-    
+    <div class="page-container">
+        @RenderBody()
+    </div>
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/dataTables")
-
 
     @RenderSection("scripts", required: false)
 </body>

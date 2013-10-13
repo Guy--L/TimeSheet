@@ -27,6 +27,8 @@ namespace TimeSheet.Models
             }
         }
 
+        public string Description { get; set; }
+
         public string[] serialize()
         {
             return new string[19] {
@@ -75,7 +77,8 @@ namespace TimeSheet.Models
         public static string user;
         public int weekNumber;
         public string sunday;
-        public Week edit;
+        public Week normal;
+        public Week overtime;
         public string User { get { return user; } set { user = value; } }
 
         /// <summary>

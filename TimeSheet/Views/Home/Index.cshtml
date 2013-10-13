@@ -4,7 +4,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <nav class="navbar navbar-fixed-top navbar-inverse" role="navigation">
-
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
             <span class="sr-only">Toggle navigation</span>
@@ -14,7 +13,6 @@
         </button>
         <a class="navbar-brand" href="/Home/">RDSS Timesheet</a>
     </div>
-
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav">
@@ -28,7 +26,6 @@
         </ul>
     </div>
     <!-- /.navbar-collapse -->
-
 </nav>
 <div class="container">
     <div class="row">
@@ -53,10 +50,12 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <button class="btn btn-success col-md-2 col-md-offset-1" id="priorsheet">
+                    <label class="control-label col-md-3">Week</label>
+                    <button class="btn btn-success col-md-1" id="priorsheet">
                         <i class="icon-step-backward icon-large"></i>
                     </button>
-                    <button class="btn btn-success col-md-2" id="nextsheet">
+                    <div class="col-md-1"><h4 id="weeknumber" class="form-control-static">@Model.weekNumber</h4></div>
+                    <button class="btn btn-success col-md-1" id="nextsheet">
                         <i class="icon-step-forward icon-large"></i>
                     </button>
                 </div>
@@ -65,30 +64,30 @@
         <div class="col-md-6">
             @using (Html.Bootstrap().Begin(new Table().Caption("Hours Summary").Condensed().Class("pull-right hoursum")))
             {
-                    <tr>
-                        <td>Demand</td>
-                        <td>
-                            <p class="subtime" id="timed">32.5</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Non-Demand</td>
-                        <td>
-                            <p class="subtime" id="timen">23.4</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Overtime</td>
-                        <td>
-                            <p class="subtime" id="timeo">4.0</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><b>Total</b></td>
-                        <td><b>
-                            <p class="subtime" id="timet">59.9</p>
-                        </b></td>
-                    </tr>
+                <tr>
+                    <td>Demand</td>
+                    <td>
+                        <p class="subtime" id="timed">32.5</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Non-Demand</td>
+                    <td>
+                        <p class="subtime" id="timen">23.4</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Overtime</td>
+                    <td>
+                        <p class="subtime" id="timeo">4.0</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Total</b></td>
+                    <td><b>
+                        <p class="subtime" id="timet">59.9</p>
+                    </b></td>
+                </tr>
             }
         </div>
     </div>
@@ -107,6 +106,8 @@
                     <th>Wed</th>
                     <th>Thu</th>
                     <th>Fri</th>
+                    <th>Sat</th>
+                    <th>Sun</th>
                     <th>Total</th>
                     <th>Customer</th>
                     <th>WorkArea</th>
@@ -129,23 +130,67 @@
     <h4>Add/Edit Hours</h4>
     }
 
-    using (var form = Html.Bootstrap().Begin(new Form().Type(FormType.Horizontal).Id("addweek")))
+    using (var form = Html.Bootstrap().Begin(new Form().Type(FormType.Horizontal).Id("addweek").LabelWidthLg(4)))
     {
         using (modal.BeginBody())
         {
-    @form.FormGroup().DropDownListFor(m => m.edit.PartnerId, new SelectList(Model.Partners, "Key", "Value")).Label().LabelText("Partner")
-    @form.FormGroup().DropDownListFor(m => m.edit.SiteId, new SelectList(Model.Sites, "Key", "Value")).Label().LabelText("Sites")
-    @form.FormGroup().DropDownListFor(m => m.edit.CustomerId, new SelectList(Model.Customers, "Key", "Value")).Label().LabelText("Customer")
-    @form.FormGroup().DropDownListFor(m => m.edit.DescriptionId, new SelectList(Model.Descriptions, "Key", "Value")).Label().LabelText("Description")
-    <div class="well">
-        @form.FormGroup().DropDownListFor(m => m.edit.WorkAreaId, new SelectList(Model.WorkAreas, "Key", "Value")).Label().LabelText("Work Area")
-        @form.FormGroup().CheckBoxFor(m => m.edit.NewRequest)
-        @form.FormGroup().DropDownListFor(m => m.edit.CostCenterId, new SelectList(Model.Orders, "Key", "Value")).Label().LabelText("Cost Center")
-        @form.FormGroup().DropDownListFor(m => m.edit.InternalNumberId, new SelectList(Model.Accounts, "Key", "Value")).Label().LabelText("Internal Number")
-        @form.FormGroup().TextBoxFor(m => m.edit.CapitalNumber)
-
-        
+    <div class="row">
+        <div class="col-lg-6">
+            @form.FormGroup().DropDownListFor(m => m.normal.PartnerId, new SelectList(Model.Partners, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Partner")
+            @form.FormGroup().DropDownListFor(m => m.normal.SiteId, new SelectList(Model.Sites, "Key", "Value")).Size(InputSize.Small).WidthLg(4).Label().LabelText("Site")
+            @form.FormGroup().DropDownListFor(m => m.normal.CustomerId, new SelectList(Model.Customers, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Customer")
+            @form.FormGroup().DropDownListFor(m => m.normal.DescriptionId, new SelectList(Model.Descriptions, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Description")
+        </div>
+        <div class="col-lg-6">
+            @form.FormGroup().DropDownListFor(m => m.normal.WorkAreaId, new SelectList(Model.WorkAreas, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Work Area")
+            @form.FormGroup().DropDownListFor(m => m.normal.CostCenterId, new SelectList(Model.Orders, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Cost Center")
+            @form.FormGroup().DropDownListFor(m => m.normal.InternalNumberId, new SelectList(Model.Accounts, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Internal #")
+            @form.FormGroup().TextBoxFor(m => m.normal.CapitalNumber).Size(InputSize.Small).Label().LabelText("Capital #")
+        </div>
     </div>
+            using (Html.Bootstrap().Begin(new Table().Condensed().Striped().Class("hourinput")))
+            { 
+    <thead>
+        <tr class="weekline">
+            <th></th>
+            <th id="dateMon">Mon</th>
+            <th id="dateTue">Tue</th>
+            <th id="dateWed">Wed</th>
+            <th id="dateThu">Thu</th>
+            <th id="dateFri">Fri</th>
+            <th id="dateSat">Sat</th>
+            <th id="dateSun">Sun</th>
+            <th>Subtotal</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="hourline">
+            <td class="hrsum">Normal</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Monday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Tuesday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Wednesday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Thursday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Friday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Saturday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Sunday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td id="hrsnormal" class="hrsum"></td>
+            <td class="hrwtotal"></td>
+        </tr>
+        <tr class="hourline">
+            <td class="hrsum">Overtime</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Monday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Tuesday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Wednesday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Thursday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Friday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Saturday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Sunday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td id="hrsovertime" class="hrsum"></td>
+            <td class="hrowtotal"></td>
+        </tr>
+    </tbody>
+            }
             using (modal.BeginFooter())
             {
     @(form.FormGroup().CustomControls(
@@ -167,21 +212,6 @@
                     <div class="input-group">
                         @Html.DropDownListFor(m => m.edit.CostCenterId, new SelectList(Model.Orders))
                     </div>
-                    <div class="input-group">
-                        <input type="text" class="form-control">
-                        <div class="input-group-btn">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
-                            <ul class="dropdown-menu pull-right">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                            </ul>
-                        </div>
-                        <!-- /btn-group -->
-                    </div>
-                    <!-- /input-group -->
                 </div>
                 <!-- /.col-lg-6 -->
 
@@ -203,70 +233,177 @@
         var sheet;
         var empid = '@Model.employee.WorkerId';
 
-    /* For a given date, get the ISO week number
-     *
-     * Based on information at:
-     *
-     *    http://www.merlyn.demon.co.uk/weekcalc.htm#WNR
-     *
-     * Algorithm is to find nearest thursday, it's year
-     * is the year of the week number. Then get weeks
-     * between that date and the first day of that year.
-     *
-     * Note that dates in one year can be weeks of previous
-     * or next year, overlap is up to 3 days.
-     *
-     * e.g. 2014/12/29 is Monday in week  1 of 2015
-     *      2012/1/1   is Sunday in week 52 of 2011
-     */
-    function getWeekNumber(d) {
-        // Copy date so don't modify original
-        d = new Date(d);
-        d.setHours(0, 0, 0);
-        // Set to nearest Thursday: current date + 4 - current day number
-        // Make Sunday's day number 7
-        d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-        // Get first day of year
-        var yearStart = new Date(d.getFullYear(), 0, 1);
-        // Calculate full weeks to nearest Thursday
-        var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
-        // Return array of year and week number
-        return [d.getFullYear(), weekNo];
-    }
-    function getSheet() {
-        sheet = $('#week').dataTable({
-            "sDom": "t",
-            "bPaginate": false,
-            "oLanguage": {
-                "sEmptyTable": "No projects yet.  Click row to add one."
-            },
-            "aoColumnDefs": [{ "bVisible": false, "aTargets": [0] }
-                , { "bVisible": false, "aTargets": [1] }
-                , { "bVisible": false, "aTargets": [2] }
-            ],
-            "sAjaxSource": 'api/Hours/' + empid + '/' + week + ''
-        });
-    }
+        /* For a given date, get the ISO week number
+         *
+         * Based on information at:
+         *
+         *    http://www.merlyn.demon.co.uk/weekcalc.htm#WNR
+         *
+         * Algorithm is to find nearest thursday, it's year
+         * is the year of the week number. Then get weeks
+         * between that date and the first day of that year.
+         *
+         * Note that dates in one year can be weeks of previous
+         * or next year, overlap is up to 3 days.
+         *
+         * e.g. 2014/12/29 is Monday in week  1 of 2015
+         *      2012/1/1   is Sunday in week 52 of 2011
+         */
+        function getWeekNumber(d) {
+            // Copy date so don't modify original
+            d = new Date(d);
+            d.setHours(0, 0, 0);
+            // Set to nearest Thursday: current date + 4 - current day number
+            // Make Sunday's day number 7
+            d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+            // Get first day of year
+            var yearStart = new Date(d.getFullYear(), 0, 1);
+            // Calculate full weeks to nearest Thursday
+            var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
+            // Return array of year and week number
+            return [d.getFullYear(), weekNo];
+        }
 
-
-    $(function () {
-        $('.datepicker').datepicker({
-            beforeShowDay: function (date) { return [date.getDay() == 0, ""] }
-            , firstDay: 1
-        });
-        $('.datepicker').on('change', function (e) {
-            var test = new Date(e.target.value);
-            if (test.getDay() != 0) {
-                test.setDate(test.getDate() + 7 - test.getDay());
-                e.target.value = $.datepicker.formatDate('mm/dd/yy', test);
+        // following function code googled -- to allow updating datatable from original ajax
+        $.fn.dataTableExt.oApi.fnReloadAjax = function (oSettings, sNewSource, fnCallback, bStandingRedraw) {
+            if (typeof sNewSource != 'undefined' && sNewSource != null) {
+                oSettings.sAjaxSource = sNewSource;
             }
-            console.log($.datepicker.iso8601Week(test));
+            this.oApi._fnProcessingDisplay(oSettings, true);
+            var that = this;
+            var iStart = oSettings._iDisplayStart;
+            var aData = [];
+
+            this.oApi._fnServerParams(oSettings, aData);
+
+            oSettings.fnServerData(oSettings.sAjaxSource, aData, function (json) {
+                /* Clear the old information from the table */
+                that.oApi._fnClearTable(oSettings);
+
+                /* Got the data - add it to the table */
+                var aData = (oSettings.sAjaxDataProp !== "") ?
+                    that.oApi._fnGetObjectDataFn(oSettings.sAjaxDataProp)(json) : json;
+
+                for (var i = 0 ; i < aData.length ; i++) {
+                    that.oApi._fnAddData(oSettings, aData[i]);
+                }
+
+                oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
+                that.fnDraw();
+
+                if (typeof bStandingRedraw != 'undefined' && bStandingRedraw === true) {
+                    oSettings._iDisplayStart = iStart;
+                    that.fnDraw(false);
+                }
+
+                that.oApi._fnProcessingDisplay(oSettings, false);
+
+                /* Callback user function - for event handlers etc */
+                if (typeof fnCallback == 'function' && fnCallback != null) {
+                    fnCallback(oSettings);
+                }
+            }, oSettings);
+        }
+
+        function getSheet() {
+            sheet = $('#week').dataTable({
+                "sDom": "t",
+                "bPaginate": false,
+                "oLanguage": {
+                    "sEmptyTable": "No projects yet.  Click row to add one."
+                },
+                "aoColumnDefs": [{ "bVisible": false, "aTargets": [0] }
+                    , { "bVisible": false, "aTargets": [1] }
+                    , { "bVisible": false, "aTargets": [2] }
+                    , { 'bSortable': false, 'aTargets': [6] }
+                    , { 'bSortable': false, 'aTargets': [7] }
+                    , { 'bSortable': false, 'aTargets': [8] }
+                    , { 'bSortable': false, 'aTargets': [9] }
+                    , { 'bSortable': false, 'aTargets': [10] }
+                    , { 'bSortable': false, 'aTargets': [11] }
+                    , { 'bSortable': false, 'aTargets': [12] }
+                ],
+                "sAjaxSource": 'api/Hours/' + empid + '/' + week + ''
+            });
+        }
+
+        function getHours(hrs, mns) {
+            hrs += Math.floor(mns / 60);
+            mns %= 60;
+            return hrs + ":" + (mns < 10?"0":"") + mns;
+        }
+
+        function newWeek(next) {
+            var days = next ? 7 : -7;
+            var newSunday = new Date(sunday);
+            newSunday.setDate(newSunday.getDate() + days);
+            sunday = $.datepicker.formatDate('mm/dd/yy', newSunday);
+            $('#periodEnding').val(sunday);
+            week = $.datepicker.iso8601Week(newSunday);
+            $('#weeknumber').html(week);
+            sheet.fnDestroy();           // do this with reload
+            getSheet();
+        }
+
+        function resumLine(line)
+        {
+            var hrs = 0;
+            var mns = 0;
+            $('input[id^="'+line+'"]', 'tr.hourline').each(function () {
+                hrs += Number($(this).val().substr(0, 1));
+                mns += Number($(this).val().substr(2, 2));
+            });
+            console.log(getTime(hrs, mns));
+            $('#hrs' + line, 'tr.hourline').html(getHours(hrs, mns));
+        }
+
+        $(function () {
+            $('#normal_DescriptionId').combobox({ freeform: true });
+            $('.datepicker').datepicker({
+                beforeShowDay: function (date) { return [date.getDay() == 0, ""] }
+                , firstDay: 1
+            });
+            $('.datepicker').on('change', function (e) {
+                var test = new Date(e.target.value);
+                if (test.getDay() != 0) {
+                    test.setDate(test.getDate() + 7 - test.getDay());
+                    e.target.value = $.datepicker.formatDate('mm/dd/yy', test);
+                }
+                console.log($.datepicker.iso8601Week(test));
+            });
+            $('#week tbody').on('click', 'tr', function () {
+                var weekday = new Date(sunday);
+                weekday.setDate(weekday.getDate() - 6);
+                $('th[id^=date]', 'tr.weekline').each(function () {
+                    $(this).html($.datepicker.formatDate('D m/d', weekday));
+                    $(this).wrapInner("<small></small>");
+                    weekday.setDate(weekday.getDate() + 1);
+                });
+                $('#weekline').modal('show');
+            });
+            $('#priorsheet').on('click', function (e) {
+                e.preventDefault();
+                newWeek(false);
+            });
+            $('#nextsheet').on('click', function (e) {
+                e.preventDefault();
+                newWeek(true);
+            });
+            week = @Model.weekNumber
+            $('#periodEnding').val('@Model.sunday');
+            $('tr.hourline input').on('blur', function (e) {
+                var newmn = e.target.value.substr(2, 2).replace('_', '0');
+                var newhr = e.target.value.substr(0, 1);
+                e.target.value = getHours(Number(newhr), Number(newmn));
+            });
+            $('input[id^="normal"]', 'tr.hourline').on('change', function (e) {
+                resumLine("normal");
+            });
+            $('input[id^="overtime"]', 'tr.hourline').on('change', function (e) {
+                resumLine("overtime");
+            });
+            console.log("init getsheet");
+            getSheet();
         });
-        $('#week tbody').on('click', 'tr', function () {
-            $('#weekline').modal('show');
-        });
-        week = @Model.weekNumber
-    getSheet();
-    });
     </script>
 }

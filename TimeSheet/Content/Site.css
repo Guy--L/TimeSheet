@@ -780,10 +780,41 @@ input#periodEnding
 #sheetform button
 {
     margin-top: 8px;
-    margin-right: 12px;
 }
 
-#weekline
+    #sheetform button#priorsheet
+    {
+        margin-left: 15px;
+    }
+
+#weekline .modal-dialog
 {
-    width: 400px;
+    width: 850px;
+}
+
+tr.hourline .form-group
+{
+    margin: 0;
+}
+
+tr.hourline .sr-only
+{
+    padding: 0;
+}
+
+tr.hourline .form-group div.col-lg-12
+{
+    padding: 0;
+}
+
+tr.hourline td.hrsum
+{
+    font-weight: bold;
+    text-align: right;
+    vertical-align: middle;
+}
+
+tr.weekline th
+{
+    font-weight: 400;
 }
