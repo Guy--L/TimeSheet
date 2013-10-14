@@ -8,9 +8,29 @@ namespace TimeSheet.Models
 {
     public partial class Week
     {
-        private static string time(decimal? hours)
+        public string Mon { get { return time2str(Monday); } set { Monday = time2dec(value); } }
+        public string Tue { get { return time2str(Tuesday); } set { Tuesday = time2dec(value); } }
+        public string Wed { get { return time2str(Wednesday); } set { Wednesday = time2dec(value); } }
+        public string Thu { get { return time2str(Thursday); } set { Thursday = time2dec(value); } }
+        public string Fri { get { return time2str(Friday); } set { Friday = time2dec(value); } }
+        public string Sat { get { return time2str(Saturday); } set { Saturday = time2dec(value); } }
+        public string Sun { get { return time2str(Sunday); } set { Sunday = time2dec(value); } } 		
+
+        private static string time2str(decimal? hours)
         {
-            return TimeSpan.FromHours(Decimal.ToDouble(hours ?? 0)).ToString("hh:mm");
+            return hours.HasValue?TimeSpan.FromHours(Decimal.ToDouble(hours.Value)).ToString("hh:mm"):"";
+        }
+
+        private static decimal? time2dec(string hours)
+        {
+            if (string.IsNullOrWhiteSpace(hours))
+                return null;
+            var part = hours.Split(':');
+            var hrs = int.Parse(part[0]);
+            var mns = int.Parse(part[1]);
+            hrs += mns / 60;
+            mns %= 60;
+            return (decimal?) (hrs + mns * (10.0 / 6.0));
         }
 
         public decimal subTotal
@@ -29,7 +49,7 @@ namespace TimeSheet.Models
 
         public string Description { get; set; }
 
-        public string[] serialize()
+        public string[] serializeDT()
         {
             return new string[19] {
                  WeekId.ToString()
@@ -38,14 +58,14 @@ namespace TimeSheet.Models
                 ,Sheet.descriptions[DescriptionId]
                 ,InternalNumberId.HasValue?Sheet.orders[InternalNumberId.Value]:CapitalNumber 
                 ,CostCenterId.HasValue?Sheet.accounts[CostCenterId.Value]:""
-                ,time(Monday)
-                ,time(Tuesday)
-                ,time(Wednesday)
-                ,time(Thursday)
-                ,time(Friday)
-                ,time(Saturday)
-                ,time(Sunday)
-                ,time(subTotal)
+                ,time2str(Monday)
+                ,time2str(Tuesday)
+                ,time2str(Wednesday)
+                ,time2str(Thursday)
+                ,time2str(Friday)
+                ,time2str(Saturday)
+                ,time2str(Sunday)
+                ,time2str(subTotal)
                 ,CustomerId.HasValue?Sheet.customers[CustomerId.Value]:""
                 ,WorkAreaId.HasValue?Sheet.workAreas[WorkAreaId.Value]:""
                 ,NewRequest.ToString()
@@ -76,9 +96,12 @@ namespace TimeSheet.Models
         public Worker employee { get; set; }
         public static string user;
         public int weekNumber;
+
         public string sunday;
+        
         public Week normal;
         public Week overtime;
+        
         public string User { get { return user; } set { user = value; } }
 
         /// <summary>

@@ -54,7 +54,9 @@
                     <button class="btn btn-success col-md-1" id="priorsheet">
                         <i class="icon-step-backward icon-large"></i>
                     </button>
-                    <div class="col-md-1"><h4 id="weeknumber" class="form-control-static">@Model.weekNumber</h4></div>
+                    <div class="col-md-1">
+                        <h4 id="weeknumber" class="form-control-static">@Model.weekNumber</h4>
+                    </div>
                     <button class="btn btn-success col-md-1" id="nextsheet">
                         <i class="icon-step-forward icon-large"></i>
                     </button>
@@ -130,8 +132,13 @@
     <h4>Add/Edit Hours</h4>
     }
 
-    using (var form = Html.Bootstrap().Begin(new Form().Type(FormType.Horizontal).Id("addweek").LabelWidthLg(4)))
+    using (var form = Html.Bootstrap().Begin(new Form().Id("weeksheet").Type(FormType.Horizontal).LabelWidthLg(4)))
     {
+        @Html.HiddenFor(m => m.employee.WorkerId)
+        @Html.HiddenFor(m => m.weekNumber)
+        @Html.HiddenFor(m => m.normal.IsOvertime)
+        @Html.HiddenFor(m => m.overtime.IsOvertime)
+
         using (modal.BeginBody())
         {
     <div class="row">
@@ -139,7 +146,7 @@
             @form.FormGroup().DropDownListFor(m => m.normal.PartnerId, new SelectList(Model.Partners, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Partner")
             @form.FormGroup().DropDownListFor(m => m.normal.SiteId, new SelectList(Model.Sites, "Key", "Value")).Size(InputSize.Small).WidthLg(4).Label().LabelText("Site")
             @form.FormGroup().DropDownListFor(m => m.normal.CustomerId, new SelectList(Model.Customers, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Customer")
-            @form.FormGroup().DropDownListFor(m => m.normal.DescriptionId, new SelectList(Model.Descriptions, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Description")
+            @form.FormGroup().CheckBoxFor(m => m.normal.NewRequest)
         </div>
         <div class="col-lg-6">
             @form.FormGroup().DropDownListFor(m => m.normal.WorkAreaId, new SelectList(Model.WorkAreas, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Work Area")
@@ -147,6 +154,9 @@
             @form.FormGroup().DropDownListFor(m => m.normal.InternalNumberId, new SelectList(Model.Accounts, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Internal #")
             @form.FormGroup().TextBoxFor(m => m.normal.CapitalNumber).Size(InputSize.Small).Label().LabelText("Capital #")
         </div>
+    </div>
+    <div class="row">
+            @form.FormGroup().DropDownListFor(m => m.normal.DescriptionId, new SelectList(Model.Descriptions, "Key", "Value")).Size(InputSize.Small).WidthLg(10).Label().WidthLg(2).LabelText("Description")
     </div>
             using (Html.Bootstrap().Begin(new Table().Condensed().Striped().Class("hourinput")))
             { 
@@ -167,25 +177,25 @@
     <tbody>
         <tr class="hourline">
             <td class="hrsum">Normal</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.normal.Monday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.normal.Tuesday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.normal.Wednesday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.normal.Thursday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.normal.Friday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.normal.Saturday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.normal.Sunday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Mon).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Tue).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Wed).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Thu).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Fri).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Sat).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.normal.Sun).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
             <td id="hrsnormal" class="hrsum"></td>
             <td class="hrwtotal"></td>
         </tr>
         <tr class="hourline">
             <td class="hrsum">Overtime</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Monday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Tuesday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Wednesday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Thursday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Friday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Saturday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
-            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Sunday).Data(new { mask = "9:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Mon).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Tue).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Wed).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Thu).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Fri).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Sat).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+            <td>@form.FormGroup().TextBoxFor(m => m.overtime.Sun).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
             <td id="hrsovertime" class="hrsum"></td>
             <td class="hrowtotal"></td>
         </tr>
@@ -194,7 +204,7 @@
             using (modal.BeginFooter())
             {
     @(form.FormGroup().CustomControls(
-                Html.Bootstrap().SubmitButton().Style(ButtonStyle.Success).LoadingText("Working..."),
+                Html.Bootstrap().SubmitButton().Text("Save").Id("savehrs").Style(ButtonStyle.Success).LoadingText("Working..."),
                 Html.Bootstrap().Button().Data(new { dismiss = "modal" }).Text("Cancel")))
             }
         }
@@ -312,7 +322,8 @@
                 "oLanguage": {
                     "sEmptyTable": "No projects yet.  Click row to add one."
                 },
-                "aoColumnDefs": [{ "bVisible": false, "aTargets": [0] }
+                "aoColumnDefs": [
+                      { "bVisible": false, "aTargets": [0] }
                     , { "bVisible": false, "aTargets": [1] }
                     , { "bVisible": false, "aTargets": [2] }
                     , { 'bSortable': false, 'aTargets': [6] }
@@ -330,7 +341,7 @@
         function getHours(hrs, mns) {
             hrs += Math.floor(mns / 60);
             mns %= 60;
-            return hrs + ":" + (mns < 10?"0":"") + mns;
+            return hrs + ":" + (mns < 10 ? "0" : "") + mns;
         }
 
         function newWeek(next) {
@@ -342,22 +353,24 @@
             week = $.datepicker.iso8601Week(newSunday);
             $('#weeknumber').html(week);
             sheet.fnDestroy();           // do this with reload
+            //var ajax = 'api/Hours/' + empid + '/' + week + '';
+            //sheet.fnReloadAjax(
             getSheet();
         }
 
-        function resumLine(line)
-        {
+        function resumLine(line) {
             var hrs = 0;
             var mns = 0;
-            $('input[id^="'+line+'"]', 'tr.hourline').each(function () {
-                hrs += Number($(this).val().substr(0, 1));
-                mns += Number($(this).val().substr(2, 2));
+            $('input[id^="' + line + '"]', 'tr.hourline').each(function () {
+                hrs += Number($(this).val().substr(0, 2));
+                mns += Number($(this).val().substr(3, 2));
             });
-            console.log(getTime(hrs, mns));
+            console.log("+"+getHours(hrs, mns));
             $('#hrs' + line, 'tr.hourline').html(getHours(hrs, mns));
         }
 
         $(function () {
+            $('#normal_CustomerId').combobox({ freeform: true });
             $('#normal_DescriptionId').combobox({ freeform: true });
             $('.datepicker').datepicker({
                 beforeShowDay: function (date) { return [date.getDay() == 0, ""] }
@@ -369,7 +382,6 @@
                     test.setDate(test.getDate() + 7 - test.getDay());
                     e.target.value = $.datepicker.formatDate('mm/dd/yy', test);
                 }
-                console.log($.datepicker.iso8601Week(test));
             });
             $('#week tbody').on('click', 'tr', function () {
                 var weekday = new Date(sunday);
@@ -391,10 +403,14 @@
             });
             week = @Model.weekNumber
             $('#periodEnding').val('@Model.sunday');
-            $('tr.hourline input').on('blur', function (e) {
-                var newmn = e.target.value.substr(2, 2).replace('_', '0');
-                var newhr = e.target.value.substr(0, 1);
-                e.target.value = getHours(Number(newhr), Number(newmn));
+            $('tr.hourline input').on('blur', function () {
+                var newt = $(this).val().replace(/_/g, '0').split(':');
+                var newhr = ($(this).val().charAt(1) == '_' && $(this).val().charAt(0) != '_') ? Number(newt[0].charAt(0)) : Number(newt[0]);
+                console.log(newt);
+                console.log(newhr);
+                var g = getHours(newhr, Number(newt[1]));
+                g = g.length < 5 ? '0' + g : g;
+                $(this).val(g);
             });
             $('input[id^="normal"]', 'tr.hourline').on('change', function (e) {
                 resumLine("normal");
@@ -402,7 +418,24 @@
             $('input[id^="overtime"]', 'tr.hourline').on('change', function (e) {
                 resumLine("overtime");
             });
-            console.log("init getsheet");
+
+            $('#savehrs').on('click', function (e) {
+                var up = $('#weeksheet').serialize();
+                var status = $.ajax({
+                    type: "POST",
+                    url: '/api/Hours',
+                    data: up,
+                    contenttype: "application/json",
+                    traditional: true,
+                    success: function (result) {
+                        //AT.communication.addMessage("success", "Hours saved.");
+                    },
+                    error: function () {
+                        //AT.communication.addMessage("error", "Sorry! Unable to save your comment. Someone has been alerted. Please try again later.");
+                    }
+                });
+
+            });
             getSheet();
         });
     </script>

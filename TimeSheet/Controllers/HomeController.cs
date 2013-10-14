@@ -54,8 +54,8 @@ namespace TimeSheet.Controllers
 
             if (ts.User == "")
                 ts.User = "Guy Lister";
-            ts.normal = new Week();
-            ts.overtime = new Week();
+            ts.normal = new Week() { IsOvertime = false };
+            ts.overtime = new Week() { IsOvertime = true };
 
             return View(ts);
         }

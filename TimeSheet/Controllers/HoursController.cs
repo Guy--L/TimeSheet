@@ -27,7 +27,7 @@ namespace TimeSheet.Controllers
             tsDB db = new tsDB();
 
             var sheet = db.Fetch<Week>(string.Format("select * from Week where workerid = '{0}' and weeknumber = '{1}'", id, week));
-            var records = sheet.Select(a => a.serialize()).ToArray();
+            var records = sheet.Select(a => a.serializeDT()).ToArray();
             return new
             {
                 sEcho = 1,
@@ -38,8 +38,10 @@ namespace TimeSheet.Controllers
         }
 
         // POST api/hours
-        public void Post([FromBody]string value)
+        public void Post(Sheet hours)
         {
+            
+
         }
 
         // PUT api/hours/5
