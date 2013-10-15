@@ -420,11 +420,12 @@
             });
 
             $('#savehrs').on('click', function (e) {
-                var up = $('#weeksheet').serialize();
+                var hours = $('#weeksheet').serialize();
+                console.log(hours);
                 var status = $.ajax({
                     type: "POST",
                     url: '/api/Hours',
-                    data: up,
+                    data: hours,
                     contenttype: "application/json",
                     traditional: true,
                     success: function (result) {

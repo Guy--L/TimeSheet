@@ -40,8 +40,8 @@ namespace TimeSheet.Controllers
         // POST api/hours
         public void Post(Sheet hours)
         {
-            
-
+            tsDB db = new tsDB();
+            db.Execute(hours.Save());
         }
 
         // PUT api/hours/5
