@@ -27,7 +27,7 @@ namespace TimeSheet.Models
         public Worker employee { get; set; }
         public static string user;
         public int weekNumber { get; set; }
-        public string Description { get; set; }
+        public string NewDescription { get; set; }
 
         public string sunday;
 
@@ -62,11 +62,8 @@ namespace TimeSheet.Models
 
         public string Save()
         {
-            string sql = "";
-            if (!string.IsNullOrWhiteSpace(Description))
-                sql = Models.Description.Save(employee.WorkerId, Description);
-            sql += normal.Save() + overtime.Save();
-            return sql;
+            normal.Match(overtime);
+            return normal.Save(employee.WorkerId) + overtime.Save(employee.WorkerId);
         }
     }
 }

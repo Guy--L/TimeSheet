@@ -17,7 +17,10 @@ namespace TimeSheet.Models
 
         private static string time2str(decimal? hours)
         {
-            return hours.HasValue ? TimeSpan.FromHours(Decimal.ToDouble(hours.Value)).ToString("hh':'mm") : "";
+            if (!hours.HasValue)
+                return "";
+            TimeSpan ts = TimeSpan.FromHours(Decimal.ToDouble(hours.Value));
+            return string.Format("{0}:{1:00}", (int) ts.TotalHours, ts.Minutes);
         }
 
         private static decimal? time2dec(string hours)
@@ -36,90 +39,125 @@ namespace TimeSheet.Models
         {
             get
             {
-                return Monday ?? 0
-                    + Tuesday ?? 0
-                    + Wednesday ?? 0
-                    + Thursday ?? 0
-                    + Friday ?? 0
-                    + Saturday ?? 0
-                    + Sunday ?? 0;
+                return (Monday ?? 0)
+                    + (Tuesday ?? 0)
+                    + (Wednesday ?? 0)
+                    + (Thursday ?? 0)
+                    + (Friday ?? 0)
+                    + (Saturday ?? 0)
+                    + (Sunday ?? 0);
             }
         }
 
         public string[] serializeDT()
         {
-            return new string[19] {
+            var tot = subTotal;
+            return new string[25] {
                  WeekId.ToString()
                 ,WeekNumber.ToString()
                 ,IsOvertime.ToString()
                 ,Sheet.descriptions[DescriptionId]
                 ,InternalNumberId.HasValue?Sheet.orders[InternalNumberId.Value]:CapitalNumber 
-                ,CostCenterId.HasValue?Sheet.accounts[CostCenterId.Value]:""
+                ,CostCenterId.HasValue?Sheet.accounts[CostCenterId.Value]:""                        // 5
                 ,time2str(Monday)
                 ,time2str(Tuesday)
                 ,time2str(Wednesday)
                 ,time2str(Thursday)
-                ,time2str(Friday)
+                ,time2str(Friday)                                                                   // 10
                 ,time2str(Saturday)
                 ,time2str(Sunday)
-                ,time2str(subTotal)
-                ,CustomerId.HasValue?Sheet.customers[CustomerId.Value]:""
-                ,WorkAreaId.HasValue?Sheet.workAreas[WorkAreaId.Value]:""
+                ,time2str(tot)
+                ,CustomerId.HasValue&&CustomerId>0?Sheet.customers[CustomerId.Value]:""
+                ,WorkAreaId.HasValue?Sheet.workAreas[WorkAreaId.Value]:""                           // 15
                 ,NewRequest.ToString()
                 ,PartnerId.HasValue?Sheet.partners[PartnerId.Value]:""
                 ,SiteId.HasValue?Sheet.sites[SiteId.Value]:""
+                ,DescriptionId.ToString()
+                ,CustomerId.ToString()                                                              // 20
+                ,InternalNumberId.ToString()
+                ,WorkAreaId.ToString()
+                ,PartnerId.ToString()
+                ,SiteId.ToString()
             };
         }
 
-        public string Save()
+        public void Match(Week b)
         {
-            if (WeekId == 0 && subTotal > 0)
+            if (WeekId == 0)
+            {
+                if (b.WeekId != 0)
+                {
+                    WeekNumber = b.WeekNumber;
+                    Year = b.Year;
+                    DescriptionId = b.DescriptionId;
+                    CustomerId = b.CustomerId;
+                    SiteId = b.SiteId;
+                    PartnerId = b.PartnerId;
+                    InternalNumberId = b.InternalNumberId;
+                    WorkAreaId = b.WorkAreaId;
+                    NewRequest = b.NewRequest;
+                    CostCenterId = b.CostCenterId;
+                }
+            }
+            else if (b.WeekId == 0 && WeekId != 0)
+                b.Match(this);
+        }
+
+        public string Save(int id)
+        {
+            if (WeekId == 0)
+            {
+                if (subTotal <= 0)
+                    return "";
+
                 return string.Format(ins_week
                        , WeekNumber
                        , Year
+                       , id
                        , DescriptionId
                        , Comments
-                       , IsOvertime
-                       , Monday
-                       , Tuesday
-                       , Wednesday
-                       , Thursday
-                       , Friday
-                       , Saturday
-                       , Sunday
-                       , Submitted
-                       , NewRequest
+                       , IsOvertime?1:0
+                       , Monday??0
+                       , Tuesday??0
+                       , Wednesday??0
+                       , Thursday??0
+                       , Friday??0
+                       , Saturday??0
+                       , Sunday??0
+                       , Submitted==null?"null":Submitted.ToString()
+                       , NewRequest?1:0
                        , SiteId
                        , WorkAreaId
                        , PartnerId
                        , InternalNumberId
                        , CostCenterId
                        , CapitalNumber
-                       , CustomerId);
-
+                       , CustomerId??0);
+            }
             return string.Format(upd_week
                        , WeekId
                        , WeekNumber
                        , Year
+                       , id
                        , DescriptionId
                        , Comments
-                       , IsOvertime
-                       , Monday
-                       , Tuesday
-                       , Wednesday
-                       , Thursday
-                       , Friday
-                       , Saturday
-                       , Sunday
-                       , Submitted
-                       , NewRequest
+                       , IsOvertime?1:0
+                       , Monday??0
+                       , Tuesday??0
+                       , Wednesday??0
+                       , Thursday??0
+                       , Friday??0
+                       , Saturday??0
+                       , Sunday??0
+                       , Submitted==null?"null":Submitted.ToString()
+                       , NewRequest?1:0
                        , SiteId
                        , WorkAreaId
                        , PartnerId
                        , InternalNumberId
                        , CostCenterId
                        , CapitalNumber
-                       , CustomerId);
+                       , CustomerId??0);
         }
 
         private static string ins_week = @"
@@ -151,7 +189,7 @@ namespace TimeSheet.Models
                        ,{1} --<Year, int,>
                        ,{2} --<WorkerId, int,>
                        ,{3} --<DescriptionId, int,>
-                       ,{4} --<Comments, nvarchar(max),>
+                       ,'{4}' --<Comments, nvarchar(max),>
                        ,{5} --<IsOvertime, bit,>
                        ,{6} --<Monday, money,>
                        ,{7} --<Tuesday, money,>
@@ -167,9 +205,8 @@ namespace TimeSheet.Models
                        ,{17} --<PartnerId, int,>
                        ,{18} --<InternalNumberId, int,>
                        ,{19} --<CostCenterId, int,>
-                       ,{20} --<CapitalNumber, nvarchar(50),>
-                       ,{21} --<CustomerId, int,>)
-               select @@scope_identity() ";
+                       ,'{20}' --<CapitalNumber, nvarchar(50),>
+                       ,{21}) --<CustomerId, int,> ";
 
         private static string upd_week = @"
             UPDATE [TimeSheetDB].[dbo].[Week]
@@ -195,6 +232,6 @@ namespace TimeSheet.Models
                        ,[CostCenterId]       = {20}
                        ,[CapitalNumber]      = '{21}'
                        ,[CustomerId]         = {22}
-             WHERE WeekId = {0}";
+             WHERE WeekId = {0} ";
     }
 }

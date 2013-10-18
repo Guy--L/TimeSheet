@@ -356,14 +356,14 @@
       var val = this.$element.val();
       if (!this.selected && val !== '' ) {
         if (!this.options.freeform) {
-            this.$element.val('')
-            this.$source.val('').trigger('change')
-            this.$target.val('').trigger('change')
+            this.$element.val('');
+            this.$source.val('').trigger('change');
+            this.$target.val('').trigger('change');
             }
         else {
-            this.$source.val(val).trigger('change')
-            this.$target.val(val).trigger('change')
-            this.$container.addClass('combobox-selected')
+            this.$source.val(val).trigger('change');
+            this.$target.val(val).trigger('change');
+            this.$container.addClass('combobox-selected');
         }
       }
       if (!this.mousedover && this.shown) {setTimeout(function () { that.hide(); }, 200);}

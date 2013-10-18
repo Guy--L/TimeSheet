@@ -41,6 +41,11 @@ namespace TimeSheet.Controllers
         public void Post(Sheet hours)
         {
             tsDB db = new tsDB();
+            if (!string.IsNullOrWhiteSpace(hours.NewDescription))
+                hours.normal.DescriptionId = db.ExecuteScalar<int>(Models.Description.Save(hours.employee.WorkerId, hours.NewDescription));
+
+            hours.normal.WeekNumber = hours.weekNumber;
+            hours.overtime.WeekNumber = hours.weekNumber;
             db.Execute(hours.Save());
         }
 

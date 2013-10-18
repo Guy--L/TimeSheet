@@ -814,6 +814,12 @@ tr.hourline td.hrsum
     vertical-align: middle;
 }
 
+td.hrcell, tr.sheetline th, tr#sheetrow th.day
+{ 
+    text-align: right;
+    vertical-align: middle;
+}
+
 tr.weekline th
 {
     font-weight: 400;

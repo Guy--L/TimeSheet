@@ -2,12 +2,21 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
 using TimeSheet.Models;
 
 namespace TimeSheet.Controllers
 {
+    public static partial class HtmlExtensions
+    {
+        public static MvcHtmlString IdFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression)
+        {
+            return MvcHtmlString.Create(htmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldId(ExpressionHelper.GetExpressionText(expression)));
+        }
+    }
+
     public class HomeController : Controller
     {
         public HomeController()
@@ -37,8 +46,9 @@ namespace TimeSheet.Controllers
             if (!Sheet.descriptions.Any())
             {
                 Sheet.descriptions = new Dictionary<int, string>(2);
-                Sheet.descriptions[1] = "Test One asdf asdf asdf as d asdfasdf asdf asd  asdf asdf asdf asdfasdfasdf  asdf";
-                Sheet.descriptions[2] = "Test Two asdfjjsadfjjas  asdf as d as dfa sdf  fasdf asdf  asdflaskdf  fasdfasfd";
+                Sheet.descriptions[1] = "Test One with a long description that contains a lot of extra text and more details regarding the work";
+                Sheet.descriptions[2] = "Test Two ";
+                Sheet.descriptions[3] = "Test Three ";
             }
             Sheet ts = new Sheet() { employee = emp };
 

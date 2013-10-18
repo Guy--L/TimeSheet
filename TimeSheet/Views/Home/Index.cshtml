@@ -69,25 +69,25 @@
                 <tr>
                     <td>Demand</td>
                     <td>
-                        <p class="subtime" id="timed">32.5</p>
+                        <p class="subtime" id="timed"></p>
                     </td>
                 </tr>
                 <tr>
                     <td>Non-Demand</td>
                     <td>
-                        <p class="subtime" id="timen">23.4</p>
+                        <p class="subtime" id="timen"></p>
                     </td>
                 </tr>
                 <tr>
                     <td>Overtime</td>
                     <td>
-                        <p class="subtime" id="timeo">4.0</p>
+                        <p class="subtime" id="timeo"></p>
                     </td>
                 </tr>
                 <tr>
                     <td><b>Total</b></td>
                     <td><b>
-                        <p class="subtime" id="timet">59.9</p>
+                        <p class="subtime" id="timet"></p>
                     </b></td>
                 </tr>
             }
@@ -96,26 +96,44 @@
     <div id="content">
         <table id="week" class="table table-striped table-hover table-condensed">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Week</th>
-                    <th>Overtime</th>
+                <tr class="sheetline">
+                    <th id="addbutton"></th>
+                    <th colspan="5"></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th colspan="12"></th>
+                </tr>
+                <tr id="sheetrow">
+                    <th data-id="@Html.IdFor(m=>m.normal.WeekId)">ID</th>
+                    <th data-id="@Html.IdFor(m=>m.normal.WeekNumber)">Week</th>
+                    <th data-id="@Html.IdFor(m=>m.normal.IsOvertime)">Overtime</th>
                     <th>Description</th>
                     <th>Cust Acct</th>
                     <th>GL Acct</th>
-                    <th>Mon</th>
-                    <th>Tue</th>
-                    <th>Wed</th>
-                    <th>Thu</th>
-                    <th>Fri</th>
-                    <th>Sat</th>
-                    <th>Sun</th>
-                    <th>Total</th>
+                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Mon)">Mon</th>
+                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Tue)">Tue</th>
+                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Wed)">Wed</th>
+                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Thu)">Thu</th>
+                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Fri)">Fri</th>
+                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Sat)">Sat</th>
+                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Sun)">Sun</th>
+                    <th class="day" data-id="@Html.IdFor(m=>m.normal.subTotal)">Total</th>
                     <th>Customer</th>
                     <th>WorkArea</th>
-                    <th><i class="icon-sun"></i></th>
+                    <th data-id="@Html.IdFor(m=>m.normal.NewRequest)"><i class="icon-sun"></i></th>
                     <th>Partner</th>
                     <th>Site</th>
+                    <th data-id="@Html.IdFor(m=>m.normal.DescriptionId)">DescriptionId</th>
+                    <th data-id="@Html.IdFor(m=>m.normal.CustomerId)">CustomerId</th>
+                    <th data-id="@Html.IdFor(m=>m.normal.InternalNumberId)">InternalNumberId</th>
+                    <th data-id="@Html.IdFor(m=>m.normal.WorkAreaId)">WorkAreaId</th>
+                    <th data-id="@Html.IdFor(m=>m.normal.PartnerId)">PartnerId</th>
+                    <th data-id="@Html.IdFor(m=>m.normal.SiteId)">SiteId</th>
                 </tr>
             </thead>
             <tbody>
@@ -129,53 +147,66 @@
 {
     using (modal.BeginHeader())
     {
-    <h4>Add/Edit Hours</h4>
+        if (Model.normal.WeekId == 0) {
+            <h4>Add Hours</h4>
+        } else {
+            <h4>Edit Hours</h4>
+        }
     }
 
     using (var form = Html.Bootstrap().Begin(new Form().Id("weeksheet").Type(FormType.Horizontal).LabelWidthLg(4)))
     {
         @Html.HiddenFor(m => m.employee.WorkerId)
         @Html.HiddenFor(m => m.weekNumber)
+        @Html.HiddenFor(m => m.NewDescription)
+    
+        @Html.HiddenFor(m => m.normal.WeekId)
+        @Html.HiddenFor(m => m.normal.WeekNumber)
+        @Html.HiddenFor(m => m.normal.Year)
         @Html.HiddenFor(m => m.normal.IsOvertime)
+
+        @Html.HiddenFor(m => m.overtime.WeekId)
+        @Html.HiddenFor(m => m.overtime.WeekNumber)
+        @Html.HiddenFor(m => m.overtime.Year)
         @Html.HiddenFor(m => m.overtime.IsOvertime)
 
         using (modal.BeginBody())
         {
-    <div class="row">
-        <div class="col-lg-6">
-            @form.FormGroup().DropDownListFor(m => m.normal.PartnerId, new SelectList(Model.Partners, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Partner")
-            @form.FormGroup().DropDownListFor(m => m.normal.SiteId, new SelectList(Model.Sites, "Key", "Value")).Size(InputSize.Small).WidthLg(4).Label().LabelText("Site")
-            @form.FormGroup().DropDownListFor(m => m.normal.CustomerId, new SelectList(Model.Customers, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Customer")
-            @form.FormGroup().CheckBoxFor(m => m.normal.NewRequest)
-        </div>
-        <div class="col-lg-6">
-            @form.FormGroup().DropDownListFor(m => m.normal.WorkAreaId, new SelectList(Model.WorkAreas, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Work Area")
-            @form.FormGroup().DropDownListFor(m => m.normal.CostCenterId, new SelectList(Model.Orders, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Cost Center")
-            @form.FormGroup().DropDownListFor(m => m.normal.InternalNumberId, new SelectList(Model.Accounts, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Internal #")
-            @form.FormGroup().TextBoxFor(m => m.normal.CapitalNumber).Size(InputSize.Small).Label().LabelText("Capital #")
-        </div>
-    </div>
-    <div class="row">
-            @form.FormGroup().DropDownListFor(m => m.normal.DescriptionId, new SelectList(Model.Descriptions, "Key", "Value")).Size(InputSize.Small).WidthLg(10).Label().WidthLg(2).LabelText("Description")
-    </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    @form.FormGroup().DropDownListFor(m => m.normal.PartnerId, new SelectList(Model.Partners, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Partner")
+                    @form.FormGroup().DropDownListFor(m => m.normal.SiteId, new SelectList(Model.Sites, "Key", "Value")).Size(InputSize.Small).WidthLg(4).Label().LabelText("Site")
+                    @form.FormGroup().DropDownListFor(m => m.normal.CustomerId, new SelectList(Model.Customers, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Customer")
+                    @form.FormGroup().CheckBoxFor(m => m.normal.NewRequest)
+                </div>
+                <div class="col-lg-6">
+                    @form.FormGroup().DropDownListFor(m => m.normal.WorkAreaId, new SelectList(Model.WorkAreas, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Work Area")
+                    @form.FormGroup().DropDownListFor(m => m.normal.CostCenterId, new SelectList(Model.Orders, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Cost Center")
+                    @form.FormGroup().DropDownListFor(m => m.normal.InternalNumberId, new SelectList(Model.Accounts, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Internal #")
+                    @form.FormGroup().TextBoxFor(m => m.normal.CapitalNumber).Size(InputSize.Small).Label().LabelText("Capital #")
+                </div>
+            </div>
+            <div class="row">
+                @form.FormGroup().DropDownListFor(m => m.normal.DescriptionId, new SelectList(Model.Descriptions, "Key", "Value")).Size(InputSize.Small).WidthLg(10).Label().WidthLg(2).LabelText("Description")
+            </div>
             using (Html.Bootstrap().Begin(new Table().Condensed().Striped().Class("hourinput")))
             { 
-    <thead>
-        <tr class="weekline">
-            <th></th>
-            <th id="dateMon">Mon</th>
-            <th id="dateTue">Tue</th>
-            <th id="dateWed">Wed</th>
-            <th id="dateThu">Thu</th>
-            <th id="dateFri">Fri</th>
-            <th id="dateSat">Sat</th>
-            <th id="dateSun">Sun</th>
-            <th>Subtotal</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr class="hourline">
+                <thead>
+                    <tr class="weekline">
+                        <th></th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                        <th>Sun</th>
+                        <th>Subtotal</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+        <tr class="hourline" id="normal">
             <td class="hrsum">Normal</td>
             <td>@form.FormGroup().TextBoxFor(m => m.normal.Mon).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
             <td>@form.FormGroup().TextBoxFor(m => m.normal.Tue).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
@@ -187,7 +218,7 @@
             <td id="hrsnormal" class="hrsum"></td>
             <td class="hrwtotal"></td>
         </tr>
-        <tr class="hourline">
+        <tr class="hourline" id="overtime">
             <td class="hrsum">Overtime</td>
             <td>@form.FormGroup().TextBoxFor(m => m.overtime.Mon).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
             <td>@form.FormGroup().TextBoxFor(m => m.overtime.Tue).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
@@ -242,6 +273,9 @@
         var sunday = '@Model.sunday';
         var sheet;
         var empid = '@Model.employee.WorkerId';
+        var rowmap = [];
+        var cust;
+        var desc;
 
         /* For a given date, get the ISO week number
          *
@@ -314,8 +348,11 @@
                 }
             }, oSettings);
         }
-
         function getSheet() {
+            demand = 0;
+            nondemand = 0;
+            overtime = 0;
+
             sheet = $('#week').dataTable({
                 "sDom": "t",
                 "bPaginate": false,
@@ -326,6 +363,12 @@
                       { "bVisible": false, "aTargets": [0] }
                     , { "bVisible": false, "aTargets": [1] }
                     , { "bVisible": false, "aTargets": [2] }
+                    , { "bVisible": false, "aTargets": [19] }
+                    , { "bVisible": false, "aTargets": [20] }
+                    , { "bVisible": false, "aTargets": [21] }
+                    , { "bVisible": false, "aTargets": [22] }
+                    , { "bVisible": false, "aTargets": [23] }
+                    , { "bVisible": false, "aTargets": [24] }
                     , { 'bSortable': false, 'aTargets': [6] }
                     , { 'bSortable': false, 'aTargets': [7] }
                     , { 'bSortable': false, 'aTargets': [8] }
@@ -334,7 +377,36 @@
                     , { 'bSortable': false, 'aTargets': [11] }
                     , { 'bSortable': false, 'aTargets': [12] }
                 ],
-                "sAjaxSource": 'api/Hours/' + empid + '/' + week + ''
+                "sAjaxSource": 'api/Hours/' + empid + '/' + week + '',
+                "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                    var title = aData[3];
+                    $('td:eq(0)', nRow).text(title.substr(0, 18));
+                    $('td:gt(2):lt(9)', nRow).addClass('hrcell');
+                    $(nRow).addClass('hourline');
+                    $(nRow).attr("title", title);
+                    return nRow;
+                },
+                "fnFooterCallback": function (nRow, aaData, iStart, iEnd, aiDisplay) {
+                    var overtime = 0;
+                    var demand = 0;
+                    var nondemand = 0;
+
+                    for (var i = 0 ; i < aaData.length ; i++) {
+                        if (aaData[i][2] == 'True')
+                            overtime += getMins(aaData[i][13]);
+                        else if (aaData[i][17] == 'RDSS')
+                            nondemand += getMins(aaData[i][13]);
+                        else
+                            demand += getMins(aaData[i][13]);
+                    }
+
+                    $('#timeo').text(getHours(0,overtime));
+                    $('#timed').text(getHours(0,demand));
+                    $('#timen').text(getHours(0,nondemand));
+                    $('#timet').text(getHours(0, overtime + demand + nondemand));
+
+                    $('th#addbutton').html('<button class="btn btn-success" id="addline"><i class="icon-plus icon-white"></i>Add Line</button>');
+                }
             });
         }
 
@@ -342,6 +414,33 @@
             hrs += Math.floor(mns / 60);
             mns %= 60;
             return hrs + ":" + (mns < 10 ? "0" : "") + mns;
+        }
+
+        function getMins(str)
+        {
+            var part = str.split(":");
+            return parseInt(part[0])*60 + parseInt(part[1]);
+        }
+
+        function modaldows() {
+            var weekday = new Date(sunday);
+            weekday.setDate(weekday.getDate() - 6);
+            $('th[id^=date]', 'tr.weekline').each(function () {
+                $(this).html($.datepicker.formatDate('D m/d', weekday));
+                $(this).wrapInner("<small></small>");
+                weekday.setDate(weekday.getDate() + 1);
+            });
+        }
+
+        function sheetdows() {
+            var weekday = new Date(sunday);
+            weekday.setDate(weekday.getDate() - 6);
+
+            $('th:gt(0):lt(7)', 'tr.sheetline').each(function (i) {
+                $(this).html($.datepicker.formatDate((i==0||i==6)?'m/d':'d', weekday));
+                $(this).wrapInner("<small></small>");
+                weekday.setDate(weekday.getDate() + 1);
+            });
         }
 
         function newWeek(next) {
@@ -352,10 +451,10 @@
             $('#periodEnding').val(sunday);
             week = $.datepicker.iso8601Week(newSunday);
             $('#weeknumber').html(week);
-            sheet.fnDestroy();           // do this with reload
-            //var ajax = 'api/Hours/' + empid + '/' + week + '';
-            //sheet.fnReloadAjax(
-            getSheet();
+            demand = 0;
+            nondemand = 0;
+            overtime = 0;
+            sheet.fnReloadAjax('api/Hours/' + empid + '/' + week + '');
         }
 
         function resumLine(line) {
@@ -369,9 +468,25 @@
             $('#hrs' + line, 'tr.hourline').html(getHours(hrs, mns));
         }
 
+        function sumhours(line) {
+            var hrs = 0;
+            var mns = 0;
+            $('*[id]:not(hrsum)', line).each(function () {
+                console.log($(this).val().substr(0, 2));
+                hrs += Number($(this).val().substr(0, 2));
+                mns += Number($(this).val().substr(3, 2));
+            });
+            $('td.hrsum[id^="hrs"]', line).html(getHours(hrs, mns));
+        }
+
         $(function () {
-            $('#normal_CustomerId').combobox({ freeform: true });
-            $('#normal_DescriptionId').combobox({ freeform: true });
+            rowmap = $('th', '#sheetrow');
+            $('@Html.IdFor(m => m.normal.CustomerId)', '#weeksheet').combobox({ freeform: true });
+            $('@Html.IdFor(m => m.normal.DescriptionId)', '#weeksheet').combobox({ freeform: true });
+            cust = $('input[name="normal.CustomerId"]', '#weeksheet');
+            desc = $('input[name="normal.DescriptionId"]', '#weeksheet');
+            cust.combobox({ freeform: true });
+            desc.combobox({ freeform: true });
             $('.datepicker').datepicker({
                 beforeShowDay: function (date) { return [date.getDay() == 0, ""] }
                 , firstDay: 1
@@ -384,13 +499,20 @@
                 }
             });
             $('#week tbody').on('click', 'tr', function () {
-                var weekday = new Date(sunday);
-                weekday.setDate(weekday.getDate() - 6);
-                $('th[id^=date]', 'tr.weekline').each(function () {
-                    $(this).html($.datepicker.formatDate('D m/d', weekday));
-                    $(this).wrapInner("<small></small>");
-                    weekday.setDate(weekday.getDate() + 1);
+                modaldows();
+                var aPos = sheet.fnGetPosition(this);
+                var aData = sheet.fnGetData(aPos);
+                rowmap.each(function (index) {
+                    var id = $(this).data('id');
+                    if (typeof id != 'undefined') {
+                        var d = aData[index];
+                        if ($(this).hasClass('day') && d.length == 4)
+                            d = "0" + d;
+                        $('#' + id, '#weekline').val(d);
+                    }
                 });
+                sumhours('#normal');
+                sumhours('#overtime');
                 $('#weekline').modal('show');
             });
             $('#priorsheet').on('click', function (e) {
@@ -406,8 +528,6 @@
             $('tr.hourline input').on('blur', function () {
                 var newt = $(this).val().replace(/_/g, '0').split(':');
                 var newhr = ($(this).val().charAt(1) == '_' && $(this).val().charAt(0) != '_') ? Number(newt[0].charAt(0)) : Number(newt[0]);
-                console.log(newt);
-                console.log(newhr);
                 var g = getHours(newhr, Number(newt[1]));
                 g = g.length < 5 ? '0' + g : g;
                 $(this).val(g);
@@ -420,8 +540,19 @@
             });
 
             $('#savehrs').on('click', function (e) {
+                @*                if (parseInt(cust.val()) == Number.NaN) {
+                    $('@Html.IdFor(m=>m.NewDescription)').val(cust.val());
+                    cust.val(0);
+                }*@
+                console.log(desc.val());
+                return;
+                if (parseInt(desc.val()) == Number.NaN) {
+                    $('@Html.IdFor(m=>m.NewDescription)').val(desc.val());
+                    desc.val(0);
+                }
                 var hours = $('#weeksheet').serialize();
                 console.log(hours);
+        
                 var status = $.ajax({
                     type: "POST",
                     url: '/api/Hours',
@@ -438,6 +569,7 @@
 
             });
             getSheet();
+            sheetdows();
         });
     </script>
 }
