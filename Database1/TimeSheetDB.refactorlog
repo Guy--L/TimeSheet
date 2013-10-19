@@ -105,4 +105,83 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="WorkerId" />
   </Operation>
+  <Operation Name="Move Schema" Key="c56892dd-f14f-4f84-b934-f467ddecab7e" ChangeDateTime="10/18/2013 21:48:33">
+    <Property Name="ElementName" Value="[dbo].[Customer]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="9f9ce0cb-ec60-449d-be87-1d61f0f4b23f" ChangeDateTime="10/18/2013 21:49:22">
+    <Property Name="ElementName" Value="[dbo].[Description]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="26e65a77-2181-4001-ab32-4a8dfb0249a7" ChangeDateTime="10/18/2013 21:50:35">
+    <Property Name="ElementName" Value="[dbo].[Facility]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="2336cc66-ea75-4a11-9024-6f2cf41d52d3" ChangeDateTime="10/18/2013 21:51:06">
+    <Property Name="ElementName" Value="[dbo].[InternalNumber]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="21d69e1f-1a52-40c2-aaab-39cbc5a5c4cd" ChangeDateTime="10/18/2013 21:51:33">
+    <Property Name="ElementName" Value="[dbo].[Level]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="f72e687f-5381-42c5-a36e-aaa1fd44067d" ChangeDateTime="10/18/2013 21:51:58">
+    <Property Name="ElementName" Value="[dbo].[Partner]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="e37c65c0-718d-40b0-b645-eacc20b07fdb" ChangeDateTime="10/18/2013 21:52:18">
+    <Property Name="ElementName" Value="[dbo].[Role]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="1f987c86-60d0-4293-8cf2-ba54117c4a61" ChangeDateTime="10/18/2013 21:57:25">
+    <Property Name="ElementName" Value="[dbo].[Site]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="e5139dda-0821-419f-8bc4-83992229baae" ChangeDateTime="10/18/2013 21:57:50">
+    <Property Name="ElementName" Value="[dbo].[Week]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="aa06cd57-6d68-4c83-8305-20bab7c96fc7" ChangeDateTime="10/18/2013 21:58:12">
+    <Property Name="ElementName" Value="[dbo].[WorkArea]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="56d12220-04ae-488e-9ca0-0d8449f8a6ba" ChangeDateTime="10/18/2013 21:58:53">
+    <Property Name="ElementName" Value="[dbo].[WorkDept]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="72cc2648-8953-486d-8251-d0b259e82855" ChangeDateTime="10/18/2013 21:59:42">
+    <Property Name="ElementName" Value="[dbo].[Worker]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="NewSchema" Value="ts" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fcac06c0-7c02-47c5-87c5-40056260ebaa" ChangeDateTime="10/18/2013 22:54:03">
+    <Property Name="ElementName" Value="[ts].[InternalNumber]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[ts]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[InternalAcct]" />
+  </Operation>
 </Operations>
