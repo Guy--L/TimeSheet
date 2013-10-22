@@ -54,7 +54,14 @@ namespace TimeSheet.Controllers
             }
             hours.normal.WeekNumber = hours.weekNumber;
             hours.overtime.WeekNumber = hours.weekNumber;
-            db.Execute(hours.Save());
+            try
+            {
+                db.Execute(hours.Save());
+            }
+            catch(Exception e)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+            }
         }
 
         // PUT api/hours/5

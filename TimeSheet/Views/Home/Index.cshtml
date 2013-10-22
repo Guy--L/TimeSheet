@@ -109,23 +109,23 @@
                     <th colspan="12"></th>
                 </tr>
                 <tr id="sheetrow">
-                    <th data-id="@Html.IdFor(m=>m.normal.WeekId)">ID</th>
-                    <th data-id="@Html.IdFor(m=>m.normal.WeekNumber)">Week</th>
-                    <th data-id="@Html.IdFor(m=>m.normal.IsOvertime)" title="Overtime"><i class="icon-time"></i></th>
+                    <th class="ovt" data-id="@Html.IdFor(m=>m.normal.WeekId)">ID</th>
+                    <th class="ovt" data-id="@Html.IdFor(m=>m.normal.WeekNumber)">Week</th>
+                    <th class="ovt" data-id="@Html.IdFor(m=>m.normal.IsOvertime)" title="Overtime"><i class="icon-time"></i></th>
                     <th>Description</th>
                     <th>Cust Acct</th>
                     <th>GL Acct</th>
-                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Mon)">Mon</th>
-                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Tue)">Tue</th>
-                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Wed)">Wed</th>
-                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Thu)">Thu</th>
-                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Fri)">Fri</th>
-                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Sat)">Sat</th>
-                    <th class="day" data-id="@Html.IdFor(m=>m.normal.Sun)">Sun</th>
-                    <th class="day" data-id="@Html.IdFor(m=>m.normal.subTotal)">Total</th>
+                    <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Mon)">Mon</th>
+                    <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Tue)">Tue</th>
+                    <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Wed)">Wed</th>
+                    <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Thu)">Thu</th>
+                    <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Fri)">Fri</th>
+                    <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Sat)">Sat</th>
+                    <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Sun)">Sun</th>
+                    <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.subTotal)">Total</th>
                     <th>Customer</th>
                     <th>WorkArea</th>
-                    <th data-id="@Html.IdFor(m=>m.normal.NewRequest)" title="New Request"><i class="icon-asterisk"></i></th>
+                    <th class="newrequest" data-id="@Html.IdFor(m=>m.normal.NewRequest)" title="New Request"><i class="icon-asterisk"></i></th>
                     <th>Partner</th>
                     <th>Site</th>
                     <th data-id="@Html.IdFor(m=>m.normal.DescriptionId)">DescriptionId</th>
@@ -389,7 +389,6 @@
                     $('td:eq(14)', nRow).html((aData[16] == 'True') ? '<i class="icon-asterisk"></i>' : '');
                     if (aData[25]) {
                         pair[aData[25]] = iDisplayIndex;
-                        console.log(iDisplayIndex + "<=" + aData[25]);
                     }
                     return nRow;
                 },
@@ -531,9 +530,9 @@
                     aData = sheet.fnGetData(pair[aData[0]]);
                     rowmap.each(function (index) {
                         var id = $(this).data('id');
-                        if (typeof id != 'undefined' && $(this).hasClass('day')) {
+                        if (typeof id != 'undefined' && $(this).hasClass('ovt')) {
                             var d = aData[index];
-                            if (d.length == 4)
+                            if ($(this).hasClass('day') && d.length == 4)
                                 d = '0' + d;
                             $('#' + id.replace('normal','overtime'), '#weekline').val(d);
                         }
@@ -572,6 +571,7 @@
             $('#savehrs').on('click', function (e) {
                 var hours = $('#weeksheet').serialize();
                 console.log(hours);
+                e.preventDefault();
                 var status = $.ajax({
                     type: "POST",
                     url: '/api/Hours',

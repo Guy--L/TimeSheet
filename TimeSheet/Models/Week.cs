@@ -127,26 +127,33 @@ namespace TimeSheet.Models
                 && CostCenterId == b.CostCenterId;
         }
 
+        private void Copy(Week b)
+        {
+            WeekNumber = b.WeekNumber;
+            Year = b.Year;
+            DescriptionId = b.DescriptionId;
+            CustomerId = b.CustomerId;
+            SiteId = b.SiteId;
+            PartnerId = b.PartnerId;
+            InternalNumberId = b.InternalNumberId;
+            WorkAreaId = b.WorkAreaId;
+            NewRequest = b.NewRequest;
+            CostCenterId = b.CostCenterId;
+        }
+
         public void Match(Week b)
         {
             if (WeekId == 0)
             {
                 if (b.WeekId != 0)
                 {
-                    WeekNumber = b.WeekNumber;
-                    Year = b.Year;
-                    DescriptionId = b.DescriptionId;
-                    CustomerId = b.CustomerId;
-                    SiteId = b.SiteId;
-                    PartnerId = b.PartnerId;
-                    InternalNumberId = b.InternalNumberId;
-                    WorkAreaId = b.WorkAreaId;
-                    NewRequest = b.NewRequest;
-                    CostCenterId = b.CostCenterId;
+                    Copy(b);
                 }
             }
             else if (b.WeekId == 0 && WeekId != 0)
                 b.Match(this);
+            else if (WeekId != 0 && b.WeekId != 0)
+                b.Copy(this);
         }
 
         public string Save(int id)
