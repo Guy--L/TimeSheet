@@ -73,6 +73,7 @@
       })
       this.map = map;
       if (selected) {
+          console.log("selected: " + selected);
         this.$element.val(selected);
         this.$target.val(selectedValue);
         this.$container.addClass('combobox-selected');
@@ -363,6 +364,7 @@
         else {
             this.$source.val(val).trigger('change');
             this.$target.val(val).trigger('change');
+            $(this.options.freeform).val(val);
             this.$container.addClass('combobox-selected');
         }
       }

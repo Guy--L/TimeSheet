@@ -42,8 +42,15 @@ namespace TimeSheet.Controllers
         {
             tsDB db = new tsDB();
             if (!string.IsNullOrWhiteSpace(hours.NewDescription))
+            {
                 hours.normal.DescriptionId = db.ExecuteScalar<int>(Models.Description.Save(hours.employee.WorkerId, hours.NewDescription));
-
+                hours.overtime.DescriptionId = hours.normal.DescriptionId;
+            }
+            if (!string.IsNullOrWhiteSpace(hours.NewCustomer))
+            {
+                hours.normal.DescriptionId = db.ExecuteScalar<int>(Models.Description.Save(hours.employee.WorkerId, hours.NewDescription));
+                hours.overtime.DescriptionId = hours.normal.DescriptionId;
+            }
             hours.normal.WeekNumber = hours.weekNumber;
             hours.overtime.WeekNumber = hours.weekNumber;
             db.Execute(hours.Save());

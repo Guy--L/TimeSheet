@@ -27,8 +27,8 @@ namespace TimeSheet.Controllers
 
             tsDB db = new tsDB();
 
-            Sheet.partners = db.Fetch<Partner>("").ToDictionary(p => p.PartnerId, p => p._Partner);
             Sheet.sites = db.Fetch<Site>("").ToDictionary(s => s.SiteId, s => s._Site);
+            Sheet.partners = db.Fetch<Partner>("").ToDictionary(p => p.PartnerId, p => p._Partner);
             Sheet.orders = db.Fetch<CostCenter>("").ToDictionary(c => c.CostCenterId, c => c._CostCenter);
             Sheet.workAreas = db.Fetch<WorkArea>("").ToDictionary(c => c.WorkAreaId, c => c._WorkArea);
             Sheet.accounts = db.Fetch<InternalNumber>("").ToDictionary(i => i.InternalNumberId, i => i.InternalOrder);
@@ -43,13 +43,13 @@ namespace TimeSheet.Controllers
             Sheet.descriptions = db.Fetch<Description>("where workerid = @0", emp.WorkerId).ToDictionary(d=>d.DescriptionId, d=>d._Description);
             Sheet.customers = db.Fetch<Customer>("where workerid = @0", emp.WorkerId).ToDictionary(c => c.CustomerId, c => c.CustomerName);
 
-            if (!Sheet.descriptions.Any())
-            {
-                Sheet.descriptions = new Dictionary<int, string>(2);
-                Sheet.descriptions[1] = "Test One with a long description that contains a lot of extra text and more details regarding the work";
-                Sheet.descriptions[2] = "Test Two ";
-                Sheet.descriptions[3] = "Test Three ";
-            }
+            //if (!Sheet.descriptions.Any())
+            //{
+            //    Sheet.descriptions = new Dictionary<int, string>(2);
+            //    Sheet.descriptions[1] = "Test One with a long description that contains a lot of extra text and more details regarding the work";
+            //    Sheet.descriptions[2] = "Test Two ";
+            //    Sheet.descriptions[3] = "Test Three ";
+            //}
             Sheet ts = new Sheet() { employee = emp };
 
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;

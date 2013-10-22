@@ -52,13 +52,21 @@ namespace TimeSheet.Models
         public string[] serializeDT()
         {
             var tot = subTotal;
+            var description = Sheet.descriptions[DescriptionId];
+            var intern = InternalNumberId.HasValue?Sheet.orders[InternalNumberId.Value]:CapitalNumber;
+            var costctr = CostCenterId.HasValue?Sheet.accounts[CostCenterId.Value]:"";
+            var customer = (CustomerId.HasValue&&CustomerId.Value>0)?Sheet.customers[CustomerId.Value]:"";
+            var workarea = WorkAreaId.HasValue?Sheet.workAreas[WorkAreaId.Value]:"";
+            var partner = PartnerId.HasValue?Sheet.partners[PartnerId.Value]:"";
+            var site = SiteId.HasValue?Sheet.sites[SiteId.Value]:"";
+
             return new string[25] {
                  WeekId.ToString()
                 ,WeekNumber.ToString()
                 ,IsOvertime.ToString()
-                ,Sheet.descriptions[DescriptionId]
-                ,InternalNumberId.HasValue?Sheet.orders[InternalNumberId.Value]:CapitalNumber 
-                ,CostCenterId.HasValue?Sheet.accounts[CostCenterId.Value]:""                        // 5
+                ,description
+                ,intern 
+                ,costctr                       // 5
                 ,time2str(Monday)
                 ,time2str(Tuesday)
                 ,time2str(Wednesday)
@@ -67,11 +75,11 @@ namespace TimeSheet.Models
                 ,time2str(Saturday)
                 ,time2str(Sunday)
                 ,time2str(tot)
-                ,CustomerId.HasValue&&CustomerId>0?Sheet.customers[CustomerId.Value]:""
-                ,WorkAreaId.HasValue?Sheet.workAreas[WorkAreaId.Value]:""                           // 15
+                ,customer
+                ,workarea                           // 15
                 ,NewRequest.ToString()
-                ,PartnerId.HasValue?Sheet.partners[PartnerId.Value]:""
-                ,SiteId.HasValue?Sheet.sites[SiteId.Value]:""
+                ,partner
+                ,site
                 ,DescriptionId.ToString()
                 ,CustomerId.ToString()                                                              // 20
                 ,InternalNumberId.ToString()

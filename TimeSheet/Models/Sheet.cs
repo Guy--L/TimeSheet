@@ -28,6 +28,7 @@ namespace TimeSheet.Models
         public static string user;
         public int weekNumber { get; set; }
         public string NewDescription { get; set; }
+        public string NewCustomer { get; set; }
 
         public string sunday;
 

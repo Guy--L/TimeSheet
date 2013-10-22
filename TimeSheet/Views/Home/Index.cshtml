@@ -159,6 +159,7 @@
         @Html.HiddenFor(m => m.employee.WorkerId)
         @Html.HiddenFor(m => m.weekNumber)
         @Html.HiddenFor(m => m.NewDescription)
+        @Html.HiddenFor(m => m.NewCustomer)
     
         @Html.HiddenFor(m => m.normal.WeekId)
         @Html.HiddenFor(m => m.normal.WeekNumber)
@@ -269,13 +270,10 @@
 
 @section scripts {
     <script type="text/javascript">
-        var week;
+        var week, sheet, $cust, $desc;
         var sunday = '@Model.sunday';
-        var sheet;
         var empid = '@Model.employee.WorkerId';
         var rowmap = [];
-        var cust;
-        var desc;
 
         /* For a given date, get the ISO week number
          *
@@ -359,6 +357,7 @@
                 "oLanguage": {
                     "sEmptyTable": "No projects yet.  Click row to add one."
                 },
+                "cache": true,
                 "aoColumnDefs": [
                       { "bVisible": false, "aTargets": [0] }
                     , { "bVisible": false, "aTargets": [1] }
@@ -377,7 +376,7 @@
                     , { 'bSortable': false, 'aTargets': [11] }
                     , { 'bSortable': false, 'aTargets': [12] }
                 ],
-                "sAjaxSource": 'api/Hours/' + empid + '/' + week + '',
+                "sAjaxSource": '/api/Hours/' + empid + '/' + week + '',
                 "fnRowCallback": function (nRow, aData, iDisplayIndex) {
                     var title = aData[3];
                     $('td:eq(0)', nRow).text(title.substr(0, 18));
@@ -454,7 +453,7 @@
             demand = 0;
             nondemand = 0;
             overtime = 0;
-            sheet.fnReloadAjax('api/Hours/' + empid + '/' + week + '');
+            sheet.fnReloadAjax('/api/Hours/' + empid + '/' + week + '');
         }
 
         function resumLine(line) {
@@ -481,12 +480,11 @@
 
         $(function () {
             rowmap = $('th', '#sheetrow');
-            $('@Html.IdFor(m => m.normal.CustomerId)', '#weeksheet').combobox({ freeform: true });
-            $('@Html.IdFor(m => m.normal.DescriptionId)', '#weeksheet').combobox({ freeform: true });
-            cust = $('input[name="normal.CustomerId"]', '#weeksheet');
-            desc = $('input[name="normal.DescriptionId"]', '#weeksheet');
-            cust.combobox({ freeform: true });
-            desc.combobox({ freeform: true });
+            $cust = $('#@Html.IdFor(m => m.normal.CustomerId)', '#weeksheet');
+            $desc = $('#@Html.IdFor(m => m.normal.DescriptionId)', '#weeksheet');
+            $desc.combobox({ freeform: '#@Html.IdFor(m => m.NewDescription)', selected: true });
+            $cust.combobox({ freeform: '#@Html.IdFor(m => m.NewCustomer)', selected: true });
+
             $('.datepicker').datepicker({
                 beforeShowDay: function (date) { return [date.getDay() == 0, ""] }
                 , firstDay: 1
@@ -501,6 +499,14 @@
             $('#week tbody').on('click', 'tr', function () {
                 modaldows();
                 var aPos = sheet.fnGetPosition(this);
+                if (aPos==null) {
+                    $('#weekline').modal('show');
+                    $('[name=options]', $desc).val('');
+                    $('[name=options]', $cust).val('');
+                    $desc.data('combobox').refresh();
+                    $cust.data('combobox').refresh();
+                    return;
+                }
                 var aData = sheet.fnGetData(aPos);
                 rowmap.each(function (index) {
                     var id = $(this).data('id');
@@ -511,6 +517,8 @@
                         $('#' + id, '#weekline').val(d);
                     }
                 });
+                $desc.data('combobox').refresh();
+                $cust.data('combobox').refresh();
                 sumhours('#normal');
                 sumhours('#overtime');
                 $('#weekline').modal('show');
@@ -540,19 +548,9 @@
             });
 
             $('#savehrs').on('click', function (e) {
-                @*                if (parseInt(cust.val()) == Number.NaN) {
-                    $('@Html.IdFor(m=>m.NewDescription)').val(cust.val());
-                    cust.val(0);
-                }*@
-                console.log(desc.val());
-                return;
-                if (parseInt(desc.val()) == Number.NaN) {
-                    $('@Html.IdFor(m=>m.NewDescription)').val(desc.val());
-                    desc.val(0);
-                }
+                e.preventDefault();
                 var hours = $('#weeksheet').serialize();
                 console.log(hours);
-        
                 var status = $.ajax({
                     type: "POST",
                     url: '/api/Hours',
@@ -566,7 +564,6 @@
                         //AT.communication.addMessage("error", "Sorry! Unable to save your comment. Someone has been alerted. Please try again later.");
                     }
                 });
-
             });
             getSheet();
             sheetdows();

@@ -28,13 +28,13 @@ namespace TimeSheet.Models
                        ,[IsActive]
                        ,[DateLastUsed])
                  VALUES
-                       ({0} -- <WorkerId, int,>
-                       ,'{1}' -- <Description, nvarchar(max),>
-                       ,'{2}' -- <AccountNumber, nchar(10),>
-                       ,{3}   -- <HashCode, int,>
-                       ,{4}   -- <IsActive, bit,>
-                       ,'{5}' -- <DateLastUsed, datetime,>)
-            select @@scope_identity()
+                       ({0}
+                       ,'{1}'
+                       ,'{2}'
+                       ,{3}
+                       ,{4}
+                       ,'{5}')
+            select scope_identity()
             ";
     }
 }
