@@ -26,7 +26,8 @@ namespace TimeSheet.Controllers
         {
             tsDB db = new tsDB();
 
-            var sheet = db.Fetch<Week>(string.Format("select * from Week where workerid = '{0}' and weeknumber = '{1}'", id, week));
+            var sheet = db.Fetch<Week>(string.Format(Week.lst_week, id, week));
+
             var records = sheet.Select(a => a.serializeDT()).ToArray();
             return new
             {
@@ -48,8 +49,8 @@ namespace TimeSheet.Controllers
             }
             if (!string.IsNullOrWhiteSpace(hours.NewCustomer))
             {
-                hours.normal.DescriptionId = db.ExecuteScalar<int>(Models.Description.Save(hours.employee.WorkerId, hours.NewDescription));
-                hours.overtime.DescriptionId = hours.normal.DescriptionId;
+                hours.normal.CustomerId = db.ExecuteScalar<int>(Models.Customer.Save(hours.employee.WorkerId, hours.NewCustomer));
+                hours.overtime.CustomerId = hours.normal.CustomerId;
             }
             hours.normal.WeekNumber = hours.weekNumber;
             hours.overtime.WeekNumber = hours.weekNumber;

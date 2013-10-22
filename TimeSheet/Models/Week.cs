@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using PetaPoco;
 
 namespace TimeSheet.Models
 {
@@ -14,6 +15,26 @@ namespace TimeSheet.Models
         public string Fri { get { return time2str(Friday); } set { Friday = time2dec(value); } }
         public string Sat { get { return time2str(Saturday); } set { Saturday = time2dec(value); } }
         public string Sun { get { return time2str(Sunday); } set { Sunday = time2dec(value); } }
+        [Column] public int PairId { get; set; }
+
+        public static string lst_week = @"
+            select b.WeekId PairId, a.* from week a
+                left join week b 
+                     on a.CapitalNumber = b.CapitalNumber 
+	                and a.CostCenterId = b.CostCenterId
+	                and a.CustomerId = b.CustomerId
+	                and a.DescriptionId = b.DescriptionId
+	                and a.InternalNumberId = b.InternalNumberId
+	                and a.PartnerId = b.PartnerId
+	                and a.SiteId = b.SiteId
+	                and a.WorkAreaId = b.WorkAreaId
+	                and a.NewRequest = b.NewRequest
+	                and a.IsOverTime != b.IsOvertime
+                    and a.workerid = b.workerid
+                    and a.weeknumber = b.weeknumber
+                    and a.year = b.year
+                 where a.workerid = '{0}' and a.weeknumber = '{1}' 
+        ";
 
         private static string time2str(decimal? hours)
         {
@@ -60,7 +81,7 @@ namespace TimeSheet.Models
             var partner = PartnerId.HasValue?Sheet.partners[PartnerId.Value]:"";
             var site = SiteId.HasValue?Sheet.sites[SiteId.Value]:"";
 
-            return new string[25] {
+            return new string[26] {
                  WeekId.ToString()
                 ,WeekNumber.ToString()
                 ,IsOvertime.ToString()
@@ -86,7 +107,24 @@ namespace TimeSheet.Models
                 ,WorkAreaId.ToString()
                 ,PartnerId.ToString()
                 ,SiteId.ToString()
+                ,PairId.ToString()                  // 25
             };
+        }
+
+        public bool Paired(Week b)
+        {
+            if (WeekId == 0 || b.WeekId == 0)
+                return false;
+            return WeekNumber == b.WeekNumber
+                && Year == b.Year
+                && DescriptionId == b.DescriptionId
+                && CustomerId == b.CustomerId
+                && SiteId == b.SiteId
+                && PartnerId == b.PartnerId
+                && InternalNumberId == b.InternalNumberId
+                && WorkAreaId == b.WorkAreaId
+                && NewRequest == b.NewRequest
+                && CostCenterId == b.CostCenterId;
         }
 
         public void Match(Week b)
