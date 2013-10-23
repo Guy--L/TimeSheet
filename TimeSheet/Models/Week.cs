@@ -36,6 +36,30 @@ namespace TimeSheet.Models
                  where a.workerid = '{0}' and a.weeknumber = '{1}' 
         ";
 
+        private static string del_week = @"
+            delete a, b from week a
+                left join week b
+                     on a.CapitalNumber = b.CapitalNumber 
+	                and a.CostCenterId = b.CostCenterId
+	                and a.CustomerId = b.CustomerId
+	                and a.DescriptionId = b.DescriptionId
+	                and a.InternalNumberId = b.InternalNumberId
+	                and a.PartnerId = b.PartnerId
+	                and a.SiteId = b.SiteId
+	                and a.WorkAreaId = b.WorkAreaId
+	                and a.NewRequest = b.NewRequest
+	                and a.IsOverTime != b.IsOvertime
+                    and a.workerid = b.workerid
+                    and a.weeknumber = b.weeknumber
+                    and a.year = b.year
+                 where a.weekid = '{0}'
+        ";
+
+        public static string Delete(int id)
+        {
+            return string.Format(del_week, id);
+        }
+
         private static string time2str(decimal? hours)
         {
             if (!hours.HasValue)

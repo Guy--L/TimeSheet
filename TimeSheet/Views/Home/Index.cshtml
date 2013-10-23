@@ -358,7 +358,6 @@
                 "oLanguage": {
                     "sEmptyTable": "No projects yet.  Click row to add one."
                 },
-                "cache": true,
                 "aoColumnDefs": [
                       { "bVisible": false, "aTargets": [0] }
                     , { "bVisible": false, "aTargets": [1] }
@@ -370,6 +369,7 @@
                     , { "bVisible": false, "aTargets": [23] }
                     , { "bVisible": false, "aTargets": [24] }
                     , { "bVisible": false, "aTargets": [25] }
+                    , { 'bSortable': false, 'aTargets': [6] }
                     , { 'bSortable': false, 'aTargets': [7] }
                     , { 'bSortable': false, 'aTargets': [8] }
                     , { 'bSortable': false, 'aTargets': [9] }
@@ -490,7 +490,6 @@
             $desc.data('combobox').refresh();
             $cust.data('combobox').refresh();
             $('#modaltitle').html('Add Hours');
-            console.log('clr '+$('input', 'tr.hourline').length);
             $('input', 'tr.hourline').val('');
             $('td.hrsum[id^="hrs"]', 'tr.hourline').html('');
         }
@@ -527,10 +526,10 @@
                 }
 
                 var aData = sheet.fnGetData(aPos);
-                if (aData[2] == 'True') {
-                    aData = sheet.fnGetData(pair[aData[0]]);
+                if (aData[2] == 'True') {                           // clicked on overtime record
+                    aData = sheet.fnGetData(pair[aData[0]]);        // start with normal record
                 }
-                var newrequest = (aData[16] == 'True');
+                var newrequest = (aData[16] == 'True');         
 
                 rowmap.each(function (index) {
                     var id = $(this).data('id');

@@ -27,7 +27,6 @@ namespace TimeSheet.Controllers
             tsDB db = new tsDB();
 
             var sheet = db.Fetch<Week>(string.Format(Week.lst_week, id, week));
-
             var records = sheet.Select(a => a.serializeDT()).ToArray();
             return new
             {
@@ -74,6 +73,16 @@ namespace TimeSheet.Controllers
         // DELETE api/hours/5
         public void Delete(int id)
         {
+            tsDB db = new tsDB();
+            try
+            {
+                db.Execute(Week.Delete(id));
+            }
+            catch (Exception e)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
         }
     }
 }
