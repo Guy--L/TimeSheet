@@ -97,8 +97,9 @@
         <table id="week" class="table table-striped table-hover table-condensed">
             <thead>
                 <tr class="sheetline">
-                    <th id="addbutton"></th>
-                    <th colspan="5"></th>
+                    <th></th>
+                    <th></th>
+                    <th class="addbutton" colspan="4"></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -106,7 +107,8 @@
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th colspan="12"></th>
+                    <th></th>
+                    <th colspan="13"></th>
                 </tr>
                 <tr id="sheetrow">
                     <th class="ovt" data-id="@Html.IdFor(m=>m.normal.WeekId)">ID</th>
@@ -148,11 +150,7 @@
 {
     using (modal.BeginHeader())
     {
-        if (Model.normal.WeekId == 0) {
-            <h4>Add Hours</h4>
-        } else {
-            <h4>Edit Hours</h4>
-        }
+        <h4 id="modaltitle">Add Hours</h4>
     }
 
     using (var form = Html.Bootstrap().Begin(new Form().Id("weeksheet").Type(FormType.Horizontal).LabelWidthLg(4)))
@@ -161,6 +159,7 @@
         @Html.HiddenFor(m => m.weekNumber)
         @Html.HiddenFor(m => m.NewDescription)
         @Html.HiddenFor(m => m.NewCustomer)
+        @Html.HiddenFor(m => m.NewRequest)
     
         @Html.HiddenFor(m => m.normal.WeekId)
         @Html.HiddenFor(m => m.normal.WeekNumber)
@@ -410,8 +409,9 @@
                     $('#timed').text(getHours(0,demand));
                     $('#timen').text(getHours(0,nondemand));
                     $('#timet').text(getHours(0, overtime + demand + nondemand));
-
-                    $('th#addbutton').html('<button class="btn btn-success" id="addline"><i class="icon-plus icon-white"></i>Add Line</button>');
+                },
+                "fnDrawCallback": function () {
+                    $('th.addbutton').html('<button class="btn btn-success btn-mini pull-left" id="addline"><i class="icon-plus icon-white"></i> New Row</button>');
                 }
             });
         }
@@ -460,6 +460,7 @@
             demand = 0;
             nondemand = 0;
             overtime = 0;
+            sheetdows();
             sheet.fnReloadAjax('/api/Hours/' + empid + '/' + week + '');
         }
 
@@ -483,7 +484,16 @@
             });
             $('td.hrsum[id^="hrs"]', line).html(getHours(hrs, mns));
         }
-
+        function clrhours() {
+            $('[name=options]', $desc).val('');
+            $('[name=options]', $cust).val('');
+            $desc.data('combobox').refresh();
+            $cust.data('combobox').refresh();
+            $('#modaltitle').html('Add Hours');
+            console.log('clr '+$('input', 'tr.hourline').length);
+            $('input', 'tr.hourline').val('');
+            $('td.hrsum[id^="hrs"]', 'tr.hourline').html('');
+        }
         $(function () {
             rowmap = $('th', '#sheetrow');
             $cust = $('#@Html.IdFor(m => m.normal.CustomerId)', '#weeksheet');
@@ -502,21 +512,26 @@
                     e.target.value = $.datepicker.formatDate('mm/dd/yy', test);
                 }
             });
+            $('tr.sheetline').on('click', 'button#addline', function (e) {
+                clrhours();
+                $('#weekline').modal('show');
+                return;
+            });
             $('#week tbody').on('click', 'tr', function () {
                 modaldows();
                 var aPos = sheet.fnGetPosition(this);
                 if (aPos==null) {
+                    clrhours();
                     $('#weekline').modal('show');
-                    $('[name=options]', $desc).val('');
-                    $('[name=options]', $cust).val('');
-                    $desc.data('combobox').refresh();
-                    $cust.data('combobox').refresh();
                     return;
                 }
+
                 var aData = sheet.fnGetData(aPos);
                 if (aData[2] == 'True') {
                     aData = sheet.fnGetData(pair[aData[0]]);
                 }
+                var newrequest = (aData[16] == 'True');
+
                 rowmap.each(function (index) {
                     var id = $(this).data('id');
                     if (typeof id != 'undefined') {
@@ -528,6 +543,8 @@
                 });
                 if (aData[25]) {
                     aData = sheet.fnGetData(pair[aData[0]]);
+                    newrequest |= (aData[16] == 'True');
+
                     rowmap.each(function (index) {
                         var id = $(this).data('id');
                         if (typeof id != 'undefined' && $(this).hasClass('ovt')) {
@@ -538,10 +555,16 @@
                         }
                     });
                 }
+                var $box = $('#@Html.IdFor(m=>m.normal.NewRequest)');
+                $box.prop('checked', newrequest);
+                var name = $box.attr('name');
+                $('input[name="' + name + '"]', '#weekline').val(newrequest);
+
                 $desc.data('combobox').refresh();
                 $cust.data('combobox').refresh();
                 sumhours('#normal');
                 sumhours('#overtime');
+                $('#modaltitle').html('Edit Hours');
                 $('#weekline').modal('show');
             });
             $('#priorsheet').on('click', function (e) {
@@ -569,9 +592,9 @@
             });
 
             $('#savehrs').on('click', function (e) {
+                var $box = $('#@Html.IdFor(m=>m.normal.NewRequest)');
+                $('#@Html.IdFor(m=>m.NewRequest)').val($box.prop('checked'));
                 var hours = $('#weeksheet').serialize();
-                console.log(hours);
-                e.preventDefault();
                 var status = $.ajax({
                     type: "POST",
                     url: '/api/Hours',
@@ -586,6 +609,7 @@
                     }
                 });
             });
+
             getSheet();
             sheetdows();
         });

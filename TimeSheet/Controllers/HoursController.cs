@@ -54,6 +54,8 @@ namespace TimeSheet.Controllers
             }
             hours.normal.WeekNumber = hours.weekNumber;
             hours.overtime.WeekNumber = hours.weekNumber;
+            hours.normal.NewRequest = hours.NewRequest;         // model binding didn't work for checkbox so we revert to this
+
             try
             {
                 db.Execute(hours.Save());

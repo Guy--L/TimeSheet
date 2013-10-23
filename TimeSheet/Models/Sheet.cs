@@ -29,6 +29,7 @@ namespace TimeSheet.Models
         public int weekNumber { get; set; }
         public string NewDescription { get; set; }
         public string NewCustomer { get; set; }
+        public bool NewRequest { get; set; }
 
         public string sunday;
 

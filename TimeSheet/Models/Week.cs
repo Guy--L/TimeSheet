@@ -92,7 +92,7 @@ namespace TimeSheet.Models
                 ,time2str(Tuesday)
                 ,time2str(Wednesday)
                 ,time2str(Thursday)
-                ,time2str(Friday)                                                                   // 10
+                ,time2str(Friday)                   // 10
                 ,time2str(Saturday)
                 ,time2str(Sunday)
                 ,time2str(tot)
@@ -102,7 +102,7 @@ namespace TimeSheet.Models
                 ,partner
                 ,site
                 ,DescriptionId.ToString()
-                ,CustomerId.ToString()                                                              // 20
+                ,CustomerId.ToString()              // 20
                 ,InternalNumberId.ToString()
                 ,WorkAreaId.ToString()
                 ,PartnerId.ToString()
