@@ -20,7 +20,8 @@ namespace TimeSheet.Controllers
             }
             catch (Exception e)
             {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+                Exception frame = new Exception(q, e);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(frame);
             }
         }
 
@@ -39,16 +40,23 @@ namespace TimeSheet.Controllers
         public dynamic Get(string id, int week)
         {
             tsDB db = new tsDB();
-
-            var sheet = db.Fetch<Week>(string.Format(Week.lst_week, id, week));
-            var records = sheet.Select(a => a.serializeDT()).ToArray();
-            return new
+            try
             {
-                sEcho = 1,
-                iTotalRecords = records.Count(),
-                iTotalDisplayRecords = records.Count(),
-                aaData = records
-            };
+                var sheet = db.Fetch<Week>(string.Format(Week.lst_week, id, week));
+                var records = sheet.Select(a => a.serializeDT()).ToArray();
+                return new
+                {
+                    sEcho = 1,
+                    iTotalRecords = records.Count(),
+                    iTotalDisplayRecords = records.Count(),
+                    aaData = records
+                };
+            }
+            catch(Exception e)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+                return null;
+            }
         }
 
         // POST api/hours

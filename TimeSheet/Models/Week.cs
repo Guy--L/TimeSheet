@@ -36,24 +36,7 @@ namespace TimeSheet.Models
                  where a.workerid = '{0}' and a.weeknumber = '{1}' 
         ";
 
-        private static string del_week = @"
-            delete a, b from week a
-                left join week b
-                     on a.CapitalNumber = b.CapitalNumber 
-	                and a.CostCenterId = b.CostCenterId
-	                and a.CustomerId = b.CustomerId
-	                and a.DescriptionId = b.DescriptionId
-	                and a.InternalNumberId = b.InternalNumberId
-	                and a.PartnerId = b.PartnerId
-	                and a.SiteId = b.SiteId
-	                and a.WorkAreaId = b.WorkAreaId
-	                and a.NewRequest = b.NewRequest
-	                and a.IsOverTime != b.IsOvertime
-                    and a.workerid = b.workerid
-                    and a.weeknumber = b.weeknumber
-                    and a.year = b.year
-                 where a.weekid = {0}
-        ";
+        private static string del_week = @" delete from week where weekid = {0} ";
 
         public static string Delete(int id)
         {
@@ -104,7 +87,7 @@ namespace TimeSheet.Models
             var workarea = WorkAreaId.HasValue?Sheet.workAreas[WorkAreaId.Value]:"";
             var partner = PartnerId.HasValue?Sheet.partners[PartnerId.Value]:"";
             var site = SiteId.HasValue?Sheet.sites[SiteId.Value]:"";
-            var submitted = !(Submitted == null);
+            var submitted = Submitted.HasValue ?Submitted.Value.ToString("MM/dd hh:mm"):"";
 
             return new string[27] {
                  WeekId.ToString()
@@ -293,7 +276,7 @@ namespace TimeSheet.Models
                        ,{21}) --<CustomerId, int,> ";
 
         private static string lock_week = @"
-            update [week] set [submitted] = {0}
+            update [week] set [submitted] = cast('{0}' as datetime)
             where [workerid] = {1} and [weeknumber] = {2}
         ";
 

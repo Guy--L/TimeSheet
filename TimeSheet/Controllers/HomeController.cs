@@ -32,6 +32,11 @@ namespace TimeSheet.Controllers
             Sheet.orders = db.Fetch<CostCenter>("").ToDictionary(c => c.CostCenterId, c => c._CostCenter);
             Sheet.workAreas = db.Fetch<WorkArea>("").ToDictionary(c => c.WorkAreaId, c => c._WorkArea);
             Sheet.accounts = db.Fetch<InternalNumber>("").ToDictionary(i => i.InternalNumberId, i => i.InternalOrder);
+            Sheet.sites.Add(0, "");
+            Sheet.partners.Add(0, "");
+            Sheet.orders.Add(0, "");
+            Sheet.workAreas.Add(0, "");
+            Sheet.accounts.Add(0, "");
         }
 
         public ActionResult Index()
