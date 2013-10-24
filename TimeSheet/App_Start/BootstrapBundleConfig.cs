@@ -16,17 +16,12 @@ namespace TimeSheet.App_Start
                 "~/Scripts/bootstrap.js"
                 ,"~/Scripts/bootstrap-inputmask.js"
                 ,"~/Scripts/bootstrap-combobox.js"
-                //"~/Scripts/bootstrap-modal.js",
-                //"~/Scripts/bootstrap-modalmanager.js"
-                //,"~/Scripts/bootstrap-datepicker.js"
                 ));
 			BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/base").Include(
                 "~/Content/bootstrap.css"
                 ,"~/Content/bootstrap-combobox.css"
-                //,"~/Content/bootstrap-modal-bs3patch.css"
-                //,"~/Content/bootstrap-modal.css"
                 ,"~/Content/datepicker.css"
-                ,"~/Content/font-awesome.css"
+                ,"~/Content/bootstrap/font-awesome.css"
                 ));
 			BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/theme").Include("~/Content/bootstrap/bootstrap-theme.css"));
 		}

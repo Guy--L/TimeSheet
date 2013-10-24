@@ -824,3 +824,8 @@ tr.weekline th
 {
     font-weight: 400;
 }
+
+#weekline label.control-label
+{
+    padding: 0;
+}

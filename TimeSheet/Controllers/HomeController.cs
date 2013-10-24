@@ -41,7 +41,7 @@ namespace TimeSheet.Controllers
             Worker emp = db.FirstOrDefault<Worker>("where ionname = @0", "steiner.ma");
 
             Sheet.descriptions = db.Fetch<Description>("where workerid = @0", emp.WorkerId).ToDictionary(d=>d.DescriptionId, d=>d._Description);
-            Sheet.customers = db.Fetch<Customer>("where workerid = @0", emp.WorkerId).ToDictionary(c => c.CustomerId, c => c.CustomerName);
+            Sheet.customers = db.Fetch<Customer>("where workerid = @0 or workerid = 0", emp.WorkerId);
 
             //if (!Sheet.descriptions.Any())
             //{

@@ -73,7 +73,6 @@
       })
       this.map = map;
       if (selected) {
-          console.log("selected: " + selected);
         this.$element.val(selected);
         this.$target.val(selectedValue);
         this.$container.addClass('combobox-selected');

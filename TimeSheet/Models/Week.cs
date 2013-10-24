@@ -52,7 +52,7 @@ namespace TimeSheet.Models
                     and a.workerid = b.workerid
                     and a.weeknumber = b.weeknumber
                     and a.year = b.year
-                 where a.weekid = '{0}'
+                 where a.weekid = {0}
         ";
 
         public static string Delete(int id)
@@ -100,18 +100,19 @@ namespace TimeSheet.Models
             var description = Sheet.descriptions[DescriptionId];
             var intern = InternalNumberId.HasValue?Sheet.orders[InternalNumberId.Value]:CapitalNumber;
             var costctr = CostCenterId.HasValue?Sheet.accounts[CostCenterId.Value]:"";
-            var customer = (CustomerId.HasValue&&CustomerId.Value>0)?Sheet.customers[CustomerId.Value]:"";
+            var customer = (CustomerId.HasValue&&CustomerId.Value>0)?Sheet.customers.First(v=>v.CustomerId == CustomerId.Value).CustomerName:"";
             var workarea = WorkAreaId.HasValue?Sheet.workAreas[WorkAreaId.Value]:"";
             var partner = PartnerId.HasValue?Sheet.partners[PartnerId.Value]:"";
             var site = SiteId.HasValue?Sheet.sites[SiteId.Value]:"";
+            var submitted = !(Submitted == null);
 
-            return new string[26] {
+            return new string[27] {
                  WeekId.ToString()
                 ,WeekNumber.ToString()
                 ,IsOvertime.ToString()
                 ,description
                 ,intern 
-                ,costctr                       // 5
+                ,costctr                            // 5
                 ,time2str(Monday)
                 ,time2str(Tuesday)
                 ,time2str(Wednesday)
@@ -132,6 +133,7 @@ namespace TimeSheet.Models
                 ,PartnerId.ToString()
                 ,SiteId.ToString()
                 ,PairId.ToString()                  // 25
+                ,submitted.ToString()
             };
         }
 
@@ -178,6 +180,11 @@ namespace TimeSheet.Models
                 b.Match(this);
             else if (WeekId != 0 && b.WeekId != 0)
                 b.Copy(this);
+        }
+
+        public static string Submit(int worker, int week)
+        {
+            return string.Format(lock_week, DateTime.Now, worker, week);
         }
 
         public string Save(int id)
@@ -284,6 +291,16 @@ namespace TimeSheet.Models
                        ,{19} --<CostCenterId, int,>
                        ,'{20}' --<CapitalNumber, nvarchar(50),>
                        ,{21}) --<CustomerId, int,> ";
+
+        private static string lock_week = @"
+            update [week] set [submitted] = {0}
+            where [workerid] = {1} and [weeknumber] = {2}
+        ";
+
+        private static string unlock_week = @"
+            update [week] set [submitted] = null
+            where [workerid] = {1} and [weeknumber] = {2}            
+        ";
 
         private static string upd_week = @"
             UPDATE [TimeSheetDB].[dbo].[Week]

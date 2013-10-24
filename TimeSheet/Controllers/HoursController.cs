@@ -10,6 +10,20 @@ namespace TimeSheet.Controllers
 {
     public class HoursController : ApiController
     {
+        private tsDB _db;
+
+        private void dbExec(string q)
+        {
+            try
+            {
+                _db.Execute(q);
+            }
+            catch (Exception e)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+            }
+        }
+
         // GET api/hours
         public IEnumerable<string> Get()
         {
@@ -38,51 +52,48 @@ namespace TimeSheet.Controllers
         }
 
         // POST api/hours
+        [HttpPost]
         public void Post(Sheet hours)
         {
-            tsDB db = new tsDB();
+            _db = new tsDB();
+
             if (!string.IsNullOrWhiteSpace(hours.NewDescription))
             {
-                hours.normal.DescriptionId = db.ExecuteScalar<int>(Models.Description.Save(hours.employee.WorkerId, hours.NewDescription));
+                hours.normal.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(hours.employee.WorkerId, hours.NewDescription));
                 hours.overtime.DescriptionId = hours.normal.DescriptionId;
             }
             if (!string.IsNullOrWhiteSpace(hours.NewCustomer))
             {
-                hours.normal.CustomerId = db.ExecuteScalar<int>(Models.Customer.Save(hours.employee.WorkerId, hours.NewCustomer));
+                hours.normal.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(hours.employee.WorkerId, hours.NewCustomer));
                 hours.overtime.CustomerId = hours.normal.CustomerId;
             }
             hours.normal.WeekNumber = hours.weekNumber;
             hours.overtime.WeekNumber = hours.weekNumber;
             hours.normal.NewRequest = hours.NewRequest;         // model binding didn't work for checkbox so we revert to this
-
-            try
-            {
-                db.Execute(hours.Save());
-            }
-            catch(Exception e)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
-            }
+            dbExec(hours.Save());
         }
 
-        // PUT api/hours/5
-        public void Put(int id, [FromBody]string value)
+        // PUT api/hours/5/32
+        [HttpPut]
+        public void Put(int id, int week)
         {
+            using (_db = new tsDB())
+            {
+                dbExec(Week.Submit(id, week));
+            }
         }
 
-        // DELETE api/hours/5
+        /// <summary>
+        /// Remove normal and overtime records for this weekid
+        /// </summary>
+        /// <param name="id">weekid</param>
+        [HttpDelete]
         public void Delete(int id)
         {
-            tsDB db = new tsDB();
-            try
+            using (_db = new tsDB())
             {
-                db.Execute(Week.Delete(id));
+                dbExec(Week.Delete(id));
             }
-            catch (Exception e)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
-            }
-
         }
     }
 }

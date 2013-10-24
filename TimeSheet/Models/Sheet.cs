@@ -10,7 +10,7 @@ namespace TimeSheet.Models
     {
         public static Dictionary<int, string> descriptions;
         public static Dictionary<int, string> workAreas;
-        public static Dictionary<int, string> customers;
+        public static IEnumerable<Customer> customers;
         public static Dictionary<int, string> orders;
         public static Dictionary<int, string> accounts;
         public static Dictionary<int, string> sites;
@@ -18,7 +18,7 @@ namespace TimeSheet.Models
 
         public Dictionary<int, string> Descriptions { get { return descriptions; } }
         public Dictionary<int, string> WorkAreas { get { return workAreas; } }
-        public Dictionary<int, string> Customers { get { return customers; } }
+        public IEnumerable<Customer> Customers { get { return customers; } }
         public Dictionary<int, string> Orders { get { return orders; } }
         public Dictionary<int, string> Accounts { get { return accounts; } }
         public Dictionary<int, string> Sites { get { return sites; } }
@@ -30,6 +30,8 @@ namespace TimeSheet.Models
         public string NewDescription { get; set; }
         public string NewCustomer { get; set; }
         public bool NewRequest { get; set; }
+        public int TimeTypeId { get; set; }
+        public bool Submitted { get; set; }
 
         public string sunday;
 
