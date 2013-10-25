@@ -61,7 +61,7 @@ namespace TimeSheet.Controllers
 
         // POST api/hours
         [HttpPost]
-        public void Post(Sheet hours)
+        public int[] Post(Sheet hours)
         {
             _db = new tsDB();
 
@@ -78,7 +78,21 @@ namespace TimeSheet.Controllers
             hours.normal.WeekNumber = hours.weekNumber;
             hours.overtime.WeekNumber = hours.weekNumber;
             hours.normal.NewRequest = hours.NewRequest;         // model binding didn't work for checkbox so we revert to this
-            dbExec(hours.Save());
+
+            string q = "";
+            Tuple<List<int>, List<int>> ids = null;
+            try
+            {
+                q = hours.Save();
+                ids = _db.FetchMultiple<int, int>(q);
+                return new int[2] { ids.Item1.FirstOrDefault(), ids.Item2.FirstOrDefault() };
+            }
+            catch (Exception e)
+            {
+                Exception frame = new Exception(q, e);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(frame);
+                return null;
+            }
         }
 
         // PUT api/hours/5/32

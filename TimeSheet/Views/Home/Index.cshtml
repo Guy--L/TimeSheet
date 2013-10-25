@@ -369,10 +369,10 @@
                     $('td:eq(0)', nRow).html((aData[2] == 'True') ? '<i class="icon-time"></i>' : '');
                     $('td:eq(14)', nRow).html((aData[16] == 'True') ? '<i class="icon-asterisk"></i>' : '');
                     if (aData[25]) {
+                        console.log(aData[25], iDisplayIndex);
                         pair[aData[25]] = iDisplayIndex;
                     }
                     locked = aData[26];
-                    console.log(locked);
                     return nRow;
                 },
                 "fnFooterCallback": function (nRow, aaData, iStart, iEnd, aiDisplay) {
@@ -412,6 +412,7 @@
         }
 
         function switchUI() {
+            $('#@Html.IdFor(m=>m.weekNumber)').val(week);
             if ($partner.find('option:selected').html() == 'RDSS') {
                 $('.nondemand').parent().parent().css('display', 'block');
                 $('.demand').parent().parent().css('display', 'none');
@@ -599,13 +600,42 @@
                     contenttype: "application/json",
                     traditional: true,
                     success: function (result) {
-                        //AT.communication.addMessage("success", "Hours saved.");
+                        //console.log(result);
+                        //var aData = [];
+                        //rowmap.each(function (index) {
+                        //    var id = $(this).data('id');
+                        //    if (typeof id != 'undefined') {
+                        //        aData[index] = $('#' + id, '#weekline').val();
+                        //    }
+                        //});
+                        //aData[0] = result[0];
+                        //aData[26] = result[1];
+                        //if (normPos < 0)
+                        //    sheet.fnAddData(aData);
+                        //else
+                        //    sheet.fnUpdate(aData, normPos);
+
+                        //if (aData[25]) {
+                        //    overPos = pair[aData[0]];
+                        //    aData = sheet.fnGetData(overPos);
+                        //    newrequest |= (aData[16] == 'True');
+
+                        //    rowmap.each(function (index) {
+                        //        var id = $(this).data('id');
+                        //        if (typeof id != 'undefined' && $(this).hasClass('ovt')) {
+                        //            var d = aData[index];
+                        //            if ($(this).hasClass('day') && d && d.length == 4)
+                        //                d = '0' + d;
+                        //            $('#' + id.replace('normal', 'overtime'), '#weekline').val(d);
+                        //        }
+                        //    });
+                        //}
                     },
                     error: function () {
                         //AT.communication.addMessage("error", "Sorry! Unable to save your comment. Someone has been alerted. Please try again later.");
                     }
                 });
-                e.preventDefault();
+                //e.preventDefault();
                 $('#weekline').modal('hide');
             });
             $('#deletehrs').on('click', function (e) {
@@ -619,7 +649,7 @@
                     delWeek(overtime, overPos);
                     delWeek(normal, normPos);
                 }
-                e.preventDefault();
+                //e.preventDefault();
                 $('#weekline').modal('hide');
             });
             getSheet();
@@ -634,9 +664,10 @@
                 $('#week tbody').on('click', 'tr', function () {
                     normPos = -1;
                     overPos = -1;
-
+                    
                     modaldows();
                     var aPos = sheet.fnGetPosition(this);
+                    console.log("clicked on: " + aPos);
                     if (aPos == null) {
                         clrhours();
                         $('#weekline').modal('show');
@@ -659,7 +690,8 @@
                             $('#' + id, '#weekline').val(d);
                         }
                     });
-                    if (aData[25]) {
+                    if (aData[25] && aData[25] > 0) {
+                        console.log('getting overtime ' + aData[25]);
                         overPos = pair[aData[0]];
                         aData = sheet.fnGetData(overPos);
                         newrequest |= (aData[16] == 'True');

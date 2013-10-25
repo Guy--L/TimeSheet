@@ -6,7 +6,7 @@
 // 
 //     Connection String Name: `ts`
 //     Provider:               `System.Data.SqlClient`
-//     Connection String:      `Data Source=155.118.175.18;Initial Catalog=TimeSheetDB;Integrated Security=False;User ID=TimeTracker;password=**zapped**;TrustServerCertificate=False`
+//     Connection String:      `Data Source=AS-GUY-MBP;Initial Catalog=TimesheetDB;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False`
 //     Schema:                 ``
 //     Include Views:          `False`
 
@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using PetaPoco;
+using NPoco;
 
 namespace TimeSheet.Models
 {
@@ -53,24 +53,24 @@ namespace TimeSheet.Models
 
 		[ThreadStatic] static tsDB _instance;
 		
-		public override void OnBeginTransaction()
-		{
-			if (_instance==null)
-				_instance=this;
-		}
-		
-		public override void OnEndTransaction()
-		{
-			if (_instance==this)
-				_instance=null;
-		}
-        
+        protected override void OnBeginTransaction()
+        {
+                if (_instance==null)
+                        _instance=this;
+        }
+                
+        protected override void OnCompleteTransaction()
+        {
+                if (_instance==this)
+                        _instance=null;
+        }
+				        
 		public class Record<T> where T:new()
 		{
 			public static tsDB repo { get { return tsDB.GetInstance(); } }
-			public bool IsNew() { return repo.IsNew(this); }
+			public bool IsNew() { return repo.IsNew<T>(this); }
 			public object Insert() { return repo.Insert(this); }
-			public void Save() { repo.Save(this); }
+			public void Save() { repo.Save<T>(this); }
 			public int Update() { return repo.Update(this); }
 			public int Update(IEnumerable<string> columns) { return repo.Update(this, columns); }
 			public static int Update(string sql, params object[] args) { return repo.Update<T>(sql, args); }
@@ -80,13 +80,12 @@ namespace TimeSheet.Models
 			public static int Delete(Sql sql) { return repo.Delete<T>(sql); }
 			public static int Delete(object primaryKey) { return repo.Delete<T>(primaryKey); }
 			public static bool Exists(object primaryKey) { return repo.Exists<T>(primaryKey); }
-			public static bool Exists(string sql, params object[] args) { return repo.Exists<T>(sql, args); }
-			public static T SingleOrDefault(object primaryKey) { return repo.SingleOrDefault<T>(primaryKey); }
+			public static T SingleOrDefault(object primaryKey) { return repo.SingleOrDefaultById<T>(primaryKey); }
 			public static T SingleOrDefault(string sql, params object[] args) { return repo.SingleOrDefault<T>(sql, args); }
 			public static T SingleOrDefault(Sql sql) { return repo.SingleOrDefault<T>(sql); }
 			public static T FirstOrDefault(string sql, params object[] args) { return repo.FirstOrDefault<T>(sql, args); }
 			public static T FirstOrDefault(Sql sql) { return repo.FirstOrDefault<T>(sql); }
-			public static T Single(object primaryKey) { return repo.Single<T>(primaryKey); }
+			public static T Single(object primaryKey) { return repo.SingleById<T>(primaryKey); }
 			public static T Single(string sql, params object[] args) { return repo.Single<T>(sql, args); }
 			public static T Single(Sql sql) { return repo.Single<T>(sql); }
 			public static T First(string sql, params object[] args) { return repo.First<T>(sql, args); }
@@ -104,6 +103,17 @@ namespace TimeSheet.Models
 		}
 	}
 	
+
+	[TableName("CostCenter")]
+	[PrimaryKey("CostCenterId")]
+	[ExplicitColumns]
+    public partial class CostCenter : tsDB.Record<CostCenter>  
+    {		
+		[Column] public int CostCenterId { get; set; } 		
+		[Column("CostCenter")] public string _CostCenter { get; set; }
+		
+		[Column] public string LegalEntity { get; set; } 	
+	}
 
 	[TableName("Customer")]
 	[PrimaryKey("CustomerId")]
@@ -264,25 +274,6 @@ namespace TimeSheet.Models
 		[Column] public bool IsPartTime { get; set; } 		
 		[Column] public bool OnDisability { get; set; } 		
 		[Column] public string IonName { get; set; } 	
-	}
-
-	[TableName("__RefactorLog")]
-	[PrimaryKey("OperationKey", autoIncrement=false)]
-	[ExplicitColumns]
-    public partial class __RefactorLog : tsDB.Record<__RefactorLog>  
-    {		
-		[Column] public Guid OperationKey { get; set; } 	
-	}
-
-	[TableName("CostCenter")]
-	[PrimaryKey("CostCenterId")]
-	[ExplicitColumns]
-    public partial class CostCenter : tsDB.Record<CostCenter>  
-    {		
-		[Column] public int CostCenterId { get; set; } 		
-		[Column("CostCenter")] public string _CostCenter { get; set; }
-		
-		[Column] public string LegalEntity { get; set; } 	
 	}
 
 }

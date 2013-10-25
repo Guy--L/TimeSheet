@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using PetaPoco;
+using NPoco;
 
 namespace TimeSheet.Models
 {
@@ -81,8 +81,8 @@ namespace TimeSheet.Models
         {
             var tot = subTotal;
             var description = Sheet.descriptions[DescriptionId];
-            var intern = InternalNumberId.HasValue?Sheet.orders[InternalNumberId.Value]:CapitalNumber;
-            var costctr = CostCenterId.HasValue?Sheet.accounts[CostCenterId.Value]:"";
+            var intern = InternalNumberId.HasValue?Sheet.accounts[InternalNumberId.Value]:CapitalNumber;
+            var costctr = CostCenterId.HasValue?Sheet.orders[CostCenterId.Value]:"";
             var customer = (CustomerId.HasValue&&CustomerId.Value>0)?Sheet.customers.First(v=>v.CustomerId == CustomerId.Value).CustomerName:"";
             var workarea = WorkAreaId.HasValue?Sheet.workAreas[WorkAreaId.Value]:"";
             var partner = PartnerId.HasValue?Sheet.partners[PartnerId.Value]:"";
@@ -273,7 +273,8 @@ namespace TimeSheet.Models
                        ,{18} --<InternalNumberId, int,>
                        ,{19} --<CostCenterId, int,>
                        ,'{20}' --<CapitalNumber, nvarchar(50),>
-                       ,{21}) --<CustomerId, int,> ";
+                       ,{21}) --<CustomerId, int,> 
+            select scope_identity() ";
 
         private static string lock_week = @"
             update [week] set [submitted] = cast('{0}' as datetime)
@@ -309,6 +310,7 @@ namespace TimeSheet.Models
                        ,[CostCenterId]       = {20}
                        ,[CapitalNumber]      = '{21}'
                        ,[CustomerId]         = {22}
-             WHERE WeekId = {0} ";
+             WHERE WeekId = {0}
+          select {0} ";
     }
 }
