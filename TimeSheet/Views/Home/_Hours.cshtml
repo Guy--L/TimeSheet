@@ -1,0 +1,105 @@
+﻿@model TimeSheet.Models.Hours
+
+@using (var modal = Html.Bootstrap().Begin(new Modal().Id("weekline").Closeable().FadeOff()))
+{
+    using (modal.BeginHeader())
+    {
+        <h4 id="modaltitle">Add Hours</h4>
+    }
+
+    using (var form = Html.Bootstrap().Begin(new Form("Save", "Home").Id("weeksheet").Type(FormType.Horizontal).LabelWidthLg(4)))
+    {
+
+        @Html.HiddenFor(m => m.NewDescription)
+        @Html.HiddenFor(m => m.NewCustomer)
+        @Html.HiddenFor(m => m.NewRequest)
+
+        @Html.HiddenFor(m => m.normal.WeekId)
+        @Html.HiddenFor(m => m.normal.WeekNumber)
+        @Html.HiddenFor(m => m.normal.Year)
+        @Html.HiddenFor(m => m.normal.IsOvertime)
+
+        @Html.HiddenFor(m => m.overtime.WeekId)
+        @Html.HiddenFor(m => m.overtime.WeekNumber)
+        @Html.HiddenFor(m => m.overtime.Year)
+        @Html.HiddenFor(m => m.overtime.IsOvertime)
+
+        using (modal.BeginBody())
+        {
+            <div class="row">
+                <div class="col-lg-6">
+                    @form.FormGroup().DropDownListFor(m => m.normal.PartnerId, Model.Partners).Size(InputSize.Small).Label().LabelText("Partner")
+                    @form.FormGroup().DropDownListFor(m => m.normal.SiteId, Model.Sites).Size(InputSize.Small).WidthLg(4).Label().LabelText("Site")
+                    @form.FormGroup().DropDownListFor(m => m.TimeTypeId, Model.Times).Size(InputSize.Small).Class("nondemand").Label().LabelText("Type")
+                    @form.FormGroup().DropDownListFor(m => m.normal.CustomerId, Model.Customers).Size(InputSize.Small).Class("demand").Label().LabelText("Customer")
+                    @form.FormGroup().CheckBoxFor(m => m.normal.NewRequest).Class("demand")
+                </div>
+                <div class="col-lg-6">
+                    @form.FormGroup().DropDownListFor(m => m.normal.WorkAreaId, Model.WorkAreas).Size(InputSize.Small).Label().LabelText("Work Area")
+                    @form.FormGroup().DropDownListFor(m => m.normal.CostCenterId, Model.CostCenters).Class("demand").Size(InputSize.Small).Label().LabelText("Cost Center")
+                    @form.FormGroup().DropDownListFor(m => m.normal.InternalNumberId, Model.InternalNumbers).Class("demand").Size(InputSize.Small).Label().LabelText("Internal #")
+                    @form.FormGroup().TextBoxFor(m => m.normal.CapitalNumber).Size(InputSize.Small).Class("demand").Label().LabelText("Capital #")
+                </div>
+            </div>
+            <div class="row">
+                @form.FormGroup().DropDownListFor(m => m.normal.DescriptionId, Model.Descriptions).Size(InputSize.Small).WidthLg(10).Label().WidthLg(2).LabelText("Description")
+            </div>
+            using (Html.Bootstrap().Begin(new Table().Condensed().Striped().Class("hourinput")))
+            {
+                <thead>
+                    <tr class="weekline">
+                        <th></th>
+                        @Html.DisplayFor(m => m.Headers)
+                        <th>Subtotal</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="hourline" id="normal">
+                        <td class="hrsum">Normal</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Mon).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Tue).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Wed).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Thu).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Fri).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Sat).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Sun).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td id="hrsnormal" class="hrsum"></td>
+                        <td class="hrwtotal"></td>
+                    </tr>
+                    <tr class="hourline" id="overtime">
+                        <td class="hrsum">Overtime</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Mon).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Tue).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Wed).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Thu).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Fri).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Sat).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Sun).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td id="hrsovertime" class="hrsum"></td>
+                        <td class="hrowtotal"></td>
+                    </tr>
+                </tbody>
+            }
+            using (modal.BeginFooter())
+            {
+                @(form.FormGroup().CustomControls(
+                Html.Bootstrap().SubmitButton().Text("Delete").Id("deletehrs").Style(ButtonStyle.Danger),
+                Html.Bootstrap().SubmitButton().Text("Save").Id("savehrs").Style(ButtonStyle.Success).LoadingText("Working..."),
+                Html.Bootstrap().Button().Data(new { dismiss = "modal" }).Text("Cancel")))
+            }
+        }
+    }
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $partner = $('#@Html.IdFor(m=>m.normal.PartnerId)');
+        $cust = $('#@Html.IdFor(m => m.normal.CustomerId)', '#weeksheet');
+        $desc = $('#@Html.IdFor(m => m.normal.DescriptionId)', '#weeksheet');
+        $desc.combobox({ freeform: '#@Html.IdFor(m => m.NewDescription)', selected: true });
+        $cust.combobox({ freeform: '#@Html.IdFor(m => m.NewCustomer)', selected: true });
+
+
+    </script>
+}

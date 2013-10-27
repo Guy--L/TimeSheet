@@ -30,7 +30,7 @@ namespace TimeSheet
 
         protected void Session_Start(object sender, EventArgs e)
         {
-#if Local
+#if DEBUG
             var user = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
 #else
             var user = Thread.CurrentPrincipal.Identity.Name;

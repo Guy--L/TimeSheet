@@ -814,10 +814,39 @@ tr.hourline td.hrsum
     vertical-align: middle;
 }
 
-td.hrcell, tr.sheetline th, tr#sheetrow th.day
+tr.sheetline th
+{
+    text-align: center;
+}
+
+tr#sheetrow th.day
+{
+    font-weight: normal;
+    font-size: inherit;
+}
+
+thead tr.sheetline th.day
+{
+    text-align: center;
+    vertical-align: middle;
+    min-width: 45px;
+}
+
+thead tr.sheetline th
+{
+    font-size: small;
+    background-color: rgba(231, 252, 222, 0.1);
+}
+
+thead tr#sheetrow th
+{
+    background-color: rgba(231, 252, 222, 0.1);
+}
+td.hrcell, tr#sheetrow th.day, tr.hoursrow td.day
 { 
     text-align: right;
     vertical-align: middle;
+    background-color: none;
 }
 
 tr.weekline th

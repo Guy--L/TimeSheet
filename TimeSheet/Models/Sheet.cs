@@ -8,24 +8,15 @@ namespace TimeSheet.Models
 {
     public class Sheet
     {
-        public static Dictionary<int, string> descriptions;
-        public static Dictionary<int, string> workAreas;
-        public static IEnumerable<Customer> customers;
-        public static Dictionary<int, string> orders;
-        public static Dictionary<int, string> accounts;
-        public static Dictionary<int, string> sites;
-        public static Dictionary<int, string> partners;
-
-        public Dictionary<int, string> Descriptions { get { return descriptions; } }
-        public Dictionary<int, string> WorkAreas { get { return workAreas; } }
-        public IEnumerable<Customer> Customers { get { return customers; } }
-        public Dictionary<int, string> Orders { get { return orders; } }
-        public Dictionary<int, string> Accounts { get { return accounts; } }
-        public Dictionary<int, string> Sites { get { return sites; } }
-        public Dictionary<int, string> Partners { get { return partners; } }
-
         public Worker employee { get; set; }
         public static string user;
+
+        public List<Week> hours { get; set; }
+        public string[] Stats { get; set; }
+
+        public static List<DateTime> headers;
+        public List<DateTime> Headers { get { return headers; } set { headers = value; } } 
+
         public int weekNumber { get; set; }
         public string NewDescription { get; set; }
         public string NewCustomer { get; set; }

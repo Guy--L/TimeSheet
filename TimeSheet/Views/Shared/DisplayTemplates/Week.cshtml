@@ -1,0 +1,21 @@
+﻿@model TimeSheet.Models.Week
+
+<tr class="hoursrow" data-id="@Model.WeekId" data-pairid="@Model.PairId">
+    <td>@Html.Raw(Model.IsOvertime?"<i class='icon-time'></i>":"")</td>
+    <td>@Model.Description.Substring(0, 20)</td>
+    <td>@Model.InternalNumber</td>
+    <td>@Model.CostCenter</td>
+    <td class="day">@Model.Mon</td>
+    <td class="day">@Model.Tue</td>
+    <td class="day">@Model.Wed</td>
+    <td class="day">@Model.Thu</td>
+    <td class="day">@Model.Fri</td>
+    <td class="day">@Model.Sat</td>
+    <td class="day">@Model.Sun</td>
+    <td class="day">@Model.SubTotal</td>
+    <td>@Html.Raw(Model.NewRequest ? "<i class='icon-asterisk'></i>" : "")</td>
+    <td>@Model.Customer</td>
+    <td>@Model.WorkArea</td>
+    <td>@Model.Partner</td>
+    <td>@Model.Site</td>
+</tr>

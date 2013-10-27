@@ -21,7 +21,7 @@
             <li><a href="#contact">Contact</a></li>
         </ul>
         <ul class="nav navbar-nav pull-right">
-            <li><a href="#"><i class="icon-user icon-white"></i>@Model.User</a></li>
+            <li><a href="#"><i class="icon-user icon-white"></i> @Model.User</a></li>
             <li><a href="#"><i class="icon-question icon-white"></i></a></li>
         </ul>
     </div>
@@ -66,660 +66,219 @@
         <div class="col-md-6">
             @using (Html.Bootstrap().Begin(new Table().Caption("Hours Summary").Condensed().Class("pull-right hoursum")))
             {
-                <tr>
-                    <td>Demand</td>
-                    <td>
-                        <p class="subtime" id="timed"></p>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Non-Demand</td>
-                    <td>
-                        <p class="subtime" id="timen"></p>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Overtime</td>
-                    <td>
-                        <p class="subtime" id="timeo"></p>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Total</b></td>
-                    <td>
-                        <b>
-                            <p class="subtime" id="timet"></p>
-                        </b>
-                    </td>
-                </tr>
+                <tr><td>Demand</td><td>@Model.Stats[0]</td></tr>
+                <tr><td>Non-Demand</td><td>@Model.Stats[1]</td></tr>
+                <tr><td>Overtime</td><td>@Model.Stats[2]</td></tr>
+                <tr><td><b>Total</b></td><td><b>@Model.Stats[3]</b></td></tr>
             }
         </div>
     </div>
 </div>
 <div id="content">
-    <table id="week" class="table table-striped table-hover table-condensed">
+    <table id="week" class="table table-striped @(Model.Submitted?"":"table-hover") table-condensed table-bordered">
         <thead>
             <tr class="sheetline">
-                <th></th>
-                <th></th>
-                <th class="addbutton" colspan="4"></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th class="submitbutton" colspan="3"></th>
-                <th colspan="7"></th>
+                <th class="addbutton" colspan="4">
+                    @if (!Model.Submitted)
+                    {
+                        <button class="btn btn-success btn-mini pull-left" id="addline">
+                            <i class="icon-plus icon-white"></i> New Row
+                        </button>
+                    }
+                </th>
+                @Html.DisplayFor(m => m.Headers)
+                <th><i class="icon-sitemap"></i></th>
+                <th class="submitbutton" colspan="5">
+                    @if (Model.hours.Count() > 0 && !Model.Submitted)
+                    {
+                        using (Html.Bootstrap().Begin(new Form("Submit", "Home").Id("submitsheet").Type(FormType.Horizontal)))
+                        {
+                            @Html.Hidden("id", Model.employee.WorkerId)
+                            @Html.Hidden("week", Model.weekNumber)
+                            <button class="btn btn-danger btn-mini pull-right" id="submitsheetbtn">
+                                <i class="icon-power-off icon-white"></i> Submit
+                            </button>
+                        }
+                    }
+                </th>
             </tr>
             <tr id="sheetrow">
-                <th class="ovt" data-id="@Html.IdFor(m=>m.normal.WeekId)">ID</th>
-                <th class="ovt" data-id="@Html.IdFor(m=>m.normal.WeekNumber)">Week</th>
-                <th class="ovt" data-id="@Html.IdFor(m=>m.normal.IsOvertime)" title="Overtime"><i class="icon-time"></i></th>
+                <th title="Overtime"><i class="icon-time"></i></th>
                 <th>Description</th>
                 <th>Cust Acct</th>
                 <th>GL Acct</th>
-                <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Mon)">Mon</th>
-                <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Tue)">Tue</th>
-                <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Wed)">Wed</th>
-                <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Thu)">Thu</th>
-                <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Fri)">Fri</th>
-                <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Sat)">Sat</th>
-                <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.Sun)">Sun</th>
-                <th class="ovt day" data-id="@Html.IdFor(m=>m.normal.subTotal)">Total</th>
+                <th class="day">@Model.Stats[4]</th>
+                <th class="day">@Model.Stats[5]</th>
+                <th class="day">@Model.Stats[6]</th>
+                <th class="day">@Model.Stats[7]</th>
+                <th class="day">@Model.Stats[8]</th>
+                <th class="day">@Model.Stats[9]</th>
+                <th class="day">@Model.Stats[10]</th>
+                <th class="day">@Model.Stats[3]</th>
+                <th title="New Request"><i class="icon-asterisk"></i></th>
                 <th>Customer</th>
                 <th>WorkArea</th>
-                <th class="newrequest" data-id="@Html.IdFor(m=>m.normal.NewRequest)" title="New Request"><i class="icon-asterisk"></i></th>
                 <th>Partner</th>
                 <th>Site</th>
-                <th data-id="@Html.IdFor(m=>m.normal.DescriptionId)">DescriptionId</th>
-                <th data-id="@Html.IdFor(m=>m.normal.CustomerId)">CustomerId</th>
-                <th data-id="@Html.IdFor(m=>m.normal.InternalNumberId)">InternalNumberId</th>
-                <th data-id="@Html.IdFor(m=>m.normal.WorkAreaId)">WorkAreaId</th>
-                <th data-id="@Html.IdFor(m=>m.normal.PartnerId)">PartnerId</th>
-                <th data-id="@Html.IdFor(m=>m.normal.SiteId)">SiteId</th>
-                <th data-id="@Html.IdFor(m=>m.normal.PairId)">PairId</th>
-                <th></th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+            @Html.DisplayFor(m => m.hours)
+        </tbody>
     </table>
 </div>
 
+<div id="modal-target"></div>
 
-@using (var modal = Html.Bootstrap().Begin(new Modal().Id("weekline").Closeable().FadeOff()))
-{
-    using (modal.BeginHeader())
-    {
-        <h4 id="modaltitle">Add Hours</h4>
-    }
-
-    using (var form = Html.Bootstrap().Begin(new Form().Id("weeksheet").Type(FormType.Horizontal).LabelWidthLg(4)))
-    {
-        @Html.HiddenFor(m => m.employee.WorkerId)
-        @Html.HiddenFor(m => m.weekNumber)
-        @Html.HiddenFor(m => m.NewDescription)
-        @Html.HiddenFor(m => m.NewCustomer)
-        @Html.HiddenFor(m => m.NewRequest)
-
-        @Html.HiddenFor(m => m.normal.WeekId)
-        @Html.HiddenFor(m => m.normal.WeekNumber)
-        @Html.HiddenFor(m => m.normal.Year)
-        @Html.HiddenFor(m => m.normal.IsOvertime)
-
-        @Html.HiddenFor(m => m.overtime.WeekId)
-        @Html.HiddenFor(m => m.overtime.WeekNumber)
-        @Html.HiddenFor(m => m.overtime.Year)
-        @Html.HiddenFor(m => m.overtime.IsOvertime)
-
-        using (modal.BeginBody())
-        {
-            <div class="row">
-                <div class="col-lg-6">
-                    @form.FormGroup().DropDownListFor(m => m.normal.PartnerId, new SelectList(Model.Partners, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Partner")
-                    @form.FormGroup().DropDownListFor(m => m.normal.SiteId, new SelectList(Model.Sites, "Key", "Value")).Size(InputSize.Small).WidthLg(4).Label().LabelText("Site")
-                    @form.FormGroup().DropDownListFor(m => m.TimeTypeId, new SelectList(Model.Customers.Where(w => w.WorkerId == 0), "CustomerId", "CustomerName")).Size(InputSize.Small).Class("nondemand").Label().LabelText("Type")
-                    @form.FormGroup().DropDownListFor(m => m.normal.CustomerId, new SelectList(Model.Customers.Where(w => w.WorkerId != 0), "CustomerId", "CustomerName")).Size(InputSize.Small).Class("demand").Label().LabelText("Customer")
-                    @form.FormGroup().CheckBoxFor(m => m.normal.NewRequest).Class("demand")
-                </div>
-                <div class="col-lg-6">
-                    @form.FormGroup().DropDownListFor(m => m.normal.WorkAreaId, new SelectList(Model.WorkAreas, "Key", "Value")).Size(InputSize.Small).Label().LabelText("Work Area")
-                    @form.FormGroup().DropDownListFor(m => m.normal.CostCenterId, new SelectList(Model.Orders, "Key", "Value")).Class("demand").Size(InputSize.Small).Label().LabelText("Cost Center")
-                    @form.FormGroup().DropDownListFor(m => m.normal.InternalNumberId, new SelectList(Model.Accounts, "Key", "Value")).Class("demand").Size(InputSize.Small).Label().LabelText("Internal #")
-                    @form.FormGroup().TextBoxFor(m => m.normal.CapitalNumber).Size(InputSize.Small).Class("demand").Label().LabelText("Capital #")
-                </div>
-            </div>
-            <div class="row">
-                @form.FormGroup().DropDownListFor(m => m.normal.DescriptionId, new SelectList(Model.Descriptions, "Key", "Value")).Size(InputSize.Small).WidthLg(10).Label().WidthLg(2).LabelText("Description")
-            </div>
-            using (Html.Bootstrap().Begin(new Table().Condensed().Striped().Class("hourinput")))
-            {
-                <thead>
-                    <tr class="weekline">
-                        <th></th>
-                        <th>Mon</th>
-                        <th>Tue</th>
-                        <th>Wed</th>
-                        <th>Thu</th>
-                        <th>Fri</th>
-                        <th>Sat</th>
-                        <th>Sun</th>
-                        <th>Subtotal</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="hourline" id="normal">
-                        <td class="hrsum">Normal</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Mon).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Tue).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Wed).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Thu).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Fri).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Sat).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.normal.Sun).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td id="hrsnormal" class="hrsum"></td>
-                        <td class="hrwtotal"></td>
-                    </tr>
-                    <tr class="hourline" id="overtime">
-                        <td class="hrsum">Overtime</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Mon).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Tue).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Wed).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Thu).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Fri).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Sat).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.overtime.Sun).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td id="hrsovertime" class="hrsum"></td>
-                        <td class="hrowtotal"></td>
-                    </tr>
-                </tbody>
-            }
-            using (modal.BeginFooter())
-            {
-                @(form.FormGroup().CustomControls(
-                Html.Bootstrap().SubmitButton().Text("Delete").Id("deletehrs").Style(ButtonStyle.Danger),
-                Html.Bootstrap().SubmitButton().Text("Save").Id("savehrs").Style(ButtonStyle.Success).LoadingText("Working..."),
-                Html.Bootstrap().Button().Data(new { dismiss = "modal" }).Text("Cancel")))
-            }
-        }
-    }
-}
 @section scripts {
     <script type="text/javascript">
-        var week, sheet, $cust, $desc, $partner, locked, normPos, overPos;
-        var sunday = '@Model.sunday';
-        var empid = '@Model.employee.WorkerId';
-        var rowmap = [];
-        var pair = [];
+    var week, sheet, $cust, $desc, $partner, locked, normPos, overPos, atleast1;
+    var sunday = '@Model.sunday';
+    var empid = '@Model.employee.WorkerId';
+    var rowmap = [];
+    var pair = [];
 
-        /* For a given date, get the ISO week number
-         *
-         * Based on information at:
-         *
-         *    http://www.merlyn.demon.co.uk/weekcalc.htm#WNR
-         *
-         * Algorithm is to find nearest thursday, it's year
-         * is the year of the week number. Then get weeks
-         * between that date and the first day of that year.
-         *
-         * Note that dates in one year can be weeks of previous
-         * or next year, overlap is up to 3 days.
-         *
-         * e.g. 2014/12/29 is Monday in week  1 of 2015
-         *      2012/1/1   is Sunday in week 52 of 2011
-         */
-        function getWeekNumber(d) {
-            // Copy date so don't modify original
-            d = new Date(d);
-            d.setHours(0, 0, 0);
-            // Set to nearest Thursday: current date + 4 - current day number
-            // Make Sunday's day number 7
-            d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-            // Get first day of year
-            var yearStart = new Date(d.getFullYear(), 0, 1);
-            // Calculate full weeks to nearest Thursday
-            var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
-            // Return array of year and week number
-            return [d.getFullYear(), weekNo];
+    function switchUI() {
+        if ($partner.find('option:selected').html() == 'RDSS') {
+            $('.nondemand').parent().parent().css('display', 'block');
+            $('.demand').parent().parent().css('display', 'none');
         }
-
-        // following function code googled -- to allow updating datatable from original ajax
-        $.fn.dataTableExt.oApi.fnReloadAjax = function (oSettings, sNewSource, fnCallback, bStandingRedraw) {
-            if (typeof sNewSource != 'undefined' && sNewSource != null) {
-                oSettings.sAjaxSource = sNewSource;
-            }
-            this.oApi._fnProcessingDisplay(oSettings, true);
-            var that = this;
-            var iStart = oSettings._iDisplayStart;
-            var aData = [];
-
-            this.oApi._fnServerParams(oSettings, aData);
-
-            oSettings.fnServerData(oSettings.sAjaxSource, aData, function (json) {
-                /* Clear the old information from the table */
-                that.oApi._fnClearTable(oSettings);
-
-                /* Got the data - add it to the table */
-                var aData = (oSettings.sAjaxDataProp !== "") ?
-                    that.oApi._fnGetObjectDataFn(oSettings.sAjaxDataProp)(json) : json;
-
-                for (var i = 0 ; i < aData.length ; i++) {
-                    that.oApi._fnAddData(oSettings, aData[i]);
-                }
-
-                oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
-                that.fnDraw();
-
-                if (typeof bStandingRedraw != 'undefined' && bStandingRedraw === true) {
-                    oSettings._iDisplayStart = iStart;
-                    that.fnDraw(false);
-                }
-
-                that.oApi._fnProcessingDisplay(oSettings, false);
-
-                /* Callback user function - for event handlers etc */
-                if (typeof fnCallback == 'function' && fnCallback != null) {
-                    fnCallback(oSettings);
-                }
-            }, oSettings);
+        else {
+            $('.nondemand').parent().parent().css('display', 'none');
+            $('.demand').parent().parent().css('display', 'block');
         }
+    }
 
-        function getSheet() {
-            demand = 0;
-            nondemand = 0;
-            overtime = 0;
-            locked = '';
+    function getHours(hrs, mns) {
+        hrs += Math.floor(mns / 60);
+        mns %= 60;
+        return hrs + ":" + (mns < 10 ? "0" : "") + mns;
+    }
 
-            sheet = $('#week').dataTable({
-                "sDom": "t",
-                "bPaginate": false,
-                "oLanguage": {
-                    "sEmptyTable": "No projects yet.  Click row to add one."
-                },
-                "aoColumnDefs": [
-                      { "bVisible": false, "aTargets": [0] }
-                    , { "bVisible": false, "aTargets": [1] }
-                    //, { "bVisible": false, "aTargets": [2] }
-                    , { "bVisible": false, "aTargets": [19] }
-                    , { "bVisible": false, "aTargets": [20] }
-                    , { "bVisible": false, "aTargets": [21] }
-                    , { "bVisible": false, "aTargets": [22] }
-                    , { "bVisible": false, "aTargets": [23] }
-                    , { "bVisible": false, "aTargets": [24] }
-                    , { "bVisible": false, "aTargets": [25] }
-                    , { "bVisible": false, "aTargets": [26] }
-                    , { 'bSortable': false, 'aTargets': [6] }
-                    , { 'bSortable': false, 'aTargets': [7] }
-                    , { 'bSortable': false, 'aTargets': [8] }
-                    , { 'bSortable': false, 'aTargets': [9] }
-                    , { 'bSortable': false, 'aTargets': [10] }
-                    , { 'bSortable': false, 'aTargets': [11] }
-                    , { 'bSortable': false, 'aTargets': [12] }
-                ],
-                "sAjaxSource": '@Url.Content("~/")api/Hours/' + empid + '/' + week + '',
-                "fnRowCallback": function (nRow, aData, iDisplayIndex) {
-                    var title = aData[3];
-                    $('td:eq(1)', nRow).text(title.substr(0, 18));
-                    $('td:gt(3):lt(10)', nRow).addClass('hrcell');
-                    $(nRow).addClass('hourline');
-                    $(nRow).attr("title", title);
-                    $('td:eq(0)', nRow).html((aData[2] == 'True') ? '<i class="icon-time"></i>' : '');
-                    $('td:eq(14)', nRow).html((aData[16] == 'True') ? '<i class="icon-asterisk"></i>' : '');
-                    if (aData[25]) {
-                        console.log(aData[25], iDisplayIndex);
-                        pair[aData[25]] = iDisplayIndex;
-                    }
-                    locked = aData[26];
-                    return nRow;
-                },
-                "fnFooterCallback": function (nRow, aaData, iStart, iEnd, aiDisplay) {
-                    var overtime = 0;
-                    var demand = 0;
-                    var nondemand = 0;
+    function getMins(str) {
+        var part = str.split(":");
+        return parseInt(part[0]) * 60 + parseInt(part[1]);
+    }
 
-                    for (var i = 0 ; i < aaData.length ; i++) {
-                        if (aaData[i][2] == 'True')
-                            overtime += getMins(aaData[i][13]);
-                        else if (aaData[i][17] == 'RDSS')
-                            nondemand += getMins(aaData[i][13]);
-                        else
-                            demand += getMins(aaData[i][13]);
-                    }
-                    //console.log(aaData.length);
-                    //locked = (aaData[0][26] == 'True');
-                    $('#timeo').text(getHours(0, overtime));
-                    $('#timed').text(getHours(0, demand));
-                    $('#timen').text(getHours(0, nondemand));
-                    $('#timet').text(getHours(0, overtime + demand + nondemand));
-                },
-                "fnDrawCallback": function () {
-                    if (locked == '') {
-                        console.log('addbutton');
-                        $('th.addbutton').html('<button class="btn btn-success btn-mini pull-left" id="addline"><i class="icon-plus icon-white"></i> New Row</button>');
-                        $('th.submitbutton').html('<button class="btn btn-danger btn-mini pull-right" id="submitsheet"><i class="icon-power-off icon-white"></i> Submit</button>');
-                    }
-                    else {
-                        $('button', 'tr.sheetline').hide();
-                        $('th.submitbutton').html('<i class="icon-lock"></i> <small>' + locked + '</small>');
-                        $('#week').removeClass('table-hover');
-                        $('#week tbody').off('click', 'tr');
-                    }
-                }
-            });
-        }
+    function newWeek(next) {
+        var days = next ? 7 : -7;
+        var newSunday = new Date(sunday);
+        newSunday.setDate(newSunday.getDate() + days);
+        sunday = $.datepicker.formatDate('mm/dd/yy', newSunday);
+        $('#periodEnding').val(sunday);
+        week = $.datepicker.iso8601Week(newSunday);
+        var url = '@Url.Action("Index", "Home", new { id = -1 })';
+        console.log(url.replace('-1', week));
+        location.href = url.replace('-1', week);
+    }
 
-        function switchUI() {
-            $('#@Html.IdFor(m=>m.weekNumber)').val(week);
-            if ($partner.find('option:selected').html() == 'RDSS') {
-                $('.nondemand').parent().parent().css('display', 'block');
-                $('.demand').parent().parent().css('display', 'none');
+    function resumLine(line) {
+        var hrs = 0;
+        var mns = 0;
+        $('input[id^="' + line + '"]', 'tr.hourline').each(function () {
+            hrs += Number($(this).val().substr(0, 2));
+            mns += Number($(this).val().substr(3, 2));
+        });
+        $('#hrs' + line, 'tr.hourline').html(getHours(hrs, mns));
+    }
+
+    function sumhours(line) {
+        var hrs = 0;
+        var mns = 0;
+        $('*[id]:not(hrsum)', line).each(function () {
+            hrs += Number($(this).val().substr(0, 2));
+            mns += Number($(this).val().substr(3, 2));
+        });
+        $('td.hrsum[id^="hrs"]', line).html(getHours(hrs, mns));
+    }
+    function clrhours() {
+        $('[name=options]', $desc).val('');
+        $('[name=options]', $cust).val('');
+        //$desc.data('combobox').refresh();
+        //$cust.data('combobox').refresh();
+        $('#modaltitle').html('Add Hours');
+        $('input', 'tr.hourline').val('');
+        $('select option[value="0"]').attr('selected', true);
+        $('td.hrsum[id^="hrs"]', 'tr.hourline').html('');
+    }
+    function popuploaded() {
+        $('#weekline').modal('show');
+        $('tr.hourline input').on('blur', function () {
+            var newt = $(this).val().replace(/_/g, '0').split(':');
+            var newhr = ($(this).val().charAt(1) == '_' && $(this).val().charAt(0) != '_') ? Number(newt[0].charAt(0)) : Number(newt[0]);
+            var g = getHours(newhr, Number(newt[1]));
+            g = g.length < 5 ? '0' + g : g;
+            $(this).val(g);
+        });
+        $('input[id^="normal"]', 'tr.hourline').on('change', function (e) {
+            resumLine("normal");
+        });
+        $('input[id^="overtime"]', 'tr.hourline').on('change', function (e) {
+            resumLine("overtime");
+        });
+        $('#@Html.IdFor(m=>m.normal.PartnerId)').on('change', function () {
+            switchUI();
+        });
+        $('#savehrs').on('click', function (e) {
+            var $box = $('#@Html.IdFor(m=>m.normal.NewRequest)');
+            $('#@Html.IdFor(m=>m.NewRequest)').val($box.prop('checked'));
+            $('#weekline').modal('hide');
+        });
+        $('#deletehrs').on('click', function (e) {
+            var normal = parseInt($('#@Html.IdFor(m=>m.normal.WeekId)').val());
+            var overtime = parseInt($('#@Html.IdFor(m=>m.overtime.WeekId)').val());
+            if (normal > overtime) {
+                delWeek(normal, normPos);
+                delWeek(overtime, overPos);
             }
             else {
-                $('.nondemand').parent().parent().css('display', 'none');
-                $('.demand').parent().parent().css('display', 'block');
-            }
-        }
-
-        function getHours(hrs, mns) {
-            hrs += Math.floor(mns / 60);
-            mns %= 60;
-            return hrs + ":" + (mns < 10 ? "0" : "") + mns;
-        }
-
-        function getMins(str) {
-            var part = str.split(":");
-            return parseInt(part[0]) * 60 + parseInt(part[1]);
-        }
-
-        function modaldows() {
-            var weekday = new Date(sunday);
-            weekday.setDate(weekday.getDate() - 6);
-            $('th[id^=date]', 'tr.weekline').each(function () {
-                $(this).html($.datepicker.formatDate('D m/d', weekday));
-                $(this).wrapInner("<small></small>");
-                weekday.setDate(weekday.getDate() + 1);
-            });
-        }
-
-        function sheetdows() {
-            var weekday = new Date(sunday);
-            weekday.setDate(weekday.getDate() - 6);
-
-            $('th:gt(0):lt(7)', 'tr.sheetline').each(function (i) {
-                $(this).html($.datepicker.formatDate((i == 0 || i == 6) ? 'm/d' : 'd', weekday));
-                $(this).wrapInner("<small></small>");
-                weekday.setDate(weekday.getDate() + 1);
-            });
-        }
-
-        function newWeek(next) {
-            var days = next ? 7 : -7;
-            var newSunday = new Date(sunday);
-            newSunday.setDate(newSunday.getDate() + days);
-            sunday = $.datepicker.formatDate('mm/dd/yy', newSunday);
-            $('#periodEnding').val(sunday);
-            week = $.datepicker.iso8601Week(newSunday);
-            $('#weeknumber').html(week);
-            demand = 0;
-            nondemand = 0;
-            overtime = 0;
-            locked = '';
-            sheetdows();
-            sheet.fnReloadAjax('@Url.Content("~/")api/Hours/' + empid + '/' + week + '');
-        }
-
-        function resumLine(line) {
-            var hrs = 0;
-            var mns = 0;
-            $('input[id^="' + line + '"]', 'tr.hourline').each(function () {
-                hrs += Number($(this).val().substr(0, 2));
-                mns += Number($(this).val().substr(3, 2));
-            });
-            $('#hrs' + line, 'tr.hourline').html(getHours(hrs, mns));
-        }
-
-        function sumhours(line) {
-            var hrs = 0;
-            var mns = 0;
-            $('*[id]:not(hrsum)', line).each(function () {
-                hrs += Number($(this).val().substr(0, 2));
-                mns += Number($(this).val().substr(3, 2));
-            });
-            $('td.hrsum[id^="hrs"]', line).html(getHours(hrs, mns));
-        }
-        function clrhours() {
-            $('[name=options]', $desc).val('');
-            $('[name=options]', $cust).val('');
-            $desc.data('combobox').refresh();
-            $cust.data('combobox').refresh();
-            $('#modaltitle').html('Add Hours');
-            $('input', 'tr.hourline').val('');
-            $('select option[value="0"]').attr('selected', true);
-            $('td.hrsum[id^="hrs"]', 'tr.hourline').html('');
-        }
-
-        function delWeek(id, row) {
-            if (!id || id <= 0)
-                return;
-
-            var status = $.ajax({
-                type: "DELETE",
-                url: '@Url.Content("~/")api/Hours/' + id,
-                contenttype: "application/json",
-                traditional: true,
-                success: function (result) {
-                    sheet.fnDeleteRow(row);
-                },
-                error: function () {
-                    //AT.communication.addMessage("error", "Sorry! Unable to save your comment. Someone has been alerted. Please try again later.");
-                }
-            });
-        }
-
-        // Page loaded document ready
-        $(function () {
-            rowmap = $('th', '#sheetrow');
-
-            $partner = $('#@Html.IdFor(m=>m.normal.PartnerId)');
-            $cust = $('#@Html.IdFor(m => m.normal.CustomerId)', '#weeksheet');
-            $desc = $('#@Html.IdFor(m => m.normal.DescriptionId)', '#weeksheet');
-            $desc.combobox({ freeform: '#@Html.IdFor(m => m.NewDescription)', selected: true });
-            $cust.combobox({ freeform: '#@Html.IdFor(m => m.NewCustomer)', selected: true });
-
-            $('.datepicker').datepicker({
-                beforeShowDay: function (date) { return [date.getDay() == 0, ""] }
-                , firstDay: 1
-            });
-            $('.datepicker').on('change', function (e) {
-                var test = new Date(e.target.value);
-                if (test.getDay() != 0) {
-                    test.setDate(test.getDate() + 7 - test.getDay());
-                    e.target.value = $.datepicker.formatDate('mm/dd/yy', test);
-                }
-            });
-            $('tr.sheetline').on('click', 'button#addline', function (e) {
-                clrhours();
-                $('#weekline').modal('show');
-                switchUI();
-                return;
-            });
-
-            $('tr.sheetline').on('click', 'button#submitsheet', function (e) {
-                var status = $.ajax({
-                    type: "PUT",
-                    url: '@Url.Content("~/")api/Hours/' + empid + '/' + week + '',
-                    contenttype: "application/json",
-                    traditional: true,
-                    success: function (result) {
-                        $('button', 'tr.sheetline').hide();
-                        $('#week').removeClass('table-hover');
-                        $('#week tbody').off('click', 'tr');
-                    },
-                    error: function () {
-                        //AT.communication.addMessage("error", "Sorry! Unable to save your comment. Someone has been alerted. Please try again later.");
-                    }
-                });
-            });
-            $('#priorsheet').on('click', function (e) {
-                e.preventDefault();
-                newWeek(false);
-            });
-            $('#nextsheet').on('click', function (e) {
-                e.preventDefault();
-                newWeek(true);
-            });
-            week = @(Model.weekNumber)+0;
-            $('#periodEnding').val('@Model.sunday');
-            $('tr.hourline input').on('blur', function () {
-                var newt = $(this).val().replace(/_/g, '0').split(':');
-                var newhr = ($(this).val().charAt(1) == '_' && $(this).val().charAt(0) != '_') ? Number(newt[0].charAt(0)) : Number(newt[0]);
-                var g = getHours(newhr, Number(newt[1]));
-                g = g.length < 5 ? '0' + g : g;
-                $(this).val(g);
-            });
-            $('input[id^="normal"]', 'tr.hourline').on('change', function (e) {
-                resumLine("normal");
-            });
-            $('input[id^="overtime"]', 'tr.hourline').on('change', function (e) {
-                resumLine("overtime");
-            });
-            $partner.on('change', function () {
-                switchUI();
-            });
-            $('#savehrs').on('click', function (e) {
-                var $box = $('#@Html.IdFor(m=>m.normal.NewRequest)');
-                $('#@Html.IdFor(m=>m.NewRequest)').val($box.prop('checked'));
-                var hours = $('#weeksheet').serialize();
-                var status = $.ajax({
-                    type: "POST",
-                    url: '@Url.Content("~/")api/Hours',
-                    data: hours,
-                    contenttype: "application/json",
-                    traditional: true,
-                    success: function (result) {
-                        //console.log(result);
-                        //var aData = [];
-                        //rowmap.each(function (index) {
-                        //    var id = $(this).data('id');
-                        //    if (typeof id != 'undefined') {
-                        //        aData[index] = $('#' + id, '#weekline').val();
-                        //    }
-                        //});
-                        //aData[0] = result[0];
-                        //aData[26] = result[1];
-                        //if (normPos < 0)
-                        //    sheet.fnAddData(aData);
-                        //else
-                        //    sheet.fnUpdate(aData, normPos);
-
-                        //if (aData[25]) {
-                        //    overPos = pair[aData[0]];
-                        //    aData = sheet.fnGetData(overPos);
-                        //    newrequest |= (aData[16] == 'True');
-
-                        //    rowmap.each(function (index) {
-                        //        var id = $(this).data('id');
-                        //        if (typeof id != 'undefined' && $(this).hasClass('ovt')) {
-                        //            var d = aData[index];
-                        //            if ($(this).hasClass('day') && d && d.length == 4)
-                        //                d = '0' + d;
-                        //            $('#' + id.replace('normal', 'overtime'), '#weekline').val(d);
-                        //        }
-                        //    });
-                        //}
-                    },
-                    error: function () {
-                        //AT.communication.addMessage("error", "Sorry! Unable to save your comment. Someone has been alerted. Please try again later.");
-                    }
-                });
-                //e.preventDefault();
-                $('#weekline').modal('hide');
-            });
-            $('#deletehrs').on('click', function (e) {
-                var normal = parseInt($('#@Html.IdFor(m=>m.normal.WeekId)').val());
-                var overtime = parseInt($('#@Html.IdFor(m=>m.overtime.WeekId)').val());
-                if (normal > overtime) {
-                    delWeek(normal, normPos);
-                    delWeek(overtime, overPos);
-                }
-                else {
-                    delWeek(overtime, overPos);
-                    delWeek(normal, normPos);
-                }
-                //e.preventDefault();
-                $('#weekline').modal('hide');
-            });
-            getSheet();
-            sheetdows();
-
-            if (locked) {
-                $('table#week').removeClass('table-hover');
-            }
-            else {
-                $('table#week').addClass('table-hover');
-
-                $('#week tbody').on('click', 'tr', function () {
-                    normPos = -1;
-                    overPos = -1;
-                    
-                    modaldows();
-                    var aPos = sheet.fnGetPosition(this);
-                    console.log("clicked on: " + aPos);
-                    if (aPos == null) {
-                        clrhours();
-                        $('#weekline').modal('show');
-                        return;
-                    }
-                    var aData = sheet.fnGetData(aPos);
-                    normPos = aPos;
-                    if (aData[2] == 'True') {                    // clicked on overtime record
-                        normPos = pair[aData[0]];
-                        aData = sheet.fnGetData(normPos);        // start with normal record
-                    }
-                    var newrequest = (aData[16] == 'True');
-
-                    rowmap.each(function (index) {
-                        var id = $(this).data('id');
-                        if (typeof id != 'undefined') {
-                            var d = aData[index];
-                            if ($(this).hasClass('day') && d && d.length == 4)
-                                d = "0" + d;
-                            $('#' + id, '#weekline').val(d);
-                        }
-                    });
-                    if (aData[25] && aData[25] > 0) {
-                        console.log('getting overtime ' + aData[25]);
-                        overPos = pair[aData[0]];
-                        aData = sheet.fnGetData(overPos);
-                        newrequest |= (aData[16] == 'True');
-
-                        rowmap.each(function (index) {
-                            var id = $(this).data('id');
-                            if (typeof id != 'undefined' && $(this).hasClass('ovt')) {
-                                var d = aData[index];
-                                if ($(this).hasClass('day') && d && d.length == 4)
-                                    d = '0' + d;
-                                $('#' + id.replace('normal', 'overtime'), '#weekline').val(d);
-                            }
-                        });
-                    }
-                    var $box = $('#@Html.IdFor(m=>m.normal.NewRequest)');
-                    $box.prop('checked', newrequest);
-                    var name = $box.attr('name');
-                    $('input[name="' + name + '"]', '#weekline').val(newrequest);
-
-                    $desc.data('combobox').refresh();
-                    $cust.data('combobox').refresh();
-                    sumhours('#normal');
-                    sumhours('#overtime');
-                    $('#modaltitle').html('Edit Hours');
-                    $('#weekline').modal('show');
-                    switchUI();
-                });
+                delWeek(overtime, overPos);
+                delWeek(normal, normPos);
             }
         });
-    </script>
+    }
+    // Page loaded document ready
+    $(function () {
+        $('.datepicker').datepicker({
+            beforeShowDay: function (date) { return [date.getDay() == 0, ""] }
+            , firstDay: 1
+        });
+        $('.datepicker').on('change', function (e) {
+            var test = new Date(e.target.value);
+            if (test.getDay() != 0) {
+                test.setDate(test.getDate() + 7 - test.getDay());
+                e.target.value = $.datepicker.formatDate('mm/dd/yy', test);
+            }
+        });
+        $('tr.sheetline').on('click', 'button#addline', function (e) {
+            $('#modal-target').load('@Url.Action("Create","Home")');
+        });
+
+        $('#priorsheet').on('click', function (e) {
+            e.preventDefault();
+            newWeek(false);
+        });
+        $('#nextsheet').on('click', function (e) {
+            e.preventDefault();
+            newWeek(true);
+        });
+
+        week = @(Model.weekNumber) +0;
+
+        $('#periodEnding').val('@Model.sunday');
+
+        @if (!Model.Submitted) {
+                <text>
+        $('#week tbody').on('click', 'tr', function () {
+            var id = $(this).data('id');
+            var pairid = $(this).data('pairid');
+            $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
+                $('#modal-target').replaceWith(data);
+                popuploaded();
+            });
+        });
+        </text>
+            }
+    });
+</script>
 }

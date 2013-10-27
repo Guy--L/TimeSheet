@@ -1,0 +1,9 @@
+﻿@model DateTime
+@{
+    var tmpl = (Model.DayOfWeek == DayOfWeek.Monday || Model.DayOfWeek == DayOfWeek.Sunday) ? "ddd<br />M/d" : "ddd<br />d";
+}
+<th class="day">
+    <small>
+    @Html.Raw(Model.ToString(tmpl))
+    </small>
+</th>

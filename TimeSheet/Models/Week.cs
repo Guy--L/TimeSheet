@@ -8,6 +8,60 @@ namespace TimeSheet.Models
 {
     public partial class Week
     {
+        public static List<CostCenter> costCenters;
+        public static List<InternalNumber> internalNumbers;
+        public static List<WorkArea> workAreas;
+        public static List<Customer> customers;
+        public static List<Description> descriptions;
+        public static List<Site> sites;
+        public static List<Partner> partners;
+
+        public static int NonDemand;
+
+        public static string[] Stats(List<Week> hrs)
+        {
+            decimal dem = 0, non = 0, ovt = 0;
+            decimal? mon = 0, tue = 0, wed = 0, thu = 0, fri = 0, sat = 0, sun = 0;
+
+            foreach(var w in hrs)
+            {
+                mon += w.Monday;
+                tue += w.Tuesday;
+                wed += w.Wednesday;
+                thu += w.Thursday;
+                fri += w.Friday;
+                sat += w.Saturday;
+                sun += w.Sunday;
+
+                if (w.IsOvertime)
+                    ovt += w.subTotal;
+                else if (w.PartnerId == NonDemand)
+                    non += w.subTotal;
+                else
+                    dem += w.subTotal;
+            }
+            return new string[11] { time2str(dem)
+                                   , time2str(non)
+                                   , time2str(ovt)
+                                   , time2str(dem+non+ovt)
+                                   ,time2str(mon)
+                                   ,time2str(tue)
+                                   ,time2str(wed)
+                                   ,time2str(thu)
+                                   ,time2str(fri)
+                                   ,time2str(sat)
+                                   ,time2str(sun)
+            }; 
+        }
+
+        public string CostCenter        { get { return costCenters.FirstOrDefault(i => i.CostCenterId == CostCenterId)._CostCenter; } }
+        public string InternalNumber    { get { return internalNumbers.FirstOrDefault(i => i.InternalNumberId == InternalNumberId).InternalOrder; } }
+        public string WorkArea          { get { return workAreas.FirstOrDefault(i => i.WorkAreaId == WorkAreaId)._WorkArea; } }
+        public string Customer          { get { return customers.FirstOrDefault(i => i.CustomerId == CustomerId).CustomerName; } }
+        public string Description       { get { return descriptions.FirstOrDefault(i => i.DescriptionId == DescriptionId)._Description; } }
+        public string Site              { get { return sites.FirstOrDefault(i => i.SiteId == SiteId).SiteName; } }
+        public string Partner           { get { return partners.FirstOrDefault(i => i.PartnerId == PartnerId)._Partner; } }
+
         public string Mon { get { return time2str(Monday); } set { Monday = time2dec(value); } }
         public string Tue { get { return time2str(Tuesday); } set { Tuesday = time2dec(value); } }
         public string Wed { get { return time2str(Wednesday); } set { Wednesday = time2dec(value); } }
@@ -15,26 +69,26 @@ namespace TimeSheet.Models
         public string Fri { get { return time2str(Friday); } set { Friday = time2dec(value); } }
         public string Sat { get { return time2str(Saturday); } set { Saturday = time2dec(value); } }
         public string Sun { get { return time2str(Sunday); } set { Sunday = time2dec(value); } }
-        [Column] public int PairId { get; set; }
+
+        [Column] public int? PairId { get; set; }
 
         public static string lst_week = @"
             select b.WeekId PairId, a.* from week a
                 left join week b 
-                     on a.CapitalNumber = b.CapitalNumber 
-	                and a.CostCenterId = b.CostCenterId
-	                and a.CustomerId = b.CustomerId
-	                and a.DescriptionId = b.DescriptionId
-	                and a.InternalNumberId = b.InternalNumberId
-	                and a.PartnerId = b.PartnerId
-	                and a.SiteId = b.SiteId
-	                and a.WorkAreaId = b.WorkAreaId
-	                and a.NewRequest = b.NewRequest
-	                and a.IsOverTime != b.IsOvertime
+                    on a.CapitalNumber = b.CapitalNumber 
+                    and a.CostCenterId = b.CostCenterId
+                    and a.CustomerId = b.CustomerId
+                    and a.DescriptionId = b.DescriptionId
+                    and a.InternalNumberId = b.InternalNumberId
+                    and a.PartnerId = b.PartnerId
+                    and a.SiteId = b.SiteId
+                    and a.WorkAreaId = b.WorkAreaId
+                    and a.NewRequest = b.NewRequest
+                    and a.IsOverTime != b.IsOvertime
                     and a.workerid = b.workerid
                     and a.weeknumber = b.weeknumber
                     and a.year = b.year
-                 where a.workerid = '{0}' and a.weeknumber = '{1}' 
-        ";
+                 where a.workerid = {0} and a.weeknumber = {1} ";
 
         private static string del_week = @" delete from week where weekid = {0} ";
 
@@ -45,7 +99,7 @@ namespace TimeSheet.Models
 
         private static string time2str(decimal? hours)
         {
-            if (!hours.HasValue)
+            if (!hours.HasValue || hours.Value == 0)
                 return "";
             TimeSpan ts = TimeSpan.FromHours(Decimal.ToDouble(hours.Value));
             return string.Format("{0}:{1:00}", (int) ts.TotalHours, ts.Minutes);
@@ -77,19 +131,21 @@ namespace TimeSheet.Models
             }
         }
 
+        public string SubTotal { get { return time2str(subTotal); } }
+
         public string[] serializeDT()
         {
             var tot = subTotal;
-            var description = Sheet.descriptions[DescriptionId];
-            var intern = InternalNumberId.HasValue?Sheet.accounts[InternalNumberId.Value]:CapitalNumber;
-            var costctr = CostCenterId.HasValue?Sheet.orders[CostCenterId.Value]:"";
-            var customer = (CustomerId.HasValue&&CustomerId.Value>0)?Sheet.customers.First(v=>v.CustomerId == CustomerId.Value).CustomerName:"";
-            var workarea = WorkAreaId.HasValue?Sheet.workAreas[WorkAreaId.Value]:"";
-            var partner = PartnerId.HasValue?Sheet.partners[PartnerId.Value]:"";
-            var site = SiteId.HasValue?Sheet.sites[SiteId.Value]:"";
+            var description = Week.descriptions[DescriptionId]._Description;
+            var intern = InternalNumberId.HasValue ? Week.internalNumbers[InternalNumberId.Value].InternalOrder : CapitalNumber;
+            var costctr = CostCenterId.HasValue ? Week.costCenters[CostCenterId.Value]._CostCenter : "";
+            var customer = (CustomerId.HasValue && CustomerId.Value > 0) ? Week.customers.First(v => v.CustomerId == CustomerId.Value).CustomerName : "";
+            var workarea = WorkAreaId.HasValue ? Week.workAreas[WorkAreaId.Value]._WorkArea : "";
+            var partner = PartnerId.HasValue ? Week.partners[PartnerId.Value]._Partner : "";
+            var site = SiteId.HasValue ? Week.sites[SiteId.Value]._Site : "";
             var submitted = Submitted.HasValue ?Submitted.Value.ToString("MM/dd hh:mm"):"";
 
-            return new string[27] {
+            return new string[26] {
                  WeekId.ToString()
                 ,WeekNumber.ToString()
                 ,IsOvertime.ToString()
@@ -115,7 +171,6 @@ namespace TimeSheet.Models
                 ,WorkAreaId.ToString()
                 ,PartnerId.ToString()
                 ,SiteId.ToString()
-                ,PairId.ToString()                  // 25
                 ,submitted.ToString()
             };
         }
@@ -273,8 +328,7 @@ namespace TimeSheet.Models
                        ,{18} --<InternalNumberId, int,>
                        ,{19} --<CostCenterId, int,>
                        ,'{20}' --<CapitalNumber, nvarchar(50),>
-                       ,{21}) --<CustomerId, int,> 
-            select scope_identity() ";
+                       ,{21}) --<CustomerId, int,>  ";
 
         private static string lock_week = @"
             update [week] set [submitted] = cast('{0}' as datetime)
@@ -310,7 +364,8 @@ namespace TimeSheet.Models
                        ,[CostCenterId]       = {20}
                        ,[CapitalNumber]      = '{21}'
                        ,[CustomerId]         = {22}
-             WHERE WeekId = {0}
-          select {0} ";
+             WHERE WeekId = {0} ";
+
+        public static string get_hours = @" select * from week where weekid = {0} or weekid = {1} ";
     }
 }
