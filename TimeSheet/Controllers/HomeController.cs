@@ -139,19 +139,64 @@ namespace TimeSheet.Controllers
             return RedirectToAction("Index", new { id = id2 });
         }
 
+        [HttpPost]
+        public ActionResult Save(Hrs hours)
+        {
+            tsDB _db = new tsDB();
+
+            if (!string.IsNullOrWhiteSpace(hours.DescriptionAdd))
+            {
+                hours.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(hours.WorkerId, hours.DescriptionAdd));
+            }
+            if (!string.IsNullOrWhiteSpace(hours.CustomerAdd))
+            {
+                hours.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(hours.WorkerId, hours.CustomerAdd));
+            }
+
+            dbExec(hours.Save());
+            return RedirectToAction("Index", new { id = hours.WeekNumber });
+        }
+
+        [HttpGet]
         public ActionResult Edit(int id, int id2)
         {
-            var workerid = Session["WorkerId"] as int?;
-            if (!workerid.HasValue)
-                throw new Exception("No workerid when creating blank hours from description");
-
-            Hrs hrs = new Hrs(workerid.Value);
             try
             {
+                var workerid = Session["WorkerId"] as int?;
+                if (!workerid.HasValue)
+                    throw new Exception("No workerid when creating blank hours from description");
+
+                Hrs hrs = new Hrs();
                 tsDB db = new tsDB();
                 var sheet = db.Fetch<Week>(string.Format(Week.get_hours, id, id2));
-                hrs.normal = sheet.Where(a => !a.IsOvertime).SingleOrDefault();
-                hrs.overtime = sheet.Where(a => a.IsOvertime).SingleOrDefault();
+                Week normal = sheet.Where(a => !a.IsOvertime).SingleOrDefault();
+                Week overtime = sheet.Where(a => a.IsOvertime).SingleOrDefault();
+
+                hrs.WorkerId = workerid.Value;
+                hrs.CopyHeader(normal??overtime);
+                
+                if (normal != null)
+                {
+                    hrs.WeekId = normal.WeekId;
+                    hrs.nMon = normal.Mon;
+                    hrs.nTue = normal.Tue;
+                    hrs.nWed = normal.Wed;
+                    hrs.nThu = normal.Thu;
+                    hrs.nFri = normal.Fri;
+                    hrs.nSat = normal.Sat;
+                    hrs.nSun = normal.Sun;
+                }
+                if (overtime != null)
+                {
+                    hrs.oWeekId = overtime.WeekId;
+                    hrs.oMon = overtime.Mon;
+                    hrs.oTue = overtime.Tue;
+                    hrs.oWed = overtime.Wed;
+                    hrs.oThu = overtime.Thu;
+                    hrs.oFri = overtime.Fri;
+                    hrs.oSat = overtime.Sat;
+                    hrs.oSun = overtime.Sun;
+                }
 
                 return PartialView("_Hours", hrs);
             }
@@ -162,24 +207,38 @@ namespace TimeSheet.Controllers
             }
         }
 
-        public ActionResult Create(int? id)
+        [HttpGet]
+        public ActionResult Create(int id)
         {
             var workerid = Session["WorkerId"] as int?;
-            if (!workerid.HasValue)
-                throw new Exception("No workerid when creating blank hours from description");
-
-            Hrs hrs = new Hrs(workerid.Value);
-
-            id = id ?? 0;
-            if (id == 0)
-                return PartialView("_Hours", hrs);
 
             try
             {
+                if (!workerid.HasValue)
+                    throw new Exception("No workerid when creating blank hours from description");
+
+                var weekno = Session["CurrentWeek"] as int?;
+                if (!weekno.HasValue)
+                    throw new Exception("No week in Home.Create");
+
+                var year = Session["CurrentYear"] as int?;
+                if (!year.HasValue)
+                    throw new Exception("No year in Home.Create");
+
+                Hrs hrs = new Hrs();
+                hrs.WorkerId = workerid.Value;
+                hrs.WeekNumber = weekno.Value;
+                hrs.Year = year.Value;
+
+                if (id == 0)
+                    return PartialView("_Hours", hrs);
+
                 tsDB db = new tsDB();
                 
-                var prior = db.Fetch<Week>(string.Format(Week.get_prior, workerid, id)).SingleOrDefault();
-                hrs.normal.CopyHeader(prior);                   
+                var prior = db.Fetch<Week>(string.Format(Week.get_prior, workerid.Value, id)).SingleOrDefault();
+                
+                hrs.CopyHeader(prior);
+                if (prior == null) hrs.DescriptionId = id;
                 return PartialView("_Hours", hrs);
             }
             catch (Exception e)
@@ -187,6 +246,13 @@ namespace TimeSheet.Controllers
                 Elmah.ErrorSignal.FromCurrentContext().Raise(e);
                 return null;
             }
+        }
+
+        [HttpGet]
+        public ActionResult Delete(int id, int id2)
+        {
+            dbExec(Week.Delete(id) + Week.Delete(id2));
+            return RedirectToAction("Index", new { id = Session["CurrentWeek"] });
         }
 
         [HttpPost]

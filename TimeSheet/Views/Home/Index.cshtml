@@ -114,7 +114,7 @@
                 <th class="day">@Model.Stats[8]</th>
                 <th class="day">@Model.Stats[9]</th>
                 <th class="day">@Model.Stats[10]</th>
-                <th class="day">@Model.Stats[3]</th>
+                <th class="day subt">@Model.Stats[3]</th>
                 <th title="New Request"><i class="icon-asterisk"></i></th>
                 <th>Customer</th>
                 <th>WorkArea</th>
@@ -138,7 +138,7 @@
     var empid = '@Model.employee.WorkerId';
 
     function switchUI() {
-        if ($('#@Html.IdFor(m=>m.normal.PartnerId)').find('option:selected').html() == 'RDSS') {
+        if ($('#PartnerId').find('option:selected').html() == 'RDSS') {
             $('.nondemand').parent().parent().css('display', 'block');
             $('.demand').parent().parent().css('display', 'none');
         }
@@ -202,10 +202,12 @@
     function popuploaded() {
         $cust = $('#CustomerId', '#weeksheet');
         $desc = $('#DescriptionId', '#weeksheet');
-        $code = $('#InternalNumber', '#weeksheet');
+        $code = $('#InternalNumberId', '#weeksheet');
         $desc.combobox({ freeform: '#DescriptionAdd', selected: true });
         $cust.combobox({ freeform: '#CustomerAdd', selected: true });
         $code.combobox({ freeform: '#InternalNumberAdd', selected: true });
+
+        switchUI();
 
         $('#weekline').modal('show');
         $('tr.hourline input').on('blur', function () {
@@ -216,46 +218,23 @@
             g = g.length < 5 ? '0' + g : g;
             $(this).val(g);
         });
-        $('input[id^="normal"]', 'tr.hourline').on('change', function (e) {
-            resumLine("normal");
+        $('input[id^="n"]', 'tr.hourline').on('change', function (e) {
+            resumLine("n");
         });
-        $('input[id^="overtime"]', 'tr.hourline').on('change', function (e) {
-            resumLine("overtime");
+        $('input[id^="o"]', 'tr.hourline').on('change', function (e) {
+            resumLine("o");
         });
         $('#PartnerId').on('change', function () {
             switchUI();
         });
         $('#savehrs').on('click', function (e) {
-            $box = $('#normal_NewRequest');
-            $('#OrderAdd').val($box.prop('checked'));
-            var status = $.ajax({
-                type: "POST",
-                url: '@Url.Content("~/")api/Hours/',
-                data: $('#weeksheet').serialize(),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                traditional: true,
-                success: function (result) {
-                    var url = '@Url.Action("Index", "Home", new { id = -1 })';
-                    location.href = url.replace('-1', week);
-                },
-                error: function () {
-                    //AT.communication.addMessage("error", "Sorry! Unable to save your comment. Someone has been alerted. Please try again later.");
-                }
-            });
-            e.preventDefault();
+            $('#weekline').modal('hide');
         });
         $('#deletehrs').on('click', function (e) {
-            var normal = parseInt($('#normal_WeekId)').val());
-            var overtime = parseInt($('#overtime_WeekId)').val());
-            if (normal > overtime) {
-                delWeek(normal, normPos);
-                delWeek(overtime, overPos);
-            }
-            else {
-                delWeek(overtime, overPos);
-                delWeek(normal, normPos);
-            }
+            var normal = parseInt($('#WeekId').val());
+            var overtime = parseInt($('#oWeekId').val());
+            $('#weekline').modal('hide');
+            href.location = '@Url.Action("Delete", "Home", null, Request.Url.Scheme)/' + normal + '/' + overtime;
         });
     }
     // Page loaded document ready
@@ -271,10 +250,6 @@
                 e.target.value = $.datepicker.formatDate('mm/dd/yy', test);
             }
         });
-        $('tr.sheetline').on('click', 'button#addline', function (e) {
-            $('#weekline').load('@Url.Action("Create","Home")');
-        });
-
         $('#priorsheet').on('click', function (e) {
             e.preventDefault();
             newWeek(false);
@@ -290,23 +265,26 @@
 
         @if (!Model.Submitted) {
             <text>
-            $('#addline').on('click', function () {
-                $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)', function (data) {
-                    $('#weekline').replaceWith(data);
-                    popuploaded();
-                });
+        $('#addline').on('click', function () {
+            $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
+                $('#weekline').replaceWith(data);
+                popuploaded();
             });
-            $('#week tbody').on('click', 'tr.hoursrow', function () {
-                var id = $(this).data('id');
-                var pairid = $(this).data('pairid');
-                $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
-                    $('#weekline').replaceWith(data);
-                    popuploaded();
-                });
+        });
+        $('#week tbody').on('click', 'tr.hoursrow', function () {
+            var id = $(this).data('id');
+            var pairid = $(this).data('pairid');
+            id = (id!='') ? id : 0;
+            pairid = (pairid!='') ? pairid : 0;
+
+            $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
+                $('#weekline').replaceWith(data);
+                popuploaded();
             });
-            </text>
+        });
+        </text>
         }
-            
+
         $('#week tbody').on('click', 'tr.descriptionrow', function (e) {
             var id = $(this).data('id');
             var $cell = $(e.target).closest('td');

@@ -38,21 +38,18 @@ namespace TimeSheet.Controllers
         }
 
         [HttpPost]
-        public void Post(PostHours id)
+        public void Post(Hrs id)
         {
             tsDB _db = new tsDB();
 
             if (!string.IsNullOrWhiteSpace(id.DescriptionAdd))
             {
-                id.normal.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(id.normal.WorkerId, id.DescriptionAdd));
+                id.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(id.WorkerId, id.DescriptionAdd));
             }
             if (!string.IsNullOrWhiteSpace(id.CustomerAdd))
             {
-                id.normal.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(id.normal.WorkerId, id.CustomerAdd));
+                id.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(id.WorkerId, id.CustomerAdd));
             }
-
-            id.overtime.WeekNumber = id.normal.WeekNumber;
-            id.normal.NewRequest = id.OrderAdd;         // model binding didn't work for checkbox so we revert to this
 
             dbExec(id.Save());
         }
@@ -70,12 +67,5 @@ namespace TimeSheet.Controllers
         /// Remove normal and overtime records for this weekid
         /// </summary>
         /// <param name="id">weekid</param>
-        public void Delete(int id)
-        {
-            using (_db = new tsDB())
-            {
-                dbExec(Week.Delete(id));
-            }
-        }
     }
 }

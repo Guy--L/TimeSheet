@@ -865,6 +865,11 @@ tr#sheetrow th.day
     border-bottom: 3px double black;
 }
 
+table#week th.day.subt, td.day.subt
+{
+    border-left: 3px double black;
+}
+
 #weekline label.control-label
 {
     padding: 0;

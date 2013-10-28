@@ -44,7 +44,7 @@ namespace TimeSheet.Models
 
         private static string inactivate = @"
             update description 
-                set isactive = 0
+                set isactive = 0,
                 datelastused = '{1}'
                 where descriptionid =  {0}
             ";

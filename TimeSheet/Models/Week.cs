@@ -18,6 +18,48 @@ namespace TimeSheet.Models
 
         public static int NonDemand;
 
+        public Week()
+        { }
+
+        public Week(Hrs b, bool isNormal)
+        {
+            WorkerId = b.WorkerId;
+            WeekId = isNormal?b.WeekId:b.oWeekId;
+            WeekNumber = b.WeekNumber;
+            Year = b.Year;
+            DescriptionId = b.DescriptionId;
+            CustomerId = b.CustomerId;
+            SiteId = b.SiteId;
+            PartnerId = b.PartnerId;
+            InternalNumberId = b.InternalNumberId;
+            WorkAreaId = b.WorkAreaId;
+            NewRequest = b.NewRequest;
+            CostCenterId = b.CostCenterId;
+            CapitalNumber = b.CapitalNumber;
+            IsOvertime = !isNormal;
+
+            if (isNormal)
+            {
+                Mon = b.nMon;
+                Tue = b.nTue;
+                Wed = b.nWed;
+                Thu = b.nThu;
+                Fri = b.nFri;
+                Sat = b.nSat;
+                Sun = b.nSun;
+            }
+            else
+            {
+                Mon = b.oMon;
+                Tue = b.oTue;
+                Wed = b.oWed;
+                Thu = b.oThu;
+                Fri = b.oFri;
+                Sat = b.oSat;
+                Sun = b.oSun;
+            }
+        }
+
         public static string[] Stats(List<Week> hrs)
         {
             decimal dem = 0, non = 0, ovt = 0;
@@ -72,6 +114,8 @@ namespace TimeSheet.Models
         public string Partner           { get {
             return partners.FirstOrDefault(i => i.PartnerId == (PartnerId??0))._Partner; } }
 
+        public string ShortDescription { get { return string.IsNullOrWhiteSpace(Description) ? "" : (Description.Length>20?Description.Substring(0, 20):Description); } }
+
         public string Mon { get { return time2str(Monday); } set { Monday = time2dec(value); } }
         public string Tue { get { return time2str(Tuesday); } set { Tuesday = time2dec(value); } }
         public string Wed { get { return time2str(Wednesday); } set { Wednesday = time2dec(value); } }
@@ -105,7 +149,7 @@ namespace TimeSheet.Models
 
         public static string Delete(int id)
         {
-            return string.Format(del_week, id);
+            return id==0?"":string.Format(del_week, id);
         }
 
         public static string get_prior = @"
@@ -208,20 +252,6 @@ namespace TimeSheet.Models
                 && CostCenterId == b.CostCenterId;
         }
 
-        public void CopyHeader(Week b)
-        {
-            if (b == null)
-                return;
-
-            CustomerId = b.CustomerId;
-            SiteId = b.SiteId;
-            PartnerId = b.PartnerId;
-            InternalNumberId = b.InternalNumberId;
-            WorkAreaId = b.WorkAreaId;
-            CostCenterId = b.CostCenterId;
-            CapitalNumber = b.CapitalNumber;
-        }
-
         private void Copy(Week b)
         {
             WeekNumber = b.WeekNumber;
@@ -257,7 +287,7 @@ namespace TimeSheet.Models
             return string.Format(lock_week, DateTime.Now, worker, week);
         }
 
-        public string Save(int id)
+        public string SaveWeek()
         {
             if (WeekId == 0)
             {
@@ -267,7 +297,7 @@ namespace TimeSheet.Models
                 return string.Format(ins_week
                        , WeekNumber
                        , Year
-                       , id
+                       , WorkerId
                        , DescriptionId
                        , Comments
                        , IsOvertime?1:0
@@ -292,7 +322,7 @@ namespace TimeSheet.Models
                        , WeekId
                        , WeekNumber
                        , Year
-                       , id
+                       , WorkerId
                        , DescriptionId
                        , Comments
                        , IsOvertime?1:0
