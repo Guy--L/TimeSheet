@@ -6,9 +6,9 @@ using System.Web.Mvc;
 
 namespace TimeSheet.Models
 {
-    public class Hours
+    public class Hrs
     {
-        static Hours()
+        static Hrs()
         {
             partners = new SelectList(Week.partners, "PartnerId", "_Partner");
             sites = new SelectList(Week.sites, "SiteId", "SiteName");
@@ -18,8 +18,10 @@ namespace TimeSheet.Models
             customers = new SelectList(Week.customers.Where(c => c.WorkerId != 0), "CustomerId", "CustomerName");
             descriptions = new SelectList(Week.descriptions, "DescriptionId", "_Description");
             costCenters = new SelectList(Week.costCenters, "CostCenterId", "_CostCenter");
+            headers = Sheet.headers;
         }
 
+        private static List<DateTime> headers;
         private static SelectList partners;
         private static SelectList sites;
         private static SelectList times;
@@ -29,24 +31,51 @@ namespace TimeSheet.Models
         private static SelectList internalNumbers;
         private static SelectList descriptions;
 
-        public SelectList Partners          { get { return partners; }}
-        public SelectList Sites             { get { return sites; }}
-        public SelectList Times             { get { return times; } }
-        public SelectList Customers         { get { return customers; } }
-        public SelectList WorkAreas         { get { return workAreas; } }
-        public SelectList CostCenters       { get { return costCenters; } }
-        public SelectList InternalNumbers   { get { return internalNumbers; } }
-        public SelectList Descriptions      { get { return descriptions; } }
+        public SelectList Partners { get { return partners; } }
+        public SelectList Sites { get { return sites; } }
+        public SelectList Times { get { return times; } }
+        public SelectList Customers { get { return customers; } }
+        public SelectList WorkAreas { get { return workAreas; } }
+        public SelectList CostCenters { get { return costCenters; } }
+        public SelectList InternalNumbers { get { return internalNumbers; } }
+        public SelectList Descriptions { get { return descriptions; } }
 
         public int TimeTypeId { get; set; }
-        public string NewCustomer { get; set; }
-        public string NewDescription { get; set; }
-        public string NewInternalNumber { get; set; }
-        public bool NewRequest { get; set; }
+        public string CustomerAdd { get; set; }
+        public string DescriptionAdd { get; set; }
+        public string InternalNumberAdd { get; set; }
+        public bool OrderAdd { get; set; }
 
         public Week normal { get; set; }
         public Week overtime { get; set; }
+        public List<DateTime> Columns { get { return headers; } set { headers = value; } }
 
-        public List<DateTime> Headers { get; set; }
+        public Hrs()
+        {
+            normal = new Week();
+            overtime = new Week();
+        }
+
+        public Hrs(int workerid) : this()
+        {
+            normal.WorkerId = workerid;
+        }
+    }
+
+    public class PostHours
+    {
+        public string DescriptionAdd {get; set; }
+        public string CustomerAdd {get;set;}
+        public bool OrderAdd {get;set;}
+        public string InternalNumberAdd {get;set;}
+        public Week normal {get; set;}
+        public Week overtime {get; set;}
+        public int TimeTypeId {get; set;}
+
+        public string Save()
+        {
+            normal.Match(overtime);
+            return normal.Save(normal.WorkerId) + overtime.Save(normal.WorkerId);
+        }
     }
 }

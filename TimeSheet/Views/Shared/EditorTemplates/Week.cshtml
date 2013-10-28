@@ -1,0 +1,18 @@
+﻿@model TimeSheet.Models.Week
+@{
+    var form = ViewData["_form"] as TwitterBootstrapMVC.Controls.FormBuilder<TimeSheet.Models.Week>;
+}
+<tr class="hourline" id="@(Model.IsOvertime?"overtime":"normal")">
+    <td class="hrsum">
+        @(Model.IsOvertime ? "Overtime" : "Normal")
+</td>
+<td>@form.FormGroup().TextBoxFor(m => m.Mon).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+<td>@form.FormGroup().TextBoxFor(m => m.Tue).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+<td>@form.FormGroup().TextBoxFor(m => m.Wed).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+<td>@form.FormGroup().TextBoxFor(m => m.Thu).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+<td>@form.FormGroup().TextBoxFor(m => m.Fri).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+<td>@form.FormGroup().TextBoxFor(m => m.Sat).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+<td>@form.FormGroup().TextBoxFor(m => m.Sun).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+<td id="hrs@(Model.IsOvertime?"overtime":"normal")" class="hrsum"></td>
+<td class="hrwtotal"></td>
+</tr>

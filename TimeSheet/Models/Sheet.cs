@@ -20,6 +20,7 @@ namespace TimeSheet.Models
         public int weekNumber { get; set; }
         public string NewDescription { get; set; }
         public string NewCustomer { get; set; }
+        public string NewInternalNumber { get; set; }
         public bool NewRequest { get; set; }
         public int TimeTypeId { get; set; }
         public bool Submitted { get; set; }
@@ -30,6 +31,8 @@ namespace TimeSheet.Models
         public Week overtime { get; set; }
         
         public string User { get { return user; } set { user = value; } }
+
+        public List<Description> CarryOver;
 
         /// <summary>
         /// http://stackoverflow.com/questions/5377851/get-date-range-by-week-number-c-sharp
@@ -53,12 +56,6 @@ namespace TimeSheet.Models
             }
             var result = firstMonday.AddDays(weekNum * 7 - 1);  // Sunday = 0
             return result;
-        }
-
-        public string Save()
-        {
-            normal.Match(overtime);
-            return normal.Save(employee.WorkerId) + overtime.Save(employee.WorkerId);
         }
     }
 }

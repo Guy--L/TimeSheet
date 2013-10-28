@@ -825,6 +825,11 @@ tr#sheetrow th.day
     font-size: inherit;
 }
 
+table.hoursum td.day
+{
+    text-align: right;
+}
+
 thead tr.sheetline th.day
 {
     text-align: center;
@@ -838,6 +843,12 @@ thead tr.sheetline th
     background-color: rgba(231, 252, 222, 0.1);
 }
 
+tr.weekline th.day
+{
+    text-align: center;
+    font-size: small;
+}
+
 thead tr#sheetrow th
 {
     background-color: rgba(231, 252, 222, 0.1);
@@ -849,12 +860,14 @@ td.hrcell, tr#sheetrow th.day, tr.hoursrow td.day
     background-color: none;
 }
 
-tr.weekline th
+tr#sheetrow th.day
 {
-    font-weight: 400;
+    border-bottom: 3px double black;
 }
 
 #weekline label.control-label
 {
     padding: 0;
 }
+
+tr.descriptionrow .icon-ban-circle { color: red; }

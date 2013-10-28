@@ -54,13 +54,23 @@ namespace TimeSheet.Models
             }; 
         }
 
-        public string CostCenter        { get { return costCenters.FirstOrDefault(i => i.CostCenterId == CostCenterId)._CostCenter; } }
-        public string InternalNumber    { get { return internalNumbers.FirstOrDefault(i => i.InternalNumberId == InternalNumberId).InternalOrder; } }
-        public string WorkArea          { get { return workAreas.FirstOrDefault(i => i.WorkAreaId == WorkAreaId)._WorkArea; } }
-        public string Customer          { get { return customers.FirstOrDefault(i => i.CustomerId == CustomerId).CustomerName; } }
-        public string Description       { get { return descriptions.FirstOrDefault(i => i.DescriptionId == DescriptionId)._Description; } }
-        public string Site              { get { return sites.FirstOrDefault(i => i.SiteId == SiteId).SiteName; } }
-        public string Partner           { get { return partners.FirstOrDefault(i => i.PartnerId == PartnerId)._Partner; } }
+        public string CostCenter
+        {
+            get
+            {
+            return costCenters.FirstOrDefault(i => i.CostCenterId == (CostCenterId??0))._CostCenter; } }
+        public string InternalNumber    { get {
+            return internalNumbers.FirstOrDefault(i => i.InternalNumberId == (InternalNumberId??0)).InternalOrder; } }
+        public string WorkArea          { get {
+            return workAreas.FirstOrDefault(i => i.WorkAreaId == (WorkAreaId??0))._WorkArea; } }
+        public string Customer          { get {
+            return customers.FirstOrDefault(i => i.CustomerId == (CustomerId??0)).CustomerName; } }
+        public string Description       { get {
+            return descriptions.FirstOrDefault(i => i.DescriptionId == DescriptionId)._Description; } }
+        public string Site              { get {
+            return sites.FirstOrDefault(i => i.SiteId == (SiteId??0)).SiteName; } }
+        public string Partner           { get {
+            return partners.FirstOrDefault(i => i.PartnerId == (PartnerId??0))._Partner; } }
 
         public string Mon { get { return time2str(Monday); } set { Monday = time2dec(value); } }
         public string Tue { get { return time2str(Tuesday); } set { Tuesday = time2dec(value); } }
@@ -68,7 +78,8 @@ namespace TimeSheet.Models
         public string Thu { get { return time2str(Thursday); } set { Thursday = time2dec(value); } }
         public string Fri { get { return time2str(Friday); } set { Friday = time2dec(value); } }
         public string Sat { get { return time2str(Saturday); } set { Saturday = time2dec(value); } }
-        public string Sun { get { return time2str(Sunday); } set { Sunday = time2dec(value); } }
+        public string Sun { get { return time2str(Sunday); } 
+            set { Sunday = time2dec(value); } }
 
         [Column] public int? PairId { get; set; }
 
@@ -96,6 +107,12 @@ namespace TimeSheet.Models
         {
             return string.Format(del_week, id);
         }
+
+        public static string get_prior = @"
+            select top 1 * from week 
+                where workerid = {0} and descriptionid = {1}
+                order by year desc, weeknumber desc
+        ";
 
         private static string time2str(decimal? hours)
         {
@@ -191,6 +208,20 @@ namespace TimeSheet.Models
                 && CostCenterId == b.CostCenterId;
         }
 
+        public void CopyHeader(Week b)
+        {
+            if (b == null)
+                return;
+
+            CustomerId = b.CustomerId;
+            SiteId = b.SiteId;
+            PartnerId = b.PartnerId;
+            InternalNumberId = b.InternalNumberId;
+            WorkAreaId = b.WorkAreaId;
+            CostCenterId = b.CostCenterId;
+            CapitalNumber = b.CapitalNumber;
+        }
+
         private void Copy(Week b)
         {
             WeekNumber = b.WeekNumber;
@@ -203,6 +234,7 @@ namespace TimeSheet.Models
             WorkAreaId = b.WorkAreaId;
             NewRequest = b.NewRequest;
             CostCenterId = b.CostCenterId;
+            CapitalNumber = b.CapitalNumber;
         }
 
         public void Match(Week b)

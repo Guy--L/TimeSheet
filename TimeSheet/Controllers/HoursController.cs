@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using System.Web.Mvc;
 using TimeSheet.Models;
 
 namespace TimeSheet.Controllers
@@ -38,40 +37,24 @@ namespace TimeSheet.Controllers
             return "value";
         }
 
-        // POST api/hours
-        public int[] Post(Sheet hours)
+        [HttpPost]
+        public void Post(PostHours id)
         {
-            _db = new tsDB();
+            tsDB _db = new tsDB();
 
-            if (!string.IsNullOrWhiteSpace(hours.NewDescription))
+            if (!string.IsNullOrWhiteSpace(id.DescriptionAdd))
             {
-                hours.normal.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(hours.employee.WorkerId, hours.NewDescription));
-                hours.overtime.DescriptionId = hours.normal.DescriptionId;
+                id.normal.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(id.normal.WorkerId, id.DescriptionAdd));
             }
-            if (!string.IsNullOrWhiteSpace(hours.NewCustomer))
+            if (!string.IsNullOrWhiteSpace(id.CustomerAdd))
             {
-                hours.normal.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(hours.employee.WorkerId, hours.NewCustomer));
-                hours.overtime.CustomerId = hours.normal.CustomerId;
+                id.normal.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(id.normal.WorkerId, id.CustomerAdd));
             }
 
-            hours.normal.WeekNumber = hours.weekNumber;
-            hours.overtime.WeekNumber = hours.weekNumber;
-            hours.normal.NewRequest = hours.NewRequest;         // model binding didn't work for checkbox so we revert to this
+            id.overtime.WeekNumber = id.normal.WeekNumber;
+            id.normal.NewRequest = id.OrderAdd;         // model binding didn't work for checkbox so we revert to this
 
-            string q = "";
-            Tuple<List<int>, List<int>> ids = null;
-            try
-            {
-                q = hours.Save();
-                ids = _db.FetchMultiple<int, int>(q);
-                return new int[2] { ids.Item1.FirstOrDefault(), ids.Item2.FirstOrDefault() };
-            }
-            catch (Exception e)
-            {
-                Exception frame = new Exception(q, e);
-                Elmah.ErrorSignal.FromCurrentContext().Raise(frame);
-                return null;
-            }
+            dbExec(id.Save());
         }
 
         // PUT api/hours/5/32

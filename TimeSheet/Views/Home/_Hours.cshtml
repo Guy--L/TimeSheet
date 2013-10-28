@@ -1,4 +1,4 @@
-﻿@model TimeSheet.Models.Hours
+﻿@model TimeSheet.Models.Hrs
 
 @using (var modal = Html.Bootstrap().Begin(new Modal().Id("weekline").Closeable().FadeOff()))
 {
@@ -8,22 +8,19 @@
     }
 
     using (var form = Html.Bootstrap().Begin(new Form("Save", "Home").Id("weeksheet").Type(FormType.Horizontal).LabelWidthLg(4)))
-    {
-
-        @Html.HiddenFor(m => m.NewDescription)
-        @Html.HiddenFor(m => m.NewCustomer)
-        @Html.HiddenFor(m => m.NewRequest)
+    { 
+        @Html.HiddenFor(m => m.DescriptionAdd)
+        @Html.HiddenFor(m => m.CustomerAdd)
+        @Html.HiddenFor(m => m.OrderAdd)
+        @Html.HiddenFor(m => m.InternalNumberAdd)
 
         @Html.HiddenFor(m => m.normal.WeekId)
+        @Html.HiddenFor(m => m.overtime.WeekId)
         @Html.HiddenFor(m => m.normal.WeekNumber)
         @Html.HiddenFor(m => m.normal.Year)
-        @Html.HiddenFor(m => m.normal.IsOvertime)
 
-        @Html.HiddenFor(m => m.overtime.WeekId)
-        @Html.HiddenFor(m => m.overtime.WeekNumber)
-        @Html.HiddenFor(m => m.overtime.Year)
-        @Html.HiddenFor(m => m.overtime.IsOvertime)
-
+        @Html.HiddenFor(m => m.normal.WorkerId);
+    
         using (modal.BeginBody())
         {
             <div class="row">
@@ -37,7 +34,7 @@
                 <div class="col-lg-6">
                     @form.FormGroup().DropDownListFor(m => m.normal.WorkAreaId, Model.WorkAreas).Size(InputSize.Small).Label().LabelText("Work Area")
                     @form.FormGroup().DropDownListFor(m => m.normal.CostCenterId, Model.CostCenters).Class("demand").Size(InputSize.Small).Label().LabelText("Cost Center")
-                    @form.FormGroup().DropDownListFor(m => m.normal.InternalNumberId, Model.InternalNumbers).Class("demand").Size(InputSize.Small).Label().LabelText("Internal #")
+                    @form.FormGroup().DropDownListFor(m => m.normal.InternalNumber, Model.InternalNumbers).Class("demand").Size(InputSize.Small).Label().LabelText("Internal #")
                     @form.FormGroup().TextBoxFor(m => m.normal.CapitalNumber).Size(InputSize.Small).Class("demand").Label().LabelText("Capital #")
                 </div>
             </div>
@@ -49,7 +46,7 @@
                 <thead>
                     <tr class="weekline">
                         <th></th>
-                        @Html.DisplayFor(m => m.Headers)
+                        @Html.DisplayFor(m => m.Columns)
                         <th>Subtotal</th>
                         <th>Total</th>
                     </tr>
@@ -78,28 +75,16 @@
                         <td>@form.FormGroup().TextBoxFor(m => m.overtime.Sun).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
                         <td id="hrsovertime" class="hrsum"></td>
                         <td class="hrowtotal"></td>
-                    </tr>
+                    </tr>                
                 </tbody>
             }
             using (modal.BeginFooter())
             {
                 @(form.FormGroup().CustomControls(
                 Html.Bootstrap().SubmitButton().Text("Delete").Id("deletehrs").Style(ButtonStyle.Danger),
-                Html.Bootstrap().SubmitButton().Text("Save").Id("savehrs").Style(ButtonStyle.Success).LoadingText("Working..."),
+                Html.Bootstrap().SubmitButton().Text("Save").Id("savehrs").Style(ButtonStyle.Success),
                 Html.Bootstrap().Button().Data(new { dismiss = "modal" }).Text("Cancel")))
             }
         }
     }
-}
-
-@section scripts {
-    <script type="text/javascript">
-        $partner = $('#@Html.IdFor(m=>m.normal.PartnerId)');
-        $cust = $('#@Html.IdFor(m => m.normal.CustomerId)', '#weeksheet');
-        $desc = $('#@Html.IdFor(m => m.normal.DescriptionId)', '#weeksheet');
-        $desc.combobox({ freeform: '#@Html.IdFor(m => m.NewDescription)', selected: true });
-        $cust.combobox({ freeform: '#@Html.IdFor(m => m.NewCustomer)', selected: true });
-
-
-    </script>
 }

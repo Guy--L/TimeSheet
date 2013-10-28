@@ -36,5 +36,17 @@ namespace TimeSheet.Models
                        ,'{5}')
             select scope_identity()
             ";
+
+        public static string InActivate(int id)
+        {
+            return string.Format(inactivate, id, DateTime.Now.ToShortDateString());
+        }
+
+        private static string inactivate = @"
+            update description 
+                set isactive = 0
+                datelastused = '{1}'
+                where descriptionid =  {0}
+            ";
     }
 }

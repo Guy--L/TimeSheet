@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -19,6 +20,10 @@ namespace TimeSheet.Controllers
 
     public class HomeController : Controller
     {
+        /// <summary>
+        /// Convenience wrapper to run queries with initialization and error handling
+        /// </summary>
+        /// <param name="q">Sql statement</param>
         private void dbExec(string q)
         {
             tsDB db = new tsDB();
@@ -34,6 +39,9 @@ namespace TimeSheet.Controllers
             }
         }
 
+        /// <summary>
+        /// Static constructor to get static lists and set constants
+        /// </summary>
         public HomeController()
         {
             if (Week.partners != null)
@@ -50,6 +58,12 @@ namespace TimeSheet.Controllers
             Week.NonDemand = Week.partners.Where(p => p._Partner == "RDSS").Select(q => q.PartnerId).Single();
         }
 
+        /// <summary>
+        /// Find the first week (a cultural dependency) then first date of week
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="weekOfYear"></param>
+        /// <returns></returns>
         private static DateTime FirstDateOfWeek(int year, int weekOfYear)
         {
             DateTime jan1 = new DateTime(year, 1, 1);
@@ -78,8 +92,11 @@ namespace TimeSheet.Controllers
                 return RedirectToAction(Sheet.user.Replace('\\','_'), "Contact");
 
             Week.descriptions = db.Fetch<Description>("where workerid = @0", emp.WorkerId);
+            Week.descriptions.Add(new Description { DescriptionId = 0, _Description = "" });
             Week.customers = db.Fetch<Customer>("where workerid = @0 or workerid = 0", emp.WorkerId);
 
+            Session["WorkerId"] = emp.WorkerId;
+            Debug.WriteLine(emp.WorkerId);
             Sheet ts = new Sheet() { employee = emp };
 
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
@@ -102,6 +119,9 @@ namespace TimeSheet.Controllers
             ts.hours = db.Fetch<Week>(string.Format(Week.lst_week, emp.WorkerId, ts.weekNumber));
             ts.Stats = Week.Stats(ts.hours);
 
+            var idsEntered = ts.hours.Select(d => d.DescriptionId);
+            ts.CarryOver = Week.descriptions.Where(d => !idsEntered.Contains(d.DescriptionId) && d.IsActive).ToList();
+
             int nextSunday = init.DayOfWeek == DayOfWeek.Sunday ? 0 : (7 - (int) init.DayOfWeek);
             init = init.AddDays(nextSunday);
             ts.sunday = init.ToString("MM/dd/yyyy");
@@ -113,16 +133,25 @@ namespace TimeSheet.Controllers
             return View(ts);
         }
 
-        public ActionResult Edit(string id, int id2)
+        public ActionResult InActivate(int id, int id2)
         {
-            tsDB db = new tsDB();
-            Hours hrs = new Hours();
+            dbExec(string.Format(Description.InActivate(id)));
+            return RedirectToAction("Index", new { id = id2 });
+        }
+
+        public ActionResult Edit(int id, int id2)
+        {
+            var workerid = Session["WorkerId"] as int?;
+            if (!workerid.HasValue)
+                throw new Exception("No workerid when creating blank hours from description");
+
+            Hrs hrs = new Hrs(workerid.Value);
             try
             {
+                tsDB db = new tsDB();
                 var sheet = db.Fetch<Week>(string.Format(Week.get_hours, id, id2));
                 hrs.normal = sheet.Where(a => !a.IsOvertime).SingleOrDefault();
                 hrs.overtime = sheet.Where(a => a.IsOvertime).SingleOrDefault();
-                hrs.Headers = Sheet.headers;
 
                 return PartialView("_Hours", hrs);
             }
@@ -133,35 +162,31 @@ namespace TimeSheet.Controllers
             }
         }
 
-        public ActionResult Create()
+        public ActionResult Create(int? id)
         {
-            Hours hrs = new Hours();
-            return PartialView("_Hours", hrs);
-        }
+            var workerid = Session["WorkerId"] as int?;
+            if (!workerid.HasValue)
+                throw new Exception("No workerid when creating blank hours from description");
 
-        [HttpPost]
-        public ActionResult Save(Sheet hours)
-        {
-            tsDB _db = new tsDB();
+            Hrs hrs = new Hrs(workerid.Value);
 
-            if (!string.IsNullOrWhiteSpace(hours.NewDescription))
+            id = id ?? 0;
+            if (id == 0)
+                return PartialView("_Hours", hrs);
+
+            try
             {
-                hours.normal.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(hours.employee.WorkerId, hours.NewDescription));
-                hours.overtime.DescriptionId = hours.normal.DescriptionId;
+                tsDB db = new tsDB();
+                
+                var prior = db.Fetch<Week>(string.Format(Week.get_prior, workerid, id)).SingleOrDefault();
+                hrs.normal.CopyHeader(prior);                   
+                return PartialView("_Hours", hrs);
             }
-            if (!string.IsNullOrWhiteSpace(hours.NewCustomer))
+            catch (Exception e)
             {
-                hours.normal.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(hours.employee.WorkerId, hours.NewCustomer));
-                hours.overtime.CustomerId = hours.normal.CustomerId;
+                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+                return null;
             }
-
-            hours.normal.WeekNumber = hours.weekNumber;
-            hours.overtime.WeekNumber = hours.weekNumber;
-            hours.normal.NewRequest = hours.NewRequest;         // model binding didn't work for checkbox so we revert to this
-
-            dbExec(hours.Save());
-
-            return RedirectToAction("Index", new { id = hours.weekNumber });
         }
 
         [HttpPost]

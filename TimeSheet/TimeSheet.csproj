@@ -372,6 +372,8 @@
     <Content Include="Views\Shared\DisplayTemplates\Week.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
     <Content Include="Views\Home\_Hours.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Description.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Week.cshtml" />
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
