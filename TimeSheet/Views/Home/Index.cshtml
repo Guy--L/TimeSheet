@@ -89,15 +89,21 @@
                 @Html.DisplayFor(m => m.Headers)
                 <th><i class="icon-sitemap"></i></th>
                 <th class="submitbutton" colspan="5">
-                    @if (Model.hours.Count() > 0 && !Model.Submitted)
+                    @if (Model.hours.Count() > 0)
                     {
-                        using (Html.Bootstrap().Begin(new Form("Submit", "Home").Id("submitsheet").Type(FormType.Horizontal)))
+                        if (!Model.Submitted) { 
+                            using (var subform = Html.Bootstrap().Begin(new Form("Submit", "Home").Id("submitsheet").Type(FormType.Horizontal)))
+                            {
+                                @Html.Hidden("WorkerId", Model.employee.WorkerId)
+                                @Html.HiddenFor(m => m.weekNumber)
+                                @Html.Bootstrap().SubmitButton().Text("Submit").Style(ButtonStyle.Danger).PrependIcon("icon-power-off icon-white").Class("pull-right")
+                            }
+                        }
+                        else
                         {
-                            @Html.Hidden("id", Model.employee.WorkerId)
-                            @Html.Hidden("week", Model.weekNumber)
-                            <button class="btn btn-danger btn-mini pull-right" id="submitsheetbtn">
-                                <i class="icon-power-off icon-white"></i> Submit
-                            </button>
+                            <div class="text-danger pull-right">
+                                <i class="icon-lock"></i> @Model.hours[0].Submitted.ToString()
+                            </div>
                         }
                     }
                 </th>
@@ -173,22 +179,13 @@
     function resumLine(line) {
         var hrs = 0;
         var mns = 0;
-        $('input[id^="' + line + '"]', 'tr.hourline').each(function () {
+        $('input', 'tr#'+line+'.hourline').each(function () {
             hrs += Number($(this).val().substr(0, 2));
             mns += Number($(this).val().substr(3, 2));
         });
         $('#hrs' + line, 'tr.hourline').html(getHours(hrs, mns));
     }
 
-    function sumhours(line) {
-        var hrs = 0;
-        var mns = 0;
-        $('*[id]:not(hrsum)', line).each(function () {
-            hrs += Number($(this).val().substr(0, 2));
-            mns += Number($(this).val().substr(3, 2));
-        });
-        $('td.hrsum[id^="hrs"]', line).html(getHours(hrs, mns));
-    }
     function clrhours() {
         $('[name=options]', $desc).val('');
         $('[name=options]', $cust).val('');
@@ -208,6 +205,8 @@
         $code.combobox({ freeform: '#InternalNumberAdd', selected: true });
 
         switchUI();
+        resumLine("normal");
+        resumLine("overtime");
 
         $('#weekline').modal('show');
         $('tr.hourline input').on('blur', function () {
@@ -218,11 +217,11 @@
             g = g.length < 5 ? '0' + g : g;
             $(this).val(g);
         });
-        $('input[id^="n"]', 'tr.hourline').on('change', function (e) {
-            resumLine("n");
+        $('input', 'tr#normal.hourline').on('change', function (e) {
+            resumLine("normal");
         });
-        $('input[id^="o"]', 'tr.hourline').on('change', function (e) {
-            resumLine("o");
+        $('input', 'tr#overtime.hourline').on('change', function (e) {
+            resumLine("overtime");
         });
         $('#PartnerId').on('change', function () {
             switchUI();
@@ -234,7 +233,8 @@
             var normal = parseInt($('#WeekId').val());
             var overtime = parseInt($('#oWeekId').val());
             $('#weekline').modal('hide');
-            href.location = '@Url.Action("Delete", "Home", null, Request.Url.Scheme)/' + normal + '/' + overtime;
+            e.preventDefault();
+            location.href = '@Url.Action("Delete", "Home", null, Request.Url.Scheme)/' + normal + '/' + overtime;
         });
     }
     // Page loaded document ready
@@ -246,8 +246,8 @@
         $('.datepicker').on('change', function (e) {
             var test = new Date(e.target.value);
             if (test.getDay() != 0) {
-                test.setDate(test.getDate() + 7 - test.getDay());
-                e.target.value = $.datepicker.formatDate('mm/dd/yy', test);
+                console.log('@Url.Action("PickDate", "Home", null, Request.Url.Scheme)');
+                location.href = '@Url.Action("PickDate", "Home", null, Request.Url.Scheme)/' + $.datepicker.formatDate('yy-mm-dd', test);
             }
         });
         $('#priorsheet').on('click', function (e) {
@@ -265,24 +265,24 @@
 
         @if (!Model.Submitted) {
             <text>
-        $('#addline').on('click', function () {
-            $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
-                $('#weekline').replaceWith(data);
-                popuploaded();
-            });
-        });
-        $('#week tbody').on('click', 'tr.hoursrow', function () {
-            var id = $(this).data('id');
-            var pairid = $(this).data('pairid');
-            id = (id!='') ? id : 0;
-            pairid = (pairid!='') ? pairid : 0;
+                $('#addline').on('click', function () {
+                    $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
+                        $('#weekline').replaceWith(data);
+                        popuploaded();
+                    });
+                });
+                $('#week tbody').on('click', 'tr.hoursrow', function () {
+                    var id = $(this).data('id');
+                    var pairid = $(this).data('pairid');
+                    id = (id!='') ? id : 0;
+                    pairid = (pairid!='') ? pairid : 0;
 
-            $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
-                $('#weekline').replaceWith(data);
-                popuploaded();
-            });
-        });
-        </text>
+                    $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
+                        $('#weekline').replaceWith(data);
+                        popuploaded();
+                    });
+                });
+            </text>
         }
 
         $('#week tbody').on('click', 'tr.descriptionrow', function (e) {

@@ -10,6 +10,9 @@ using TimeSheet.Models;
 
 namespace TimeSheet.Controllers
 {
+    /// <summary>
+    /// Class extension to make it easy to get element's id
+    /// </summary>
     public static partial class HtmlExtensions
     {
         public static MvcHtmlString IdFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression)
@@ -39,6 +42,7 @@ namespace TimeSheet.Controllers
             }
         }
 
+
         /// <summary>
         /// Static constructor to get static lists and set constants
         /// </summary>
@@ -57,6 +61,7 @@ namespace TimeSheet.Controllers
             }
             Week.NonDemand = Week.partners.Where(p => p._Partner == "RDSS").Select(q => q.PartnerId).Single();
         }
+
 
         /// <summary>
         /// Find the first week (a cultural dependency) then first date of week
@@ -81,7 +86,52 @@ namespace TimeSheet.Controllers
             var result = firstThursday.AddDays(weekNum * 7);
             return result.AddDays(-3);
         }
+        
 
+        /// <summary>
+        /// Touchup '0:00' to '00:00' and '' to '00:00'
+        /// </summary>
+        /// <param name="timespan"></param>
+        /// <returns></returns>
+        private static string d(string timespan)
+        {
+            if (string.IsNullOrWhiteSpace(timespan)) return "00:00";
+            if (timespan.Length == 4) return "0" + timespan;
+            return timespan;    // not compleat
+        }
+
+
+        /// <summary>
+        /// If user types in date or clicks the week rewind or advance buttons, find week and recall it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult PickDate(string id)
+        {
+            Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+
+            try
+            {
+                var newday = DateTime.Parse(id);
+                var newmon = calendar.GetWeekOfYear(newday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                return RedirectToAction("Index", new { id = newmon });
+            }
+            catch(Exception e)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+                var week = Session["CurrentWeek"] as int?;
+                if (!week.HasValue)
+                    week = calendar.GetWeekOfYear(DateTime.Today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                return RedirectToAction("Index", new { id = week });
+            }
+        }
+
+
+        /// <summary>
+        /// "Landing" page for timesheet
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult Index(int? id)
         {
             tsDB db = new tsDB();
@@ -118,6 +168,7 @@ namespace TimeSheet.Controllers
 
             ts.hours = db.Fetch<Week>(string.Format(Week.lst_week, emp.WorkerId, ts.weekNumber));
             ts.Stats = Week.Stats(ts.hours);
+            ts.Submitted = ts.hours.Any(d => d.Submitted.HasValue);
 
             var idsEntered = ts.hours.Select(d => d.DescriptionId);
             ts.CarryOver = Week.descriptions.Where(d => !idsEntered.Contains(d.DescriptionId) && d.IsActive).ToList();
@@ -133,12 +184,38 @@ namespace TimeSheet.Controllers
             return View(ts);
         }
 
+
+        /// <summary>
+        /// Mark this description as inactive (to hide it from empty timesheet rows)
+        /// </summary>
+        /// <param name="id">Description Id</param>
+        /// <param name="id2">Week Number</param>
+        /// <returns></returns>
         public ActionResult InActivate(int id, int id2)
         {
             dbExec(string.Format(Description.InActivate(id)));
             return RedirectToAction("Index", new { id = id2 });
         }
 
+
+        /// <summary>
+        /// Mark this description as active again (because it was selected from pulldown)
+        /// </summary>
+        /// <param name="id">Description Id</param>
+        /// <param name="id2">Week Number</param>
+        /// <returns></returns>
+        public ActionResult Activate(int id, int id2)
+        {
+            dbExec(string.Format(Description.Activate(id)));
+            return RedirectToAction("Index", new { id = id2 });
+        }
+
+
+        /// <summary>
+        /// Save changes or additions made using _Hours modal form while adding new list items as needed
+        /// </summary>
+        /// <param name="hours">Flat object containing normal and overtime hours</param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult Save(Hrs hours)
         {
@@ -151,6 +228,10 @@ namespace TimeSheet.Controllers
             if (!string.IsNullOrWhiteSpace(hours.CustomerAdd))
             {
                 hours.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(hours.WorkerId, hours.CustomerAdd));
+            }
+            if (!string.IsNullOrWhiteSpace(hours.InternalNumberAdd))
+            {
+                hours.InternalNumberId = _db.ExecuteScalar<int>(Models.InternalNumber.Save(hours.InternalNumberAdd));
             }
 
             dbExec(hours.Save());
@@ -178,24 +259,24 @@ namespace TimeSheet.Controllers
                 if (normal != null)
                 {
                     hrs.WeekId = normal.WeekId;
-                    hrs.nMon = normal.Mon;
-                    hrs.nTue = normal.Tue;
-                    hrs.nWed = normal.Wed;
-                    hrs.nThu = normal.Thu;
-                    hrs.nFri = normal.Fri;
-                    hrs.nSat = normal.Sat;
-                    hrs.nSun = normal.Sun;
+                    hrs.nMon = d(normal.Mon);
+                    hrs.nTue = d(normal.Tue);
+                    hrs.nWed = d(normal.Wed);
+                    hrs.nThu = d(normal.Thu);
+                    hrs.nFri = d(normal.Fri);
+                    hrs.nSat = d(normal.Sat);
+                    hrs.nSun = d(normal.Sun);
                 }
                 if (overtime != null)
                 {
                     hrs.oWeekId = overtime.WeekId;
-                    hrs.oMon = overtime.Mon;
-                    hrs.oTue = overtime.Tue;
-                    hrs.oWed = overtime.Wed;
-                    hrs.oThu = overtime.Thu;
-                    hrs.oFri = overtime.Fri;
-                    hrs.oSat = overtime.Sat;
-                    hrs.oSun = overtime.Sun;
+                    hrs.oMon = d(overtime.Mon);
+                    hrs.oTue = d(overtime.Tue);
+                    hrs.oWed = d(overtime.Wed);
+                    hrs.oThu = d(overtime.Thu);
+                    hrs.oFri = d(overtime.Fri);
+                    hrs.oSat = d(overtime.Sat);
+                    hrs.oSun = d(overtime.Sun);
                 }
 
                 return PartialView("_Hours", hrs);
@@ -256,22 +337,10 @@ namespace TimeSheet.Controllers
         }
 
         [HttpPost]
-        public ActionResult Submit(int id, int week)
+        public ActionResult Submit(int WorkerId, int weekNumber)
         {
-            dbExec(Week.Submit(id, week));
-            return RedirectToAction("Index", new { id = week });
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your app description page.";
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-            return View();
+            dbExec(Week.Submit(WorkerId, weekNumber));
+            return RedirectToAction("Index", new { id = weekNumber });
         }
     }
 }

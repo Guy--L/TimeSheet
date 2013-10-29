@@ -870,6 +870,11 @@ table#week th.day.subt, td.day.subt
     border-left: 3px double black;
 }
 
+tr.hoursline input.form-control
+{
+    text-align: center;
+}
+
 #weekline label.control-label
 {
     padding: 0;

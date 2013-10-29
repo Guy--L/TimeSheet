@@ -48,5 +48,18 @@ namespace TimeSheet.Models
                 datelastused = '{1}'
                 where descriptionid =  {0}
             ";
+
+        public static string Activate(int id)
+        {
+            return string.Format(activate, id, DateTime.Now.ToShortDateString());
+        }
+
+        private static string activate = @"
+            update description 
+                set isactive = 1,
+                datelastused = '{1}'
+                where descriptionid =  {0}
+            ";
+
     }
 }
