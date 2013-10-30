@@ -1,6 +1,6 @@
 ﻿@model TimeSheet.Models.Description
 
 <tr class="descriptionrow" data-id="@Model.DescriptionId">
-    <td class="inactivate"><i class='icon-ban-circle'></i></td>
-    <td colspan="16">@Model._Description</td>
+    <td class="inactivate" title="click to remove description from empty list"><i class='icon-ban-circle'></i></td>
+    <td colspan="16" title="click to add this description as new row">@Model._Description</td>
 </tr>

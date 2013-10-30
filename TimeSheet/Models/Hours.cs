@@ -11,7 +11,7 @@ namespace TimeSheet.Models
         static Hrs()
         {
             partners = new SelectList(Week.partners, "PartnerId", "_Partner");
-            sites = new SelectList(Week.sites, "SiteId", "SiteName");
+            sites = new SelectList(Week.sites, "SiteId", "_Site");
             internalNumbers = new SelectList(Week.internalNumbers, "InternalNumberId", "InternalOrder");
             workAreas = new SelectList(Week.workAreas, "WorkAreaId", "_WorkArea");
             times = new SelectList(Week.customers.Where(c => c.WorkerId == 0), "CustomerId", "CustomerName");

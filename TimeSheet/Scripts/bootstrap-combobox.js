@@ -402,7 +402,7 @@
   };
 
   $.fn.combobox.defaults = {
-      template: '<div class="combobox-container input-group"><input type="text" autocomplete="off" class="form-control input-sm" /><input type="hidden" /><span class="input-group-addon btn dropdown-toggle" data-dropdown="dropdown"><span class="caret"/><span class="combobox-clear"><i class="icon-remove"/></span></span></div>'
+      template: '<div class="combobox-container input-group"><input type="text" autocomplete="off" class="form-control input-sm" /><input type="hidden" /><span class="input-group-addon btn dropdown-toggle" data-dropdown="dropdown"><span class="caret"/><span class="combobox-clear"><i class="icon-lock"/></span></span></div>'
   , menu: '<ul class="typeahead typeahead-long dropdown-menu"></ul>'
   , item: '<li><a href="#"></a></li>'
   };

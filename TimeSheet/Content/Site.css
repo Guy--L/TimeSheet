@@ -763,10 +763,6 @@ p.subtime
 {
     margin: 0;
 }
-input#periodEnding
-{
-    max-width: 150px;
-}
 
 .hoursum
 {
@@ -776,16 +772,6 @@ input#periodEnding
 #sheetform .form-group {
     margin-bottom: 0px;
 }
-
-#sheetform button
-{
-    margin-top: 8px;
-}
-
-    #sheetform button#priorsheet
-    {
-        margin-left: 15px;
-    }
 
 #weekline .modal-dialog
 {
@@ -837,22 +823,47 @@ thead tr.sheetline th.day
     min-width: 45px;
 }
 
+table#week thead
+{
+    background-color: rgba(231, 252, 222, 0.1);
+}
+
+table#week thead.locked
+{
+    background-color: rgba(216, 215, 254, 0.1);
+}
+
+table#week tbody
+{
+    cursor: pointer;
+}
+table#week tr.descriptionrow
+{
+    cursor: crosshair;
+}
+table#week tr.descriptionrow td.inactivate
+{
+    cursor: pointer;
+}
+table#week tbody.locked
+{
+    cursor: text;
+}
+
 thead tr.sheetline th
 {
     font-size: small;
-    background-color: rgba(231, 252, 222, 0.1);
 }
+
+
 
 tr.weekline th.day
 {
-    text-align: center;
+    text-align: center;;
     font-size: small;
 }
 
-thead tr#sheetrow th
-{
-    background-color: rgba(231, 252, 222, 0.1);
-}
+
 td.hrcell, tr#sheetrow th.day, tr.hoursrow td.day
 { 
     text-align: right;
@@ -881,3 +892,24 @@ tr.hoursline input.form-control
 }
 
 tr.descriptionrow .icon-ban-circle { color: red; }
+
+table.weekmover {
+    margin-left: 35px;
+    margin-top: .5em;
+}
+
+#weeklabel {
+    padding-top: 13px;
+}
+
+#weeknumber 
+{
+    padding: 0 5px;
+    font-size: 20px;
+}
+
+form#sheetform .control-label
+{
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+}

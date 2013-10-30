@@ -106,11 +106,15 @@ namespace TimeSheet.Models
         public string WorkArea          { get {
             return workAreas.FirstOrDefault(i => i.WorkAreaId == (WorkAreaId??0))._WorkArea; } }
         public string Customer          { get {
-            return customers.FirstOrDefault(i => i.CustomerId == (CustomerId??0)).CustomerName; } }
+            var c = customers.FirstOrDefault(i => i.CustomerId == (CustomerId??0));
+            if (c == null)
+                return "";
+            return c.CustomerName; }
+        }
         public string Description       { get {
             return descriptions.FirstOrDefault(i => i.DescriptionId == DescriptionId)._Description; } }
         public string Site              { get {
-            return sites.FirstOrDefault(i => i.SiteId == (SiteId??0)).SiteName; } }
+            return sites.FirstOrDefault(i => i.SiteId == (SiteId??0))._Site; } }
         public string Partner           { get {
             return partners.FirstOrDefault(i => i.PartnerId == (PartnerId??0))._Partner; } }
 
@@ -171,8 +175,17 @@ namespace TimeSheet.Models
             if (string.IsNullOrWhiteSpace(hours))
                 return null;
             var part = hours.Split(':');
-            var hrs = int.Parse(part[0]);
-            var mns = int.Parse(part[1]);
+            int hrs = 0, mns = 0;
+            try
+            {
+                hrs = int.Parse(part[0]);
+                mns = int.Parse(part[1]);
+            }
+            catch(Exception e)
+            {
+                Exception frame = new Exception(hours, e);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(frame);
+            }
             hrs += mns / 60;
             mns %= 60;
             return (decimal?)(hrs + mns * (10.0 / 6.0));

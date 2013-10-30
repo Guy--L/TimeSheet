@@ -55,7 +55,6 @@ namespace TimeSheet.Controllers
             {
                 Week.sites = db.Fetch<Site>("");
                 Week.partners = db.Fetch<Partner>("");
-                Week.internalNumbers = db.Fetch<InternalNumber>("");
                 Week.workAreas = db.Fetch<WorkArea>("");
                 Week.costCenters = db.Fetch<CostCenter>("");
             }
@@ -139,11 +138,13 @@ namespace TimeSheet.Controllers
             string[] worker = Sheet.user.Split('\\');
             Worker emp = db.FirstOrDefault<Worker>("where ionname = @0", worker[worker.Length-1]);
             if (emp == null)
-                return RedirectToAction(Sheet.user.Replace('\\','_'), "Contact");
+                return RedirectToAction("Contact", Sheet.user.Replace('\\','_'));
 
             Week.descriptions = db.Fetch<Description>("where workerid = @0", emp.WorkerId);
             Week.descriptions.Add(new Description { DescriptionId = 0, _Description = "" });
             Week.customers = db.Fetch<Customer>("where workerid = @0 or workerid = 0", emp.WorkerId);
+
+            Week.internalNumbers = db.Fetch<InternalNumber>("");
 
             Session["WorkerId"] = emp.WorkerId;
             Debug.WriteLine(emp.WorkerId);
@@ -341,6 +342,11 @@ namespace TimeSheet.Controllers
         {
             dbExec(Week.Submit(WorkerId, weekNumber));
             return RedirectToAction("Index", new { id = weekNumber });
+        }
+
+        public ActionResult Contact(string id)
+        {
+            return View(id);
         }
     }
 }

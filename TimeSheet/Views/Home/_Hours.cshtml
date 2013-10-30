@@ -7,7 +7,7 @@
         <h4 id="modaltitle">Add Hours</h4>
     }
 
-    using (var form = Html.Bootstrap().Begin(new Form("Save", "Home").Id("weeksheet").Type(FormType.Horizontal).LabelWidthLg(4)))
+    using (var form = Html.Bootstrap().Begin(new Form("Save", "Home").Id("weeksheet").Type(FormType.Horizontal).LabelWidthS(4)))
     { 
         @Html.HiddenFor(m => m.DescriptionAdd)
         @Html.HiddenFor(m => m.CustomerAdd)
@@ -23,14 +23,14 @@
         using (modal.BeginBody())
         {
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-sm-6">
                     @form.FormGroup().DropDownListFor(m => m.PartnerId, Model.Partners).Size(InputSize.Small).Label().LabelText("Partner")
                     @form.FormGroup().DropDownListFor(m => m.SiteId, Model.Sites).Size(InputSize.Small).WidthLg(4).Label().LabelText("Site")
                     @form.FormGroup().DropDownListFor(m => m.TimeTypeId, Model.Times).Size(InputSize.Small).Class("nondemand").Label().LabelText("Type")
                     @form.FormGroup().DropDownListFor(m => m.CustomerId, Model.Customers).Size(InputSize.Small).Class("demand").Label().LabelText("Customer")
                     @form.FormGroup().CheckBoxFor(m => m.NewRequest).Class("demand")
                 </div>
-                <div class="col-lg-6">
+                <div class="col-sm-6">
                     @form.FormGroup().DropDownListFor(m => m.WorkAreaId, Model.WorkAreas).Size(InputSize.Small).Label().LabelText("Work Area")
                     @form.FormGroup().DropDownListFor(m => m.CostCenterId, Model.CostCenters).Class("demand").Size(InputSize.Small).Label().LabelText("Cost Center")
                     @form.FormGroup().DropDownListFor(m => m.InternalNumberId, Model.InternalNumbers).Class("demand").Size(InputSize.Small).Label().LabelText("Internal #")
