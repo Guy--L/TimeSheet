@@ -3,30 +3,7 @@
     ViewBag.Title = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<nav class="navbar navbar-fixed-top navbar-inverse" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/Home/">RDSS Timesheet</a>
-    </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse navbar-ex1-collapse">
-        <ul class="nav navbar-nav">
-            <li><a href="#about">About</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-        <ul class="nav navbar-nav pull-right">
-            <li><a href="#"><i class="icon-user icon-white"></i> @Model.User</a></li>
-            <li><a href="#"><i class="icon-question icon-white"></i></a></li>
-        </ul>
-    </div>
-    <!-- /.navbar-collapse -->
-</nav>
+
 <div class="container">
     <div class="row">
         <div class="col-sm-6">
@@ -39,25 +16,22 @@
                 <div class="form-group">
                     <label class="control-label col-sm-4" id="weeklabel">Week
                     <span style="visibility:hidden;">*</span></label>
+                    <div class="col-sm-4">
                     <table class="weekmover">
-                        <thead>
-                            <tr>
-                                <th>
+                        <thead><tr><th>
                                     <button class="btn btn-success btn-small" id="priorsheet">
                                         <i class="icon-step-backward icon-large"></i>
                                     </button>
-                                </th>
-                                <th>
+                                </th><th>
                                     <div id="weeknumber" class="form-control-static">@Model.weekNumber</div>
-                                </th>
-                                <th>
+                                </th><th>
                                     <button class="btn btn-success btn-small" id="nextsheet">
                                         <i class="icon-step-forward icon-large"></i>
                                     </button>
-                                </th>
-                            </tr>
+                                </th></tr>
                         </thead>
                     </table>
+                        </div>
                 </div>
             }
         </div>
@@ -76,7 +50,7 @@
     <table id="week" class="table table-striped @(Model.Submitted?"":"table-hover") table-condensed table-bordered">
         <thead @(Model.Submitted ? "class=locked" : "")>
             <tr class="sheetline">
-                <th class="addbutton" colspan="4">
+                <th class="addbutton" colspan="3">
                     @if (!Model.Submitted)
                     {
                         <button class="btn btn-success btn-mini pull-left" id="addline">
@@ -110,8 +84,7 @@
             <tr id="sheetrow">
                 <th title="Overtime"><i class="icon-time"></i></th>
                 <th>Description</th>
-                <th>Cust Acct</th>
-                <th>GL Acct</th>
+                <th>Account</th>
                 <th class="day">@Model.Stats[4]</th>
                 <th class="day">@Model.Stats[5]</th>
                 <th class="day">@Model.Stats[6]</th>
@@ -129,12 +102,16 @@
         </thead>
         <tbody>
             @Html.DisplayFor(m => m.hours)
-            @Html.DisplayFor(m => m.CarryOver)
+            @if (!Model.Submitted) { 
+                @Html.DisplayFor(m => m.CarryOver)
+            }
         </tbody>
     </table>
 </div>
 
 <div id="weekline"></div>
+
+@section login{ @Model.User }
 
 @section scripts {
     <script type="text/javascript">
@@ -202,25 +179,36 @@
             $desc.combobox({ freeform: '#DescriptionAdd', selected: true });
             $cust.combobox({ freeform: '#CustomerAdd', selected: true });
             $intn.combobox({ freeform: '#InternalNumberAdd', selected: true });
+            $("button.demand").button();
 
             switchUI();
             resumLine("normal");
             resumLine("overtime");
 
-            $('#weekline').modal('show');
-            $('tr.hourline input').on('blur', function () {
+            $('tr.hourline input').on('change', function (e) {
                 var newt = $(this).val().replace(/_/g, '0').split(':');
                 var newhr = ($(this).val().charAt(1) == '_' && $(this).val().charAt(0) != '_') ? Number(newt[0].charAt(0)) : Number(newt[0]);
                 newhr = newhr > 24 ? 8 : newhr;
                 var g = getHours(newhr, Number(newt[1]));
                 g = g.length < 5 ? '0' + g : g;
                 $(this).val(g);
+                resumLine($(e.target).closest('tr').attr('id'));
             });
-            $('input', 'tr#normal.hourline').on('change', function (e) {
-                resumLine("normal");
-            });
-            $('input', 'tr#overtime.hourline').on('change', function (e) {
-                resumLine("overtime");
+            $('tr.hourline input').on('keypress', function (e) {
+                /* ENTER PRESSED*/
+                if (e.keyCode == 13) {
+                    /* FOCUS ELEMENT */
+                    var inputs = $(this).parents("form").eq(0).find(":input");
+                    var idx = inputs.index(this);
+
+                    if (idx == inputs.length - 1) {
+                        inputs[0].select()
+                    } else {
+                        inputs[idx + 1].focus(); //  handles submit buttons
+                        inputs[idx + 1].select();
+                    }
+                    return false;
+                }
             });
             $('#PartnerId').on('change', function () {
                 switchUI();
@@ -235,6 +223,14 @@
                 e.preventDefault();
                 location.href = '@Url.Action("Delete", "Home", null, Request.Url.Scheme)/' + normal + '/' + overtime;
             });
+            $('input[name="AccountType"]').on('change', function () {
+                $('#charge i').attr("class", "icon-check-empty");
+                $(this).prev().attr("class", "icon-check");
+                $('.acct').css('display', 'none');
+                $('.'+$(this).attr('id')).parent().parent().css('display', 'block');
+            })
+            $('#weekline').modal('show');
+            $('.acct').css('display', 'none');
         }
         // Page loaded document ready
         $(function () {
@@ -263,26 +259,26 @@
             $('#periodEnding').val('@Model.sunday');
 
             @if (!Model.Submitted) {
-            <text>
-            $('#addline').on('click', function () {
-                $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
-                    $('#weekline').replaceWith(data);
-                    popuploaded();
+                <text>
+                $('#addline').on('click', function () {
+                    $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
+                        $('#weekline').replaceWith(data);
+                        popuploaded();
+                    });
                 });
-            });
-            $('#week tbody').on('click', 'tr.hoursrow', function () {
-                var id = $(this).data('id');
-                var pairid = $(this).data('pairid');
-                id = (id != '') ? id : 0;
-                pairid = (pairid != '') ? pairid : 0;
+                $('#week tbody').on('click', 'tr.hoursrow', function () {
+                    var id = $(this).data('id');
+                    var pairid = $(this).data('pairid');
+                    id = (id != '') ? id : 0;
+                    pairid = (pairid != '') ? pairid : 0;
 
-                $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
-                    $('#weekline').replaceWith(data);
-                    popuploaded();
+                    $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
+                        $('#weekline').replaceWith(data);
+                        popuploaded();
+                    });
                 });
-            });
-            </text>
-        }
+                </text>
+            }
 
             $('#week tbody').on('click', 'tr.descriptionrow', function (e) {
                 var id = $(this).data('id');

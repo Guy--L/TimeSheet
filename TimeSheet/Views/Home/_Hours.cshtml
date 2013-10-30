@@ -6,8 +6,8 @@
     {
         <h4 id="modaltitle">Add Hours</h4>
     }
-
-    using (var form = Html.Bootstrap().Begin(new Form("Save", "Home").Id("weeksheet").Type(FormType.Horizontal).LabelWidthS(4)))
+    
+    using (var form = Html.Bootstrap().Begin(new Form("Save", "Home").Id("weeksheet").Type(FormType.Horizontal).LabelWidthSm(3)))
     { 
         @Html.HiddenFor(m => m.DescriptionAdd)
         @Html.HiddenFor(m => m.CustomerAdd)
@@ -23,18 +23,35 @@
         using (modal.BeginBody())
         {
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-5">
                     @form.FormGroup().DropDownListFor(m => m.PartnerId, Model.Partners).Size(InputSize.Small).Label().LabelText("Partner")
-                    @form.FormGroup().DropDownListFor(m => m.SiteId, Model.Sites).Size(InputSize.Small).WidthLg(4).Label().LabelText("Site")
+                    @form.FormGroup().DropDownListFor(m => m.SiteId, Model.Sites).Size(InputSize.Small).WidthSm(6).Label().LabelText("Site")
                     @form.FormGroup().DropDownListFor(m => m.TimeTypeId, Model.Times).Size(InputSize.Small).Class("nondemand").Label().LabelText("Type")
                     @form.FormGroup().DropDownListFor(m => m.CustomerId, Model.Customers).Size(InputSize.Small).Class("demand").Label().LabelText("Customer")
                     @form.FormGroup().CheckBoxFor(m => m.NewRequest).Class("demand")
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-7">
                     @form.FormGroup().DropDownListFor(m => m.WorkAreaId, Model.WorkAreas).Size(InputSize.Small).Label().LabelText("Work Area")
-                    @form.FormGroup().DropDownListFor(m => m.CostCenterId, Model.CostCenters).Class("demand").Size(InputSize.Small).Label().LabelText("Cost Center")
-                    @form.FormGroup().DropDownListFor(m => m.InternalNumberId, Model.InternalNumbers).Class("demand").Size(InputSize.Small).Label().LabelText("Internal #")
-                    @form.FormGroup().TextBoxFor(m => m.CapitalNumber).Size(InputSize.Small).Class("demand").Label().LabelText("Capital #")
+                    <div class="form-group">
+                        <label class="control-label col-sm-3">Charge To<span class="required" style="visibility:hidden;">*</span> </label>
+                        <div class="btn-group col-sm-9" data-toggle="buttons" id="charge">
+                            <label class="btn btn-primary demand">
+                                <i class="icon-check-empty"></i>
+                                <input type="radio" name="AccountType" id="costc"> Cost Center
+                            </label>
+                            <label class="btn btn-primary demand">
+                                <i class="icon-check-empty"></i>
+                                <input type="radio" name="AccountType" id="interno"> Internal
+                            </label>
+                            <label class="btn btn-primary demand">
+                                <i class="icon-check-empty"></i>
+                                <input type="radio" name="AccountType" id="capital"> Capital
+                            </label>
+                        </div>
+                    </div>
+                    @form.FormGroup().Class("acct").DropDownListFor(m => m.CostCenterId, Model.CostCenters).Class("demand costc").Size(InputSize.Small).Label().LabelText("Cost Center")
+                    @form.FormGroup().Class("acct").DropDownListFor(m => m.InternalNumberId, Model.InternalNumbers).Class("demand interno").Size(InputSize.Small).Label().LabelText("Internal #")
+                    @form.FormGroup().Class("acct").TextBoxFor(m => m.CapitalNumber).Size(InputSize.Small).Class("demand capital").Label().LabelText("Capital #")
                 </div>
             </div>
             <div class="row">
@@ -53,25 +70,25 @@
                 <tbody>
                     <tr class="hourline" id="normal">
                         <td class="hrsum">Normal</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.nMon).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.nTue).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.nWed).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.nThu).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.nFri).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.nSat).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.nSun).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.nMon).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.nTue).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.nWed).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.nThu).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.nFri).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.nSat).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.nSun).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
                         <td id="hrsnormal" class="hrsum"></td>
                         <td class="hrwtotal"></td>
                     </tr>
                     <tr class="hourline" id="overtime">
                         <td class="hrsum">Overtime</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.oMon).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.oTue).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.oWed).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.oThu).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.oFri).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.oSat).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
-                        <td>@form.FormGroup().TextBoxFor(m => m.oSun).Data(new { mask = "99:99" }).WidthLg(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.oMon).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.oTue).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.oWed).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.oThu).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.oFri).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.oSat).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
+                        <td>@form.FormGroup().TextBoxFor(m => m.oSun).Data(new { mask = "99:99" }).WidthSm(12).Label().Class("sr-only")</td>
                         <td id="hrsovertime" class="hrsum"></td>
                         <td class="hrowtotal"></td>
                     </tr>                

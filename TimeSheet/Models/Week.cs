@@ -36,6 +36,8 @@ namespace TimeSheet.Models
             NewRequest = b.NewRequest;
             CostCenterId = b.CostCenterId;
             CapitalNumber = b.CapitalNumber;
+            AccountType = b.AccountType;
+
             IsOvertime = !isNormal;
 
             if (isNormal)
@@ -95,14 +97,46 @@ namespace TimeSheet.Models
                                    ,time2str(sun)
             }; 
         }
+        
+        public enum ChargeTo
+        {
+            Internal_Number,
+            Cost_Center,
+            Capital_Number
+        };
 
-        public string CostCenter
+        public string ChargeType
+        {
+            get {
+                if (!AccountType.HasValue)
+                    return "";
+                return Enum.GetName(typeof(ChargeTo), AccountType.Value).Replace('_', ' ');
+            }
+        }
+
+        public string ChargeNumber
         {
             get
             {
-            return costCenters.FirstOrDefault(i => i.CostCenterId == (CostCenterId??0))._CostCenter; } }
-        public string InternalNumber    { get {
-            return internalNumbers.FirstOrDefault(i => i.InternalNumberId == (InternalNumberId??0)).InternalOrder; } }
+                if (!AccountType.HasValue)
+                    return "";
+                switch ((ChargeTo)AccountType.Value)
+                {
+                    case ChargeTo.Cost_Center:
+                        var cc = costCenters.FirstOrDefault(i => i.CostCenterId == CostCenterId);
+                        return (cc == null) ? "" : cc._CostCenter;
+
+                    case ChargeTo.Internal_Number:
+                        var inn = internalNumbers.FirstOrDefault(i => i.InternalNumberId == InternalNumberId);
+                        return (inn == null) ? "" : inn.InternalOrder;
+
+                    case ChargeTo.Capital_Number:
+                        return CapitalNumber;
+                }
+                return "";
+            }
+        }
+        
         public string WorkArea          { get {
             return workAreas.FirstOrDefault(i => i.WorkAreaId == (WorkAreaId??0))._WorkArea; } }
         public string Customer          { get {
@@ -139,6 +173,7 @@ namespace TimeSheet.Models
                     and a.CustomerId = b.CustomerId
                     and a.DescriptionId = b.DescriptionId
                     and a.InternalNumberId = b.InternalNumberId
+                    and a.AccountType = b.AccountType
                     and a.PartnerId = b.PartnerId
                     and a.SiteId = b.SiteId
                     and a.WorkAreaId = b.WorkAreaId
@@ -262,7 +297,8 @@ namespace TimeSheet.Models
                 && InternalNumberId == b.InternalNumberId
                 && WorkAreaId == b.WorkAreaId
                 && NewRequest == b.NewRequest
-                && CostCenterId == b.CostCenterId;
+                && CostCenterId == b.CostCenterId
+                && AccountType == b.AccountType;
         }
 
         private void Copy(Week b)
@@ -278,6 +314,7 @@ namespace TimeSheet.Models
             NewRequest = b.NewRequest;
             CostCenterId = b.CostCenterId;
             CapitalNumber = b.CapitalNumber;
+            AccountType = b.AccountType;
         }
 
         public void Match(Week b)
@@ -329,7 +366,9 @@ namespace TimeSheet.Models
                        , InternalNumberId
                        , CostCenterId
                        , CapitalNumber
-                       , CustomerId??0);
+                       , CustomerId??0
+                       , AccountType==null?"null":AccountType.ToString()
+                       );
             }
             return string.Format(upd_week
                        , WeekId
@@ -354,7 +393,9 @@ namespace TimeSheet.Models
                        , InternalNumberId
                        , CostCenterId
                        , CapitalNumber
-                       , CustomerId??0);
+                       , CustomerId??0
+                       , AccountType==null?"null":AccountType.ToString()
+                       );
         }
 
         private static string ins_week = @"
@@ -380,7 +421,8 @@ namespace TimeSheet.Models
                        ,[InternalNumberId]
                        ,[CostCenterId]
                        ,[CapitalNumber]
-                       ,[CustomerId])
+                       ,[CustomerId]
+                       ,[AccountType])
                  VALUES
                        ({0} --<WeekNumber, int,>
                        ,{1} --<Year, int,>
@@ -403,7 +445,8 @@ namespace TimeSheet.Models
                        ,{18} --<InternalNumberId, int,>
                        ,{19} --<CostCenterId, int,>
                        ,'{20}' --<CapitalNumber, nvarchar(50),>
-                       ,{21}) --<CustomerId, int,>  ";
+                       ,{21} --<CustomerId, int,> 
+                       ,{22} ";
 
         private static string lock_week = @"
             update [week] set [submitted] = cast('{0}' as datetime)
@@ -439,6 +482,7 @@ namespace TimeSheet.Models
                        ,[CostCenterId]       = {20}
                        ,[CapitalNumber]      = '{21}'
                        ,[CustomerId]         = {22}
+                       ,[AccountType]         = {23}
              WHERE WeekId = {0} ";
 
         public static string get_hours = @" select * from week where weekid = {0} or weekid = {1} ";

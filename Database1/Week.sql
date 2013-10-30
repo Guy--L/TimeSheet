@@ -22,5 +22,6 @@
     [InternalNumberId] INT NULL, 
     [CostCenterId] INT NULL, 
     [CapitalNumber] NVARCHAR(50) NULL, 
-    [CustomerId] INT NULL
+    [CustomerId] INT NULL, 
+    [AccountType] INT NULL
 )

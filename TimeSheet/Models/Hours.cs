@@ -80,7 +80,26 @@ namespace TimeSheet.Models
 		public int? CostCenterId { get; set; } 		
 		public string CapitalNumber { get; set; } 		
 		public int? CustomerId { get; set; }
+        public int? AccountType { get; set; }
+        public Week.ChargeTo? ChargeAccount 
+        { 
+            get { 
+                return AccountType==null?(Nullable<Week.ChargeTo>) null:(Week.ChargeTo)AccountType; 
+            }
+            set
+            {
+                AccountType = (int?)value;
+            }
+        }
 
+        public static Dictionary<int, string> chargeTo = new Dictionary<int, string>
+        {
+            {0, "Cost Center" },
+            {1, "Internal Number"},
+            {2, "Capital Number"}
+        };
+
+        public Dictionary<int, string> ChargeTo { get { return chargeTo; } }
         public string Save()
         {
             Week normal = new Week(this, true);
@@ -102,6 +121,7 @@ namespace TimeSheet.Models
             CostCenterId = b.CostCenterId;
             CapitalNumber = b.CapitalNumber;
             WeekNumber = b.WeekNumber;
+            AccountType = b.AccountType;
             Year = b.Year;
         }
     }

@@ -30,7 +30,6 @@
 	foreach (var table in tables)
 		table.Ignore = !timesheet.Contains(table.Name);
 		*/
-
 /*
 	// Tweak Schema
 	tables["tablename"].Ignore = true;							// To ignore a table

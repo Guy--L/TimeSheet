@@ -211,7 +211,6 @@ namespace TimeSheet.Controllers
             return RedirectToAction("Index", new { id = id2 });
         }
 
-
         /// <summary>
         /// Save changes or additions made using _Hours modal form while adding new list items as needed
         /// </summary>
@@ -223,17 +222,16 @@ namespace TimeSheet.Controllers
             tsDB _db = new tsDB();
 
             if (!string.IsNullOrWhiteSpace(hours.DescriptionAdd))
-            {
                 hours.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(hours.WorkerId, hours.DescriptionAdd));
-            }
+            else if (Week.descriptions.Any(i => (i.DescriptionId == hours.DescriptionId && !i.IsActive)))
+                _db.Execute(Models.Description.Activate(hours.DescriptionId));
+            // else update date last used
+
             if (!string.IsNullOrWhiteSpace(hours.CustomerAdd))
-            {
                 hours.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(hours.WorkerId, hours.CustomerAdd));
-            }
+            
             if (!string.IsNullOrWhiteSpace(hours.InternalNumberAdd))
-            {
                 hours.InternalNumberId = _db.ExecuteScalar<int>(Models.InternalNumber.Save(hours.InternalNumberAdd));
-            }
 
             dbExec(hours.Save());
             return RedirectToAction("Index", new { id = hours.WeekNumber });

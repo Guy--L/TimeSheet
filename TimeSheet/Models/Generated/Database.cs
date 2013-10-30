@@ -7,7 +7,7 @@
 //     Connection String Name: `ts`
 //     Provider:               `System.Data.SqlClient`
 //     Connection String:      `Data Source=AS-GUY-MBP;Initial Catalog=TimesheetDB;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False`
-//     Schema:                 ``
+//     Schema:                 `dbo`
 //     Include Views:          `False`
 
 using System;
@@ -231,7 +231,8 @@ namespace TimeSheet.Models
 		[Column] public int? InternalNumberId { get; set; } 		
 		[Column] public int? CostCenterId { get; set; } 		
 		[Column] public string CapitalNumber { get; set; } 		
-		[Column] public int? CustomerId { get; set; } 	
+		[Column] public int? CustomerId { get; set; } 		
+		[Column] public int? AccountType { get; set; } 	
 	}
 
 	[TableName("WorkArea")]
@@ -274,6 +275,14 @@ namespace TimeSheet.Models
 		[Column] public bool IsPartTime { get; set; } 		
 		[Column] public bool OnDisability { get; set; } 		
 		[Column] public string IonName { get; set; } 	
+	}
+
+	[TableName("__RefactorLog")]
+	[PrimaryKey("OperationKey", AutoIncrement=false)]
+	[ExplicitColumns]
+    public partial class __RefactorLog : tsDB.Record<__RefactorLog>  
+    {		
+		[Column] public Guid OperationKey { get; set; } 	
 	}
 
 }

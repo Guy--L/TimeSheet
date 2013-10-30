@@ -3,8 +3,7 @@
 <tr class="hoursrow" data-id="@Model.WeekId" data-pairid="@Model.PairId" title="@Model.Description">
     <td>@Html.Raw(Model.IsOvertime?"<i class='icon-time'></i>":"")</td>
     <td>@Model.ShortDescription</td>
-    <td>@Model.InternalNumber</td>
-    <td>@Model.CostCenter</td>
+    <td title="@Model.ChargeType">@Model.ChargeNumber</td>
     <td class="day">@Model.Mon</td>
     <td class="day">@Model.Tue</td>
     <td class="day">@Model.Wed</td>

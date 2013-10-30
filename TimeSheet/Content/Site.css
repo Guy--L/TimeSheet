@@ -755,6 +755,8 @@ tr.pager td {
             margin: 0;
         }
 }
+
+/*----  TimeSheet specific css ----*/
 .subtime
 {
     text-align: right;
@@ -788,7 +790,7 @@ tr.hourline .sr-only
     padding: 0;
 }
 
-tr.hourline .form-group div.col-lg-12
+tr.hourline .form-group div.col-sm-12
 {
     padding: 0;
 }
@@ -855,11 +857,9 @@ thead tr.sheetline th
     font-size: small;
 }
 
-
-
 tr.weekline th.day
 {
-    text-align: center;;
+    text-align: center;
     font-size: small;
 }
 
@@ -894,8 +894,7 @@ tr.hoursline input.form-control
 tr.descriptionrow .icon-ban-circle { color: red; }
 
 table.weekmover {
-    margin-left: 35px;
-    margin-top: .5em;
+    margin-top: .3em;
 }
 
 #weeklabel {
