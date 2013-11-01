@@ -6,17 +6,17 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-6">
-            @using (var f = Html.Bootstrap().Begin(new Form("Index", "Home").Id("sheetform").Type(FormType.Horizontal).LabelWidthSm(4)))
+        <div class="col-xs-6">
+            @using (var f = Html.Bootstrap().Begin(new Form("Index", "Home").Id("sheetform").Type(FormType.Horizontal).LabelWidthXs(4)))
             {
                 @f.FormGroup().DisplayTextFor(m => m.employee.FirstName).Label().LabelText("FirstName")
                 @f.FormGroup().DisplayTextFor(m => m.employee.LastName).Label().LabelText("LastName")
                 @f.FormGroup().DisplayTextFor(m => m.employee.EmployeeNumber).Label().LabelText("Number")
-                @f.FormGroup().TextBoxFor(m => m.sunday).Placeholder("on a Sunday").Class("datepicker").Size(InputSize.Small).WidthSm(4).Label().LabelText("Ending")
+                @f.FormGroup().TextBoxFor(m => m.sunday).Placeholder("on a Sunday").Class("datepicker").Size(InputSize.Small).WidthXs(4).Label().LabelText("Ending")
                 <div class="form-group">
-                    <label class="control-label col-sm-4" id="weeklabel">Week
+                    <label class="control-label col-xs-4" id="weeklabel">Week
                     <span style="visibility:hidden;">*</span></label>
-                    <div class="col-sm-4">
+                    <div class="col-xs-4">
                     <table class="weekmover">
                         <thead><tr><th>
                                     <button class="btn btn-success btn-small" id="priorsheet">
@@ -35,7 +35,7 @@
                 </div>
             }
         </div>
-        <div class="col-sm-6">
+        <div class="col-xs-6">
             @using (Html.Bootstrap().Begin(new Table().Caption("Hours Summary").Condensed().Class("pull-right hoursum")))
             {
                 <tr><td>Demand</td><td class="day">@Model.Stats[0]</td></tr>
@@ -116,181 +116,208 @@
 @section scripts {
     <script type="text/javascript">
         var week, sheet, $cust, $desc;
-        var sunday = '@Model.sunday';
-        var empid = '@Model.employee.WorkerId';
+    var sunday = '@Model.sunday';
+    var empid = '@Model.employee.WorkerId';
 
-        function switchUI() {
-            if ($('#PartnerId').find('option:selected').html() == 'RDSS') {
-                $('.nondemand').parent().parent().css('display', 'block');
-                $('.demand').parent().parent().css('display', 'none');
+    function switchUI() {
+        if ($('#PartnerId').find('option:selected').html() == 'RDSS') {
+            $('.nondemand').parent().parent().css('display', 'block');
+            $('.demand').parent().parent().css('display', 'none');
+        }
+        else {
+            $('.nondemand').parent().parent().css('display', 'none');
+            $('.demand').parent().parent().css('display', 'block');
+        }
+        $('.acct').css('display', 'none');
+        $('.' + $('input[name="AccountType"]:checked').attr('id')).parent().parent().css('display', 'block');
+    }
+
+    function getHours(hrs, mns) {
+        hrs += Math.floor(mns / 60);
+        mns %= 60;
+        return hrs + ":" + (mns < 10 ? "0" : "") + mns;
+    }
+
+    function getMins(str) {
+        var part = str.split(":");
+        var h = parseInt(part[0]);
+        var m = parseInt(part[1]);
+        return (isNan(h)?0:h) * 60 + (isNaN(m)?0:m);
+    }
+
+    function newWeek(next) {
+        var days = next ? 7 : -7;
+        var newSunday = new Date(sunday);
+        newSunday.setDate(newSunday.getDate() + days);
+        sunday = $.datepicker.formatDate('mm/dd/yy', newSunday);
+        $('#periodEnding').val(sunday);
+        week = $.datepicker.iso8601Week(newSunday);
+        var url = '@Url.Action("Index", "Home", new { id = -1 })';
+        location.href = url.replace('-1', week);
+    }
+
+    function resumLine(line) {
+        var hrs = 0;
+        var mns = 0;
+        $('input', 'tr#' + line + '.hourline').each(function () {
+            hrs += Number($(this).val().substr(0, 2));
+            mns += Number($(this).val().substr(3, 2));
+        });
+        $('#hrs' + line, 'tr.hourline').html(getHours(hrs, mns));
+    }
+
+    function clrhours() {
+        $('[name=options]', $desc).val('');
+        $('[name=options]', $cust).val('');
+        //$desc.data('combobox').refresh();
+        //$cust.data('combobox').refresh();
+        $('#modaltitle').html('Add Hours');
+        $('input', 'tr.hourline').val('');
+        $('select option[value="0"]').attr('selected', true);
+        $('td.hrsum[id^="hrs"]', 'tr.hourline').html('');
+    }
+    function popuploaded() {
+        $cust = $('#CustomerId', '#weeksheet');
+        $desc = $('#DescriptionId', '#weeksheet');
+        $intn = $('#InternalNumberId', '#weeksheet');
+        $desc.combobox({ freeform: '#DescriptionAdd', selected: true });
+        $cust.combobox({ freeform: '#CustomerAdd', selected: true });
+        $intn.combobox({ freeform: '#InternalNumberAdd', selected: true });
+        $("button.demand").button();
+
+        resumLine("normal");
+        resumLine("overtime");
+
+        $('tr.hourline input').on('blur', function (e) {
+            var newt = $(this).val().replace(/_/g, '0').split(':');
+            var newhr = ($(this).val().charAt(1) == '_' && $(this).val().charAt(0) != '_') ? Number(newt[0].charAt(0)) : Number(newt[0]);
+            newhr = newhr > 24 ? 8 : newhr;
+            var g = getHours(newhr, Number(newt[1]));
+            g = g.length < 5 ? '0' + g : g;
+            $(this).val(g);
+            resumLine($(e.target).closest('tr').attr('id'));
+        });
+        $('tr.hourline input').on('keypress', function (e) {
+            /* ENTER PRESSED*/
+            if (e.keyCode == 13) {
+                /* FOCUS ELEMENT */
+                var inputs = $(this).parents("form").eq(0).find(":input");
+                var idx = inputs.index(this);
+
+                if (idx == inputs.length - 1) {
+                    inputs[0].select()
+                } else {
+                    inputs[idx + 1].focus(); //  handles submit buttons
+                    inputs[idx + 1].select();
+                }
+                return false;
+            }
+            //if (String.fromCharCode(e.which) == '+') {
+            //    $(this).val(getHours(0, getMins($(this).val()) + 5));
+            //    return false;
+            //}
+            //if (String.fromCharCode(e.which) == '-') {
+            //    console.log($(this).val());
+            //    var m = getMins($(this).val());
+            //    if (m <= 0) return false;
+            //    $(this).val(getHours(0, getMins($(this).val()) - 5));
+            //    return false;
+            //}
+        });
+        $('#PartnerId').on('change', function () {
+            switchUI();
+        });
+        $('#savehrs').on('click', function (e) {
+            console.log($('#weeksheet').serialize());
+            $('#weekline').modal('hide');
+        });
+        $('#deletehrs').on('click', function (e) {
+            var normal = parseInt($('#WeekId').val());
+            var overtime = parseInt($('#oWeekId').val());
+            $('#weekline').modal('hide');
+            e.preventDefault();
+            location.href = '@Url.Action("Delete", "Home", null, Request.Url.Scheme)/' + normal + '/' + overtime;
+        });
+        $('input[name="AccountType"]').on('change', function () {
+            $('#charge i.icon-check').attr("class", "icon-check-empty");
+            $(this).prev().attr("class", "icon-check");
+            $('.acct').css('display', 'none');
+            $('.' + $(this).attr('id')).parent().parent().css('display', 'block');
+        });
+        $('#newreq').on('click', function () {
+            if ($('#newreq').hasClass('active')) {
+                $('#newreq span').html(' is not New');
+                $('#newreq input').val('false');
             }
             else {
-                $('.nondemand').parent().parent().css('display', 'none');
-                $('.demand').parent().parent().css('display', 'block');
+                $('#newreq span').html(' is New <i class="icon-asterisk"></i>');
+                $('#newreq input').val('true');
             }
-        }
+        });
+        $('#weekline').modal('show');
+        switchUI();
 
-        function getHours(hrs, mns) {
-            hrs += Math.floor(mns / 60);
-            mns %= 60;
-            return hrs + ":" + (mns < 10 ? "0" : "") + mns;
-        }
+    }
+    // Page loaded document ready
+    $(function () {
+        $('.datepicker').datepicker({
+            beforeShowDay: function (date) { return [date.getDay() == 0, ""] }
+            , firstDay: 1
+        });
+        $('.datepicker').on('change', function (e) {
+            var test = new Date(e.target.value);
+            if (test.getDay() != 0) {
+                console.log('@Url.Action("PickDate", "Home", null, Request.Url.Scheme)');
+                location.href = '@Url.Action("PickDate", "Home", null, Request.Url.Scheme)/' + $.datepicker.formatDate('yy-mm-dd', test);
+            }
+        });
+        $('#priorsheet').on('click', function (e) {
+            e.preventDefault();
+            newWeek(false);
+        });
+        $('#nextsheet').on('click', function (e) {
+            e.preventDefault();
+            newWeek(true);
+        });
 
-        function getMins(str) {
-            var part = str.split(":");
-            return parseInt(part[0]) * 60 + parseInt(part[1]);
-        }
+        week = @(Model.weekNumber) +0;
 
-        function newWeek(next) {
-            var days = next ? 7 : -7;
-            var newSunday = new Date(sunday);
-            newSunday.setDate(newSunday.getDate() + days);
-            sunday = $.datepicker.formatDate('mm/dd/yy', newSunday);
-            $('#periodEnding').val(sunday);
-            week = $.datepicker.iso8601Week(newSunday);
-            var url = '@Url.Action("Index", "Home", new { id = -1 })';
-            location.href = url.replace('-1', week);
-        }
+        $('#periodEnding').val('@Model.sunday');
 
-        function resumLine(line) {
-            var hrs = 0;
-            var mns = 0;
-            $('input', 'tr#' + line + '.hourline').each(function () {
-                hrs += Number($(this).val().substr(0, 2));
-                mns += Number($(this).val().substr(3, 2));
-            });
-            $('#hrs' + line, 'tr.hourline').html(getHours(hrs, mns));
-        }
-
-        function clrhours() {
-            $('[name=options]', $desc).val('');
-            $('[name=options]', $cust).val('');
-            //$desc.data('combobox').refresh();
-            //$cust.data('combobox').refresh();
-            $('#modaltitle').html('Add Hours');
-            $('input', 'tr.hourline').val('');
-            $('select option[value="0"]').attr('selected', true);
-            $('td.hrsum[id^="hrs"]', 'tr.hourline').html('');
-        }
-        function popuploaded() {
-            $cust = $('#CustomerId', '#weeksheet');
-            $desc = $('#DescriptionId', '#weeksheet');
-            $intn = $('#InternalNumberId', '#weeksheet');
-            $desc.combobox({ freeform: '#DescriptionAdd', selected: true });
-            $cust.combobox({ freeform: '#CustomerAdd', selected: true });
-            $intn.combobox({ freeform: '#InternalNumberAdd', selected: true });
-            $("button.demand").button();
-
-            switchUI();
-            resumLine("normal");
-            resumLine("overtime");
-
-            $('tr.hourline input').on('change', function (e) {
-                var newt = $(this).val().replace(/_/g, '0').split(':');
-                var newhr = ($(this).val().charAt(1) == '_' && $(this).val().charAt(0) != '_') ? Number(newt[0].charAt(0)) : Number(newt[0]);
-                newhr = newhr > 24 ? 8 : newhr;
-                var g = getHours(newhr, Number(newt[1]));
-                g = g.length < 5 ? '0' + g : g;
-                $(this).val(g);
-                resumLine($(e.target).closest('tr').attr('id'));
-            });
-            $('tr.hourline input').on('keypress', function (e) {
-                /* ENTER PRESSED*/
-                if (e.keyCode == 13) {
-                    /* FOCUS ELEMENT */
-                    var inputs = $(this).parents("form").eq(0).find(":input");
-                    var idx = inputs.index(this);
-
-                    if (idx == inputs.length - 1) {
-                        inputs[0].select()
-                    } else {
-                        inputs[idx + 1].focus(); //  handles submit buttons
-                        inputs[idx + 1].select();
-                    }
-                    return false;
-                }
-            });
-            $('#PartnerId').on('change', function () {
-                switchUI();
-            });
-            $('#savehrs').on('click', function (e) {
-                $('#weekline').modal('hide');
-            });
-            $('#deletehrs').on('click', function (e) {
-                var normal = parseInt($('#WeekId').val());
-                var overtime = parseInt($('#oWeekId').val());
-                $('#weekline').modal('hide');
-                e.preventDefault();
-                location.href = '@Url.Action("Delete", "Home", null, Request.Url.Scheme)/' + normal + '/' + overtime;
-            });
-            $('input[name="AccountType"]').on('change', function () {
-                $('#charge i').attr("class", "icon-check-empty");
-                $(this).prev().attr("class", "icon-check");
-                $('.acct').css('display', 'none');
-                $('.'+$(this).attr('id')).parent().parent().css('display', 'block');
-            })
-            $('#weekline').modal('show');
-            $('.acct').css('display', 'none');
-        }
-        // Page loaded document ready
-        $(function () {
-            $('.datepicker').datepicker({
-                beforeShowDay: function (date) { return [date.getDay() == 0, ""] }
-                , firstDay: 1
-            });
-            $('.datepicker').on('change', function (e) {
-                var test = new Date(e.target.value);
-                if (test.getDay() != 0) {
-                    console.log('@Url.Action("PickDate", "Home", null, Request.Url.Scheme)');
-                    location.href = '@Url.Action("PickDate", "Home", null, Request.Url.Scheme)/' + $.datepicker.formatDate('yy-mm-dd', test);
-                }
-            });
-            $('#priorsheet').on('click', function (e) {
-                e.preventDefault();
-                newWeek(false);
-            });
-            $('#nextsheet').on('click', function (e) {
-                e.preventDefault();
-                newWeek(true);
-            });
-
-            week = @(Model.weekNumber) +0;
-
-            $('#periodEnding').val('@Model.sunday');
-
-            @if (!Model.Submitted) {
+        @if (!Model.Submitted) {
                 <text>
-                $('#addline').on('click', function () {
-                    $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
-                        $('#weekline').replaceWith(data);
-                        popuploaded();
-                    });
-                });
-                $('#week tbody').on('click', 'tr.hoursrow', function () {
-                    var id = $(this).data('id');
-                    var pairid = $(this).data('pairid');
-                    id = (id != '') ? id : 0;
-                    pairid = (pairid != '') ? pairid : 0;
-
-                    $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
-                        $('#weekline').replaceWith(data);
-                        popuploaded();
-                    });
-                });
-                </text>
-            }
-
-            $('#week tbody').on('click', 'tr.descriptionrow', function (e) {
-                var id = $(this).data('id');
-                var $cell = $(e.target).closest('td');
-                if ($cell.index() == 0) {
-                    location.href = '@Url.Action("InActivate", "Home", null, Request.Url.Scheme)/' + id + '/' + week;
-                }
-                $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/' + id, function (data) {
-                    $('#weekline').replaceWith(data);
-                    popuploaded();
-                });
+        $('#addline').on('click', function () {
+            $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
+                $('#weekline').replaceWith(data);
+                popuploaded();
             });
         });
-    </script>
+        $('#week tbody').on('click', 'tr.hoursrow', function () {
+            var id = $(this).data('id');
+            var pairid = $(this).data('pairid');
+            id = (id != '') ? id : 0;
+            pairid = (pairid != '') ? pairid : 0;
+
+            $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
+                $('#weekline').replaceWith(data);
+                popuploaded();
+            });
+        });
+        </text>
+            }
+
+        $('#week tbody').on('click', 'tr.descriptionrow', function (e) {
+            var id = $(this).data('id');
+            var $cell = $(e.target).closest('td');
+            if ($cell.index() == 0) {
+                location.href = '@Url.Action("InActivate", "Home", null, Request.Url.Scheme)/' + id + '/' + week;
+            }
+            $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/' + id, function (data) {
+                $('#weekline').replaceWith(data);
+                popuploaded();
+            });
+        });
+    });
+</script>
+
 }

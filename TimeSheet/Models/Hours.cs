@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -16,6 +17,7 @@ namespace TimeSheet.Models
             workAreas = new SelectList(Week.workAreas, "WorkAreaId", "_WorkArea");
             times = new SelectList(Week.customers.Where(c => c.WorkerId == 0), "CustomerId", "CustomerName");
             customers = new SelectList(Week.customers.Where(c => c.WorkerId != 0), "CustomerId", "CustomerName");
+            Debugger.Break();
             descriptions = new SelectList(Week.descriptions, "DescriptionId", "_Description");
             costCenters = new SelectList(Week.costCenters, "CostCenterId", "_CostCenter");
             headers = Sheet.headers;
@@ -81,10 +83,10 @@ namespace TimeSheet.Models
 		public string CapitalNumber { get; set; } 		
 		public int? CustomerId { get; set; }
         public int? AccountType { get; set; }
-        public Week.ChargeTo? ChargeAccount 
+        public ChargeTo? ChargeAccount 
         { 
             get { 
-                return AccountType==null?(Nullable<Week.ChargeTo>) null:(Week.ChargeTo)AccountType; 
+                return AccountType==null?(Nullable<ChargeTo>) null:(ChargeTo)AccountType; 
             }
             set
             {
@@ -92,14 +94,15 @@ namespace TimeSheet.Models
             }
         }
 
-        public static Dictionary<int, string> chargeTo = new Dictionary<int, string>
-        {
-            {0, "Cost Center" },
-            {1, "Internal Number"},
-            {2, "Capital Number"}
-        };
+        //public static Dictionary<int, string> chargeTo = new Dictionary<int, string>
+        //{
+        //    {0, "Cost Center" },
+        //    {1, "Internal Number"},
+        //    {2, "Capital Number"}
+        //};
 
-        public Dictionary<int, string> ChargeTo { get { return chargeTo; } }
+        //public Dictionary<int, string> ChargeTo { get { return chargeTo; } }
+
         public string Save()
         {
             Week normal = new Week(this, true);
@@ -123,6 +126,7 @@ namespace TimeSheet.Models
             WeekNumber = b.WeekNumber;
             AccountType = b.AccountType;
             Year = b.Year;
+            NewRequest = b.NewRequest;
         }
     }
 }

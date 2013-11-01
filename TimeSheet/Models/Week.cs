@@ -6,6 +6,13 @@ using NPoco;
 
 namespace TimeSheet.Models
 {
+    public enum ChargeTo
+    {
+        Internal_Number,
+        Cost_Center,
+        Capital_Number
+    };
+
     public partial class Week
     {
         public static List<CostCenter> costCenters;
@@ -98,13 +105,6 @@ namespace TimeSheet.Models
             }; 
         }
         
-        public enum ChargeTo
-        {
-            Internal_Number,
-            Cost_Center,
-            Capital_Number
-        };
-
         public string ChargeType
         {
             get {
@@ -114,26 +114,26 @@ namespace TimeSheet.Models
             }
         }
 
-        public string ChargeNumber
+        public HtmlString ChargeNumber
         {
             get
             {
                 if (!AccountType.HasValue)
-                    return "";
+                    return null;
                 switch ((ChargeTo)AccountType.Value)
                 {
                     case ChargeTo.Cost_Center:
                         var cc = costCenters.FirstOrDefault(i => i.CostCenterId == CostCenterId);
-                        return (cc == null) ? "" : cc._CostCenter;
+                        return new HtmlString((cc == null) ? "" : ("<i class='icon-bullseye'></i> " + cc._CostCenter));
 
                     case ChargeTo.Internal_Number:
                         var inn = internalNumbers.FirstOrDefault(i => i.InternalNumberId == InternalNumberId);
-                        return (inn == null) ? "" : inn.InternalOrder;
+                        return new HtmlString((inn == null) ? "" : ("<i class='icon-building'></i> " + inn.InternalOrder));
 
                     case ChargeTo.Capital_Number:
-                        return CapitalNumber;
+                        return new HtmlString(("<i class='icon-money'></i> "+CapitalNumber));
                 }
-                return "";
+                return null;
             }
         }
         
@@ -446,7 +446,7 @@ namespace TimeSheet.Models
                        ,{19} --<CostCenterId, int,>
                        ,'{20}' --<CapitalNumber, nvarchar(50),>
                        ,{21} --<CustomerId, int,> 
-                       ,{22} ";
+                       ,{22}) ";
 
         private static string lock_week = @"
             update [week] set [submitted] = cast('{0}' as datetime)

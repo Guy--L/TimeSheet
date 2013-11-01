@@ -16,9 +16,9 @@ namespace TimeSheet.Models
 
         private static string ins_internalnumber = @"
             INSERT INTO [dbo].[InternalNumber]
-                       ([InternalNumber])
+                       ([InternalOrder])
                  VALUES
-                       ('{1}')
+                       ('{0}')
             select scope_identity()
             ";
 

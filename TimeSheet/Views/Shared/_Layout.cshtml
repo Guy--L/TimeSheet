@@ -6,7 +6,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width">
+    @*<meta name="viewport" content="width=device-width">*@
     <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/jqueryui")
@@ -41,6 +41,7 @@
             </div>
             <!-- /.navbar-collapse -->
         </nav>
+        Width: <span class="widthnote"></span>
         @RenderBody()
     </div>
     @Scripts.Render("~/bundles/modernizr")
@@ -50,5 +51,36 @@
     @Scripts.Render("~/bundles/dataTables")
 
     @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+        function getWidth() {
+            xWidth = null;
+            if (window.screen != null)
+                xWidth = window.screen.availWidth;
+
+            if (window.innerWidth != null)
+                xWidth = window.innerWidth;
+
+            if (document.body != null)
+                xWidth = document.body.clientWidth;
+
+            return xWidth;
+        }
+        function getHeight() {
+            xHeight = null;
+            if (window.screen != null)
+                xHeight = window.screen.availHeight;
+
+            if (window.innerHeight != null)
+                xHeight = window.innerHeight;
+
+            if (document.body != null)
+                xHeight = document.body.clientHeight;
+
+            return xHeight;
+        }
+        $(function () {
+            $('span.widthnote').text(getWidth());
+        })
+    </script>
 </body>
 </html>
