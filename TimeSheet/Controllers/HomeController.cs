@@ -10,17 +10,6 @@ using TimeSheet.Models;
 
 namespace TimeSheet.Controllers
 {
-    /// <summary>
-    /// Class extension to make it easy to get element's id
-    /// </summary>
-    public static partial class HtmlExtensions
-    {
-        public static MvcHtmlString IdFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression)
-        {
-            return MvcHtmlString.Create(htmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldId(ExpressionHelper.GetExpressionText(expression)));
-        }
-    }
-
     public class HomeController : Controller
     {
         /// <summary>
@@ -29,6 +18,9 @@ namespace TimeSheet.Controllers
         /// <param name="q">Sql statement</param>
         private void dbExec(string q)
         {
+            if (string.IsNullOrWhiteSpace(q))
+                return;
+
             tsDB db = new tsDB();
 
             try
@@ -57,6 +49,11 @@ namespace TimeSheet.Controllers
                 Week.partners = db.Fetch<Partner>("");
                 Week.workAreas = db.Fetch<WorkArea>("");
                 Week.costCenters = db.Fetch<CostCenter>("");
+
+                if (!Week.sites.Any(s => s.SiteId == 0)) Week.sites.Add(new Site { SiteId = 0, _Site = "" });
+                if (!Week.partners.Any(p => p.PartnerId == 0)) Week.partners.Add(new Partner { PartnerId = 0, _Partner = "" });
+                if (!Week.workAreas.Any(w => w.WorkAreaId == 0)) Week.workAreas.Add(new WorkArea { WorkAreaId = 0, _WorkArea = "" });
+                if (!Week.costCenters.Any(c => c.CostCenterId == 0)) Week.costCenters.Add(new CostCenter { CostCenterId = 0, _CostCenter = "" });
             }
             Week.NonDemand = Week.partners.Where(p => p._Partner == "RDSS").Select(q => q.PartnerId).Single();
         }
@@ -147,6 +144,7 @@ namespace TimeSheet.Controllers
             Week.internalNumbers = db.Fetch<InternalNumber>("");
 
             Session["WorkerId"] = emp.WorkerId;
+
             Debug.WriteLine(emp.WorkerId);
             Sheet ts = new Sheet() { employee = emp };
 
@@ -309,6 +307,7 @@ namespace TimeSheet.Controllers
                 hrs.WorkerId = workerid.Value;
                 hrs.WeekNumber = weekno.Value;
                 hrs.Year = year.Value;
+                hrs.PartnerId = 0;
 
                 if (id == 0)
                     return PartialView("_Hours", hrs);

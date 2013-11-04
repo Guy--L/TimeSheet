@@ -228,7 +228,10 @@
             switchUI();
         });
         $('#savehrs').on('click', function (e) {
-            console.log($('#weeksheet').serialize());
+            var result = $('#weeksheet').valid();
+            console.log(result, $('#weeksheet').serialize());
+            if (!result)
+                return false;
             $('#weekline').modal('hide');
         });
         $('#deletehrs').on('click', function (e) {
@@ -254,9 +257,9 @@
                 $('#newreq input').val('true');
             }
         });
+        $.validator.unobtrusive.parse("#weeksheet");
         $('#weekline').modal('show');
         switchUI();
-
     }
     // Page loaded document ready
     $(function () {

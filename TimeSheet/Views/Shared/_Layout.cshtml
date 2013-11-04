@@ -13,6 +13,7 @@
     @Styles.Render("~/Content/bootstrap/base")
     @Styles.Render("~/Content/bootstrap/theme")
     @Styles.Render("~/Content/dataTables")
+    @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
     <div class="page-container">
@@ -44,9 +45,10 @@
         Width: <span class="widthnote"></span>
         @RenderBody()
     </div>
-    @Scripts.Render("~/bundles/modernizr")
+
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/dataTables")
 

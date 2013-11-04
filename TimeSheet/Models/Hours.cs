@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Web;
@@ -11,14 +12,13 @@ namespace TimeSheet.Models
     {
         static Hrs()
         {
-            partners = new SelectList(Week.partners, "PartnerId", "_Partner");
+            partners = new SelectList(Week.partners, "PartnerId", "_Partner", 0);
             sites = new SelectList(Week.sites, "SiteId", "_Site");
             internalNumbers = new SelectList(Week.internalNumbers, "InternalNumberId", "InternalOrder");
             workAreas = new SelectList(Week.workAreas, "WorkAreaId", "_WorkArea");
             times = new SelectList(Week.customers.Where(c => c.WorkerId == 0), "CustomerId", "CustomerName");
             customers = new SelectList(Week.customers.Where(c => c.WorkerId != 0), "CustomerId", "CustomerName");
-            Debugger.Break();
-            descriptions = new SelectList(Week.descriptions, "DescriptionId", "_Description");
+            descriptions = new SelectList(Week.descriptions, "DescriptionId", "_Description", 0);
             costCenters = new SelectList(Week.costCenters, "CostCenterId", "_CostCenter");
             headers = Sheet.headers;
         }
@@ -53,7 +53,7 @@ namespace TimeSheet.Models
         public int oWeekId { get; set; }
         public int WeekNumber { get; set; } 		
 		public int Year { get; set; } 		
-		public int WorkerId { get; set; } 		
+		public int WorkerId { get; set; }
 		public int DescriptionId { get; set; } 		
 		public string Comments { get; set; } 		
 		public bool IsOvertime { get; set; } 		
@@ -74,10 +74,15 @@ namespace TimeSheet.Models
         public string oSun { get; set; } 		
 
 		public DateTime? Submitted { get; set; } 		
-		public bool NewRequest { get; set; } 		
-		public int? SiteId { get; set; } 		
-		public int? WorkAreaId { get; set; } 		
-		public int? PartnerId { get; set; } 		
+		public bool NewRequest { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Select a Site")]
+        public int? SiteId { get; set; } 		
+
+		public int? WorkAreaId { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Select a Partner")]
+        public int? PartnerId { get; set; } 		
 		public int? InternalNumberId { get; set; } 		
 		public int? CostCenterId { get; set; } 		
 		public string CapitalNumber { get; set; } 		

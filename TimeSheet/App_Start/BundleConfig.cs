@@ -15,8 +15,9 @@ namespace TimeSheet
                         "~/Scripts/jquery-ui-{version}.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
-                        "~/Scripts/jquery.unobtrusive*",
-                        "~/Scripts/jquery.validate*"));
+                        "~/Scripts/jquery.validate*",
+                        "~/Scripts/jquery.validate.unobtrusive*"
+                        ));
 
             bundles.Add(new ScriptBundle("~/bundles/dataTables").Include(
                         "~/Scripts/jquery.dataTables.js",
