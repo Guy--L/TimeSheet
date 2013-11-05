@@ -114,7 +114,7 @@ namespace TimeSheet.Controllers
             }
             catch(Exception e)
             {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("PickDate threw up", e));
                 var week = Session["CurrentWeek"] as int?;
                 if (!week.HasValue)
                     week = calendar.GetWeekOfYear(DateTime.Today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
@@ -145,7 +145,8 @@ namespace TimeSheet.Controllers
 
             Session["WorkerId"] = emp.WorkerId;
 
-            Debug.WriteLine(emp.WorkerId);
+            Debug.WriteLine("Index>WorkerId: "+emp.WorkerId);
+
             Sheet ts = new Sheet() { employee = emp };
 
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
@@ -275,7 +276,7 @@ namespace TimeSheet.Controllers
                     hrs.oSat = d(overtime.Sat);
                     hrs.oSun = d(overtime.Sun);
                 }
-
+                Debug.WriteLine("Edit>WeekId: " + hrs.WeekId + ", WeekNumber: " + hrs.WeekNumber);
                 return PartialView("_Hours", hrs);
             }
             catch (Exception e)
@@ -317,7 +318,9 @@ namespace TimeSheet.Controllers
                 var prior = db.Fetch<Week>(string.Format(Week.get_prior, workerid.Value, id)).SingleOrDefault();
                 
                 hrs.CopyHeader(prior);
+                hrs.WeekNumber = weekno.Value;                  // stay on currently viewed week not the prior
                 if (prior == null) hrs.DescriptionId = id;
+                Debug.WriteLine("Create>WeekId: " + hrs.WeekId+", WeekNumber: "+hrs.WeekNumber);
                 return PartialView("_Hours", hrs);
             }
             catch (Exception e)

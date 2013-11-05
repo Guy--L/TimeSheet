@@ -31,7 +31,7 @@ namespace TimeSheet.Models
         public Week(Hrs b, bool isNormal)
         {
             WorkerId = b.WorkerId;
-            WeekId = isNormal?b.WeekId:b.oWeekId;
+            WeekId = isNormal ? b.WeekId : b.oWeekId;
             WeekNumber = b.WeekNumber;
             Year = b.Year;
             DescriptionId = b.DescriptionId;
@@ -74,7 +74,7 @@ namespace TimeSheet.Models
             decimal dem = 0, non = 0, ovt = 0;
             decimal? mon = 0, tue = 0, wed = 0, thu = 0, fri = 0, sat = 0, sun = 0;
 
-            foreach(var w in hrs)
+            foreach (var w in hrs)
             {
                 mon += w.Monday;
                 tue += w.Tuesday;
@@ -102,12 +102,13 @@ namespace TimeSheet.Models
                                    ,time2str(fri)
                                    ,time2str(sat)
                                    ,time2str(sun)
-            }; 
+            };
         }
-        
+
         public string ChargeType
         {
-            get {
+            get
+            {
                 if (!AccountType.HasValue)
                     return "";
                 return Enum.GetName(typeof(ChargeTo), AccountType.Value).Replace('_', ' ');
@@ -131,28 +132,55 @@ namespace TimeSheet.Models
                         return new HtmlString((inn == null) ? "" : ("<i class='icon-building'></i> " + inn.InternalOrder));
 
                     case ChargeTo.Capital_Number:
-                        return new HtmlString(("<i class='icon-money'></i> "+CapitalNumber));
+                        return new HtmlString(("<i class='icon-money'></i> " + CapitalNumber));
                 }
                 return null;
             }
         }
-        
-        public string WorkArea          { get {
-            return workAreas.FirstOrDefault(i => i.WorkAreaId == (WorkAreaId??0))._WorkArea; } }
-        public string Customer          { get {
-            var c = customers.FirstOrDefault(i => i.CustomerId == (CustomerId??0));
-            if (c == null)
-                return "";
-            return c.CustomerName; }
-        }
-        public string Description       { get {
-            return descriptions.FirstOrDefault(i => i.DescriptionId == DescriptionId)._Description; } }
-        public string Site              { get {
-            return sites.FirstOrDefault(i => i.SiteId == (SiteId??0))._Site; } }
-        public string Partner           { get {
-            return partners.FirstOrDefault(i => i.PartnerId == (PartnerId??0))._Partner; } }
 
-        public string ShortDescription { get { return string.IsNullOrWhiteSpace(Description) ? "" : (Description.Length>20?Description.Substring(0, 20):Description); } }
+        public string WorkArea
+        {
+            get
+            {
+                var w = workAreas.FirstOrDefault(i => i.WorkAreaId == (WorkAreaId ?? 0));
+                if (w == null)
+                    return "";
+                return w._WorkArea;
+            }
+        }
+        public string Customer
+        {
+            get
+            {
+                var c = customers.FirstOrDefault(i => i.CustomerId == (CustomerId ?? 0));
+                if (c == null)
+                    return "";
+                return c.CustomerName;
+            }
+        }
+        public string Description
+        {
+            get
+            {
+                return descriptions.FirstOrDefault(i => i.DescriptionId == DescriptionId)._Description;
+            }
+        }
+        public string Site
+        {
+            get
+            {
+                return sites.FirstOrDefault(i => i.SiteId == (SiteId ?? 0))._Site;
+            }
+        }
+        public string Partner
+        {
+            get
+            {
+                return partners.FirstOrDefault(i => i.PartnerId == (PartnerId ?? 0))._Partner;
+            }
+        }
+
+        public string ShortDescription { get { return string.IsNullOrWhiteSpace(Description) ? "" : (Description.Length > 20 ? Description.Substring(0, 20) : Description); } }
 
         public string Mon { get { return time2str(Monday); } set { Monday = time2dec(value); } }
         public string Tue { get { return time2str(Tuesday); } set { Tuesday = time2dec(value); } }
@@ -160,10 +188,14 @@ namespace TimeSheet.Models
         public string Thu { get { return time2str(Thursday); } set { Thursday = time2dec(value); } }
         public string Fri { get { return time2str(Friday); } set { Friday = time2dec(value); } }
         public string Sat { get { return time2str(Saturday); } set { Saturday = time2dec(value); } }
-        public string Sun { get { return time2str(Sunday); } 
-            set { Sunday = time2dec(value); } }
+        public string Sun
+        {
+            get { return time2str(Sunday); }
+            set { Sunday = time2dec(value); }
+        }
 
-        [Column] public int? PairId { get; set; }
+        [Column]
+        public int? PairId { get; set; }
 
         public static string lst_week = @"
             select b.WeekId PairId, a.* from week a
@@ -188,7 +220,7 @@ namespace TimeSheet.Models
 
         public static string Delete(int id)
         {
-            return id==0?"":string.Format(del_week, id);
+            return id == 0 ? "" : string.Format(del_week, id);
         }
 
         public static string get_prior = @"
@@ -202,7 +234,7 @@ namespace TimeSheet.Models
             if (!hours.HasValue || hours.Value == 0)
                 return "";
             TimeSpan ts = TimeSpan.FromHours(Decimal.ToDouble(hours.Value));
-            return string.Format("{0}:{1:00}", (int) ts.TotalHours, ts.Minutes);
+            return string.Format("{0}:{1:00}", (int)ts.TotalHours, ts.Minutes);
         }
 
         private static decimal? time2dec(string hours)
@@ -216,7 +248,7 @@ namespace TimeSheet.Models
                 hrs = int.Parse(part[0]);
                 mns = int.Parse(part[1]);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Exception frame = new Exception(hours, e);
                 Elmah.ErrorSignal.FromCurrentContext().Raise(frame);
@@ -252,7 +284,7 @@ namespace TimeSheet.Models
             var workarea = WorkAreaId.HasValue ? Week.workAreas[WorkAreaId.Value]._WorkArea : "";
             var partner = PartnerId.HasValue ? Week.partners[PartnerId.Value]._Partner : "";
             var site = SiteId.HasValue ? Week.sites[SiteId.Value]._Site : "";
-            var submitted = Submitted.HasValue ?Submitted.Value.ToString("MM/dd hh:mm"):"";
+            var submitted = Submitted.HasValue ? Submitted.Value.ToString("MM/dd hh:mm") : "";
 
             return new string[26] {
                  WeekId.ToString()
@@ -350,24 +382,24 @@ namespace TimeSheet.Models
                        , WorkerId
                        , DescriptionId
                        , Comments
-                       , IsOvertime?1:0
-                       , Monday??0
-                       , Tuesday??0
-                       , Wednesday??0
-                       , Thursday??0
-                       , Friday??0
-                       , Saturday??0
-                       , Sunday??0
-                       , Submitted==null?"null":Submitted.ToString()
-                       , NewRequest?1:0
+                       , IsOvertime ? 1 : 0
+                       , Monday ?? 0
+                       , Tuesday ?? 0
+                       , Wednesday ?? 0
+                       , Thursday ?? 0
+                       , Friday ?? 0
+                       , Saturday ?? 0
+                       , Sunday ?? 0
+                       , Submitted == null ? "null" : Submitted.ToString()
+                       , NewRequest ? 1 : 0
                        , SiteId
                        , WorkAreaId
                        , PartnerId
                        , InternalNumberId
                        , CostCenterId
                        , CapitalNumber
-                       , CustomerId??0
-                       , AccountType==null?"null":AccountType.ToString()
+                       , CustomerId ?? 0
+                       , AccountType == null ? "null" : AccountType.ToString()
                        );
             }
             return string.Format(upd_week
@@ -377,24 +409,24 @@ namespace TimeSheet.Models
                        , WorkerId
                        , DescriptionId
                        , Comments
-                       , IsOvertime?1:0
-                       , Monday??0
-                       , Tuesday??0
-                       , Wednesday??0
-                       , Thursday??0
-                       , Friday??0
-                       , Saturday??0
-                       , Sunday??0
-                       , Submitted==null?"null":Submitted.ToString()
-                       , NewRequest?1:0
+                       , IsOvertime ? 1 : 0
+                       , Monday ?? 0
+                       , Tuesday ?? 0
+                       , Wednesday ?? 0
+                       , Thursday ?? 0
+                       , Friday ?? 0
+                       , Saturday ?? 0
+                       , Sunday ?? 0
+                       , Submitted == null ? "null" : Submitted.ToString()
+                       , NewRequest ? 1 : 0
                        , SiteId
                        , WorkAreaId
                        , PartnerId
                        , InternalNumberId
                        , CostCenterId
                        , CapitalNumber
-                       , CustomerId??0
-                       , AccountType==null?"null":AccountType.ToString()
+                       , CustomerId ?? 0
+                       , AccountType == null ? "null" : AccountType.ToString()
                        );
         }
 
