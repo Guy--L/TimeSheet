@@ -116,21 +116,32 @@
 @section scripts {
     <script type="text/javascript">
         var week, sheet, $cust, $desc;
-    var sunday = '@Model.sunday';
-    var empid = '@Model.employee.WorkerId';
+        var sunday = '@Model.sunday';
+        var empid = '@Model.employee.WorkerId';
 
-    function switchUI() {
-        if ($('#PartnerId').find('option:selected').html() == 'RDSS') {
-            $('.nondemand').parent().parent().css('display', 'block');
-            $('.demand').parent().parent().css('display', 'none');
+        function switchUI() {
+            var $nondmd = $('.nondemand').parent().parent();
+            var $dmd = $('.demand').parent().parent();
+
+            if ($('#PartnerId').find('option:selected').html() == 'RDSS') {
+                $nondmd.css('display', 'block');
+                $nondmd.find('input[type="text"]','input[type="hidden"]','input[type="radio"]','select').removeAttr('disabled');
+                $dmd.css('display', 'none');
+                $dmd.find('input[type="text"]', 'input[type="hidden"]', 'input[type="radio"]', 'select').attr('disabled', 'disabled');
+            }
+            else {
+                $nondmd.css('display', 'none');
+                $nondmd.find('input[type="text"]', 'input[type="hidden"]', 'input[type="radio"]', 'select').removeAttr('disabled');
+                $dmd.css('display', 'block');
+                $dmd.find('input[type="text"]', 'input[type="hidden"]', 'input[type="radio"]', 'select').attr('disabled', 'disabled');
+            }
+            $('.acct').css('display', 'none');
+            $('.acct').find('input[type="text"]', 'select').attr('disabled', 'disabled');
+
+            var $target = $('.' + $('input[name="AccountType"]:checked').attr('id')).parent().parent();
+            $target.css('display', 'block');
+            $target.find('input[type="text"]', 'select').removeAttr('disabled');
         }
-        else {
-            $('.nondemand').parent().parent().css('display', 'none');
-            $('.demand').parent().parent().css('display', 'block');
-        }
-        $('.acct').css('display', 'none');
-        $('.' + $('input[name="AccountType"]:checked').attr('id')).parent().parent().css('display', 'block');
-    }
 
     function getHours(hrs, mns) {
         hrs += Math.floor(mns / 60);
@@ -230,8 +241,8 @@
         $('#savehrs').on('click', function (e) {
             var result = $('#weeksheet').valid();
             console.log(result, $('#weeksheet').serialize());
-            //if (!result)
-            //    return false;
+            if (!result)
+                return false;
             $('#weekline').modal('hide');
         });
         $('#deletehrs').on('click', function (e) {
