@@ -9,7 +9,7 @@
         <div class="col-xs-6">
             @using (var f = Html.Bootstrap().Begin(new Form("Index", "Home").Id("sheetform").Type(FormType.Horizontal).LabelWidthXs(4)))
             {
-                @f.FormGroup().CustomControls(Model.employee.FirstName + " " + Model.employee.LastName)
+                @f.FormGroup().CustomControls(Model.employee.FirstName + " " + Model.employee.LastName).CustomLabel("Name")
                 @f.FormGroup().DisplayTextFor(m => m.employee.EmployeeNumber).Label().LabelText("Number")
                 @f.FormGroup().TextBoxFor(m => m.sunday).Placeholder("on a Sunday").Class("datepicker").Size(InputSize.Small).WidthXs(4).Label().LabelText("Ending")
                 <div class="form-group">
@@ -253,25 +253,28 @@
         $('#savehrs').on('click', function (e) {
             var result = $('#weeksheet').valid();
 
-            console.log(result, $('#weeksheet').serialize());
-
             if (!result)
                 return false;
 
             if (isNaN(parseInt($cust.val()))) $cust.val(0);
             if (isNaN(parseInt($desc.val()))) $desc.val(0);
 
-            if (isNaN(parseInt($intn.val()))) {
-                $('#confirminternal').html($intn.val());
+            if (isNaN(parseInt($('.interno', '#weeksheet').val()))) {
+                e.preventDefault();
+                $('#confirminternal').html($('.interno', '#weeksheet').val());
                 $('#dialog-confirm-newnumber').show();
                 $("#dialog-confirm-newnumber").dialog({
                     resizable: false,
-                    height: 140,
+                    height: 200,
+                    width: 400,
                     modal: true,
                     buttons: {
                         "Use new Internal Order": function () {
                             $(this).dialog("close");
                             $('#dialog-confirm-newnumber').hide();
+                            $('input[name="InternalNumberId"]', '#weeksheet').val(0);
+                            $('#weeksheet').submit();
+                            return true;
                         },
                         Cancel: function () {
                             $(this).dialog("close");
@@ -280,7 +283,6 @@
                         }
                     }
                 });
-                $intn.val(0);
             }
             $('#weekline').modal('hide');
         });
@@ -348,6 +350,7 @@
                         popuploaded();
                     });
                 });
+
                 $('#submitsheet').on('click', function (e) {
                     var total = getMins('@Model.Stats[0]') + getMins('@Model.Stats[1]');
                     if (total != 40 * 60) {
@@ -375,6 +378,7 @@
                         });
                     }
                 });
+
                 $('#week tbody').on('click', 'tr.hoursrow', function () {
                     var id = $(this).data('id');
                     id = (id != '') ? id : 0;

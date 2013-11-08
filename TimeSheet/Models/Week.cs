@@ -166,21 +166,30 @@ namespace TimeSheet.Models
         {
             get
             {
-                return descriptions.FirstOrDefault(i => i.DescriptionId == DescriptionId)._Description;
+                var d = descriptions.FirstOrDefault(i => i.DescriptionId == DescriptionId);
+                if (d == null)
+                    return "";
+                return d._Description;
             }
         }
         public string Site
         {
             get
             {
-                return sites.FirstOrDefault(i => i.SiteId == (SiteId ?? 0))._Site;
+                var s = sites.FirstOrDefault(i => i.SiteId == (SiteId ?? 0));
+                if (s == null)
+                    return "";
+                return s._Site;
             }
         }
         public string Partner
         {
             get
             {
-                return partners.FirstOrDefault(i => i.PartnerId == (PartnerId ?? 0))._Partner;
+                var partner = partners.FirstOrDefault(i => i.PartnerId == (PartnerId ?? 0));
+                if (partner == null)
+                    return "";
+                return partner._Partner;
             }
         }
 
