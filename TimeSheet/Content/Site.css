@@ -511,6 +511,10 @@ input.input-validation-error {
     border: 1px solid #e80c4d;
 }
 
+select.input-validation-error {
+    border: 1px solid #e80c4d;
+}
+
 input[type="checkbox"].input-validation-error {
     border: 0 none;
 }
@@ -911,4 +915,9 @@ form#sheetform .control-label
 {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 14px;
+}
+
+div.submitchecks
+{
+    display: none;
 }

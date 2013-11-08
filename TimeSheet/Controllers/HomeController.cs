@@ -140,6 +140,8 @@ namespace TimeSheet.Controllers
             Week.descriptions = db.Fetch<Description>("where workerid = @0", emp.WorkerId);
             Week.descriptions.Add(new Description { DescriptionId = 0, _Description = "" });
             Week.customers = db.Fetch<Customer>("where workerid = @0 or workerid = 0", emp.WorkerId);
+            Week.customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = 0 });
+            Week.customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = emp.WorkerId });
 
             Week.internalNumbers = db.Fetch<InternalNumber>("");
 
@@ -220,16 +222,16 @@ namespace TimeSheet.Controllers
         {
             tsDB _db = new tsDB();
 
-            if (!string.IsNullOrWhiteSpace(hours.DescriptionAdd))
+            if (hours.DescriptionId==0 && !string.IsNullOrWhiteSpace(hours.DescriptionAdd))
                 hours.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(hours.WorkerId, hours.DescriptionAdd));
             else if (Week.descriptions.Any(i => (i.DescriptionId == hours.DescriptionId && !i.IsActive)))
                 _db.Execute(Models.Description.Activate(hours.DescriptionId));
             // else update date last used
 
-            if (!string.IsNullOrWhiteSpace(hours.CustomerAdd))
+            if (hours.CustomerId==0 && !string.IsNullOrWhiteSpace(hours.CustomerAdd))
                 hours.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(hours.WorkerId, hours.CustomerAdd));
             
-            if (!string.IsNullOrWhiteSpace(hours.InternalNumberAdd))
+            if (hours.InternalNumberId==0 && !string.IsNullOrWhiteSpace(hours.InternalNumberAdd))
                 hours.InternalNumberId = _db.ExecuteScalar<int>(Models.InternalNumber.Save(hours.InternalNumberAdd));
 
             dbExec(hours.Save());
@@ -242,7 +244,7 @@ namespace TimeSheet.Controllers
             try
             {
                 var workerid = Session["WorkerId"] as int?;
-                if (!workerid.HasValue)
+                if (workerid == null || !workerid.HasValue)
                     throw new Exception("No workerid when creating blank hours from description");
 
                 Hrs hrs = new Hrs();
@@ -256,6 +258,7 @@ namespace TimeSheet.Controllers
                 
                 if (normal != null)
                 {
+                    hrs.Year = normal.Year;
                     hrs.WeekId = normal.WeekId;
                     hrs.nMon = d(normal.Mon);
                     hrs.nTue = d(normal.Tue);
@@ -267,6 +270,7 @@ namespace TimeSheet.Controllers
                 }
                 if (overtime != null)
                 {
+                    hrs.Year = overtime.Year;
                     hrs.oWeekId = overtime.WeekId;
                     hrs.oMon = d(overtime.Mon);
                     hrs.oTue = d(overtime.Tue);
@@ -304,11 +308,7 @@ namespace TimeSheet.Controllers
                 if (!year.HasValue)
                     throw new Exception("No year in Home.Create");
 
-                Hrs hrs = new Hrs();
-                hrs.WorkerId = workerid.Value;
-                hrs.WeekNumber = weekno.Value;
-                hrs.Year = year.Value;
-                hrs.PartnerId = 0;
+                Hrs hrs = new Hrs(workerid, weekno, year);
 
                 if (id == 0)
                     return PartialView("_Hours", hrs);

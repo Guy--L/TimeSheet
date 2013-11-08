@@ -84,6 +84,10 @@
   , transferAttributes: function() {
     this.options.placeholder = this.$source.attr('data-placeholder') || this.options.placeholder;
     this.$element.attr('placeholder', this.options.placeholder);
+    this.$element.prop('name', this.$source.prop('name').replace('Id', 'Add'));
+    this.$element.attr('data-val-required', this.$source.attr('data-val-required'));
+    this.$element.attr('data-val', this.$source.attr('data-val'));
+    $('span.field-validation-valid', this.$container.parent()).attr('data-valmsg-for', this.$element.prop('name'));
     this.$target.prop('name', this.$source.prop('name'));
     this.$target.val(this.$source.val());
     this.$source.removeAttr('name');  // Remove from source otherwise form will pass parameter twice.

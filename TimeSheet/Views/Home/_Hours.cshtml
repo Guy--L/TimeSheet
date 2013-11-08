@@ -11,10 +11,6 @@
 
     using (var form = Html.Bootstrap().Begin(new Form("Save", "Home").Id("weeksheet").Type(FormType.Horizontal).LabelWidthXs(3)))
     {
-        @Html.HiddenFor(m => m.DescriptionAdd)
-        @Html.HiddenFor(m => m.CustomerAdd)
-        @Html.HiddenFor(m => m.InternalNumberAdd)
-
         @Html.HiddenFor(m => m.WeekId)
         @Html.HiddenFor(m => m.oWeekId)
         @Html.HiddenFor(m => m.WeekNumber)
@@ -34,8 +30,8 @@
                         <label class="control-label col-xs-3">Request<span class="required" style="visibility:hidden;">*</span> </label>
                         <div class="btn-group col-xs-9" data-toggle="buttons">
                             <label class="btn btn-primary demand @(Model.NewRequest?"active":"")" id="newreq">
-                                <input type='hidden' name='NewRequest' value='@(Model.NewRequest?"true":"false")'/>
-                                    <span> is @(Model.NewRequest?"":"not ")New @Html.Raw(Model.NewRequest?"<i class='icon-asterisk'></i>":"")</span>
+                                <input type='hidden' name='NewRequest' value='@(Model.NewRequest?"true":"false")' />
+                                <span> is @(Model.NewRequest ? "" : "not ")New @Html.Raw(Model.NewRequest ? "<i class='icon-asterisk'></i>" : "")</span>
                             </label>
                         </div>
                     </div>
@@ -44,24 +40,21 @@
                     @form.FormGroup().DropDownListFor(m => m.WorkAreaId, Model.WorkAreas).Size(InputSize.Small).Label().LabelText("Work Area")
                     <div class="form-group">
                         <label class="control-label col-xs-3">Charge To<span class="required" style="visibility:hidden;">*</span> </label>
-                        <div class="btn-group col-xs-9" data-toggle="buttons" id="charge">
-                            <label class="btn btn-primary demand @(Model.ChargeAccount == ChargeTo.Cost_Center ? "active" : "")">
+                        <div class="btn-group demand col-xs-9" data-toggle="buttons" id="charge">
+                            <label class="btn btn-primary @(Model.ChargeAccount == ChargeTo.Cost_Center ? "active" : "")">
                                 <i class="icon-check@(Model.ChargeAccount == ChargeTo.Cost_Center ? "" : "-empty")"></i>
-                                <input type="radio" name="AccountType" id="costc"
-                                       value="@((int)ChargeTo.Cost_Center)"
-                                       @(Model.ChargeAccount == ChargeTo.Cost_Center ? "checked" : "")> Cost Center
+                                <input type="radio" name="AccountType" id="costc" value="@((int)ChargeTo.Cost_Center)"
+                                        @(Model.ChargeAccount == ChargeTo.Cost_Center ? "checked" : "")> Cost Center
                             </label>
-                            <label class="btn btn-primary demand @(Model.ChargeAccount == ChargeTo.Internal_Number ? "active" : "")">
+                            <label class="btn btn-primary @(Model.ChargeAccount == ChargeTo.Internal_Number ? "active" : "")">
                                 <i class="icon-check@(Model.ChargeAccount == ChargeTo.Internal_Number ? "" : "-empty")"></i>
-                                <input type="radio" name="AccountType" id="interno"
-                                       value="@((int)ChargeTo.Internal_Number)"
-                                       @(Model.ChargeAccount == ChargeTo.Internal_Number ? "checked" : "")> Internal
+                                <input type="radio" name="AccountType" id="interno" value="@((int)ChargeTo.Internal_Number)"
+                                        @(Model.ChargeAccount == ChargeTo.Internal_Number ? "checked" : "")> Internal
                             </label>
-                            <label class="btn btn-primary demand @(Model.ChargeAccount == ChargeTo.Capital_Number ? "active" : "")">
+                            <label class="btn btn-primary @(Model.ChargeAccount == ChargeTo.Capital_Number ? "active" : "")">
                                 <i class="icon-check@(Model.ChargeAccount == ChargeTo.Capital_Number ? "" : "-empty")"></i>
-                                <input type="radio" name="AccountType" id="capital"
-                                       value="@((int)ChargeTo.Capital_Number)"
-                                       @(Model.ChargeAccount == ChargeTo.Capital_Number ? "checked" : "")> Capital
+                                <input type="radio" name="AccountType" id="capital" value="@((int)ChargeTo.Capital_Number)"
+                                        @(Model.ChargeAccount == ChargeTo.Capital_Number ? "checked" : "")> Capital
                             </label>
                         </div>
                     </div>

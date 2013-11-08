@@ -9,8 +9,7 @@
         <div class="col-xs-6">
             @using (var f = Html.Bootstrap().Begin(new Form("Index", "Home").Id("sheetform").Type(FormType.Horizontal).LabelWidthXs(4)))
             {
-                @f.FormGroup().DisplayTextFor(m => m.employee.FirstName).Label().LabelText("FirstName")
-                @f.FormGroup().DisplayTextFor(m => m.employee.LastName).Label().LabelText("LastName")
+                @f.FormGroup().CustomControls(Model.employee.FirstName + " " + Model.employee.LastName)
                 @f.FormGroup().DisplayTextFor(m => m.employee.EmployeeNumber).Label().LabelText("Number")
                 @f.FormGroup().TextBoxFor(m => m.sunday).Placeholder("on a Sunday").Class("datepicker").Size(InputSize.Small).WidthXs(4).Label().LabelText("Ending")
                 <div class="form-group">
@@ -111,6 +110,14 @@
 
 <div id="weekline"></div>
 
+<div class="submitchecks" id="dialog-confirm-newnumber" title="Add Internal Order number?">
+    <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Proceed with Internal Order <span id="confirminternal"></span>.  Are you sure?</p>
+</div>
+
+<div class="submitchecks" id="dialog-confirm-hours" title="Regular hours do not sum to 40">
+    <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Your regular hours totals <span id="confirmhours"></span>.  Are you sure you want to submit?</p>
+</div>
+
 @section login{ @Model.User }
 
 @section scripts {
@@ -125,22 +132,27 @@
 
             if ($('#PartnerId').find('option:selected').html() == 'RDSS') {
                 $nondmd.css('display', 'block');
-                $nondmd.find('input[type="text"]','input[type="hidden"]','input[type="radio"]','select').removeAttr('disabled');
+                $nondmd.find('input[type="text"],input[type="hidden"],input[type="radio"],select').removeAttr('disabled');
                 $dmd.css('display', 'none');
-                $dmd.find('input[type="text"]', 'input[type="hidden"]', 'input[type="radio"]', 'select').attr('disabled', 'disabled');
+                $dmd.find('input[type="text"], input[type="hidden"], input[type="radio"], select').attr('disabled', 'disabled');
             }
             else {
                 $nondmd.css('display', 'none');
-                $nondmd.find('input[type="text"]', 'input[type="hidden"]', 'input[type="radio"]', 'select').removeAttr('disabled');
+                $nondmd.find('input[type="text"], input[type="hidden"], input[type="radio"], select').attr('disabled', 'disabled');
                 $dmd.css('display', 'block');
-                $dmd.find('input[type="text"]', 'input[type="hidden"]', 'input[type="radio"]', 'select').attr('disabled', 'disabled');
+                $dmd.find('input[type="text"], input[type="hidden"], input[type="radio"], select').removeAttr('disabled');
             }
             $('.acct').css('display', 'none');
-            $('.acct').find('input[type="text"]', 'select').attr('disabled', 'disabled');
-
-            var $target = $('.' + $('input[name="AccountType"]:checked').attr('id')).parent().parent();
+            $('.acct').find('input[type="text"], select').attr('disabled', 'disabled');
+            var $acct = $('.' + $('input[name="AccountType"]:checked').attr('id'));             // get ID of checked box
+            if ($acct.length == 0) {                                                            // if none set one
+                $('#costc').prop('checked', true);
+                $('#costc').prev().attr("class", "icon-check");
+                $acct = $('.costc');
+            }
+            var $target = $acct.parent().parent();
             $target.css('display', 'block');
-            $target.find('input[type="text"]', 'select').removeAttr('disabled');
+            $target.find('input[type="text"], select').removeAttr('disabled');
         }
 
     function getHours(hrs, mns) {
@@ -153,7 +165,7 @@
         var part = str.split(":");
         var h = parseInt(part[0]);
         var m = parseInt(part[1]);
-        return (isNan(h)?0:h) * 60 + (isNaN(m)?0:m);
+        return (isNaN(h) ? 0 : h) * 60 + (isNaN(m) ? 0 : m);
     }
 
     function newWeek(next) {
@@ -240,9 +252,36 @@
         });
         $('#savehrs').on('click', function (e) {
             var result = $('#weeksheet').valid();
+
             console.log(result, $('#weeksheet').serialize());
+
             if (!result)
                 return false;
+
+            if (isNaN(parseInt($cust.val()))) $cust.val(0);
+            if (isNaN(parseInt($desc.val()))) $desc.val(0);
+
+            if (isNaN(parseInt($intn.val()))) {
+                $('#confirminternal').html($intn.val());
+                $('#dialog-confirm-newnumber').show();
+                $("#dialog-confirm-newnumber").dialog({
+                    resizable: false,
+                    height: 140,
+                    modal: true,
+                    buttons: {
+                        "Use new Internal Order": function () {
+                            $(this).dialog("close");
+                            $('#dialog-confirm-newnumber').hide();
+                        },
+                        Cancel: function () {
+                            $(this).dialog("close");
+                            $('#dialog-confirm-newnumber').hide();
+                            return false;
+                        }
+                    }
+                });
+                $intn.val(0);
+            }
             $('#weekline').modal('hide');
         });
         $('#deletehrs').on('click', function (e) {
@@ -256,7 +295,10 @@
             $('#charge i.icon-check').attr("class", "icon-check-empty");
             $(this).prev().attr("class", "icon-check");
             $('.acct').css('display', 'none');
-            $('.' + $(this).attr('id')).parent().parent().css('display', 'block');
+            $('.acct').attr('disabled', 'disabled');
+            var $target = $('.' + $(this).attr('id'));
+            $target.parent().parent().css('display', 'block');
+            $target.removeAttr('disabled');
         });
         $('#newreq').on('click', function () {
             if ($('#newreq').hasClass('active')) {
@@ -300,24 +342,52 @@
 
         @if (!Model.Submitted) {
                 <text>
-        $('#addline').on('click', function () {
-            $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
-                $('#weekline').replaceWith(data);
-                popuploaded();
-            });
-        });
-        $('#week tbody').on('click', 'tr.hoursrow', function () {
-            var id = $(this).data('id');
-            var pairid = $(this).data('pairid');
-            id = (id != '') ? id : 0;
-            pairid = (pairid != '') ? pairid : 0;
+                $('#addline').on('click', function () {
+                    $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
+                        $('#weekline').replaceWith(data);
+                        popuploaded();
+                    });
+                });
+                $('#submitsheet').on('click', function (e) {
+                    var total = getMins('@Model.Stats[0]') + getMins('@Model.Stats[1]');
+                    if (total != 40 * 60) {
+                        $('#confirmhours').text(getHours(0, total));
+                        $('#dialog-confirm-hours').show();
+                        e.preventDefault();
+                        $("#dialog-confirm-hours").dialog({
+                            resizable: false,
+                            height: 170,
+                            width: 350,
+                            modal: true,
+                            buttons: {
+                                "Submit hours as is": function () {
+                                    $(this).dialog("close");
+                                    $('#dialog-confirm-hours').hide();
+                                    $('#submitsheet').submit();
+                                },
+                                Cancel: function () {
+                                    $(this).dialog("close");
+                                    $('#dialog-confirm-hours').hide();
 
-            $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
-                $('#weekline').replaceWith(data);
-                popuploaded();
-            });
-        });
-        </text>
+                                    return false;
+                                }
+                            }
+                        });
+                    }
+                });
+                $('#week tbody').on('click', 'tr.hoursrow', function () {
+                    var id = $(this).data('id');
+                    id = (id != '') ? id : 0;
+
+                    var pairid = $(this).data('pairid');
+                    pairid = (pairid != '') ? pairid : 0;
+
+                    $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
+                        $('#weekline').replaceWith(data);
+                        popuploaded();
+                    });
+                });
+                </text>
             }
 
         $('#week tbody').on('click', 'tr.descriptionrow', function (e) {

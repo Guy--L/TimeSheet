@@ -8,6 +8,12 @@ using System.Web.Mvc;
 
 namespace TimeSheet.Models
 {
+    public class AccType
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+    }
+
     public class Hrs
     {
         static Hrs()
@@ -21,6 +27,23 @@ namespace TimeSheet.Models
             descriptions = new SelectList(Week.descriptions, "DescriptionId", "_Description", 0);
             costCenters = new SelectList(Week.costCenters, "CostCenterId", "_CostCenter");
             headers = Sheet.headers;
+        }
+
+        public Hrs()
+        {
+        }
+
+        public Hrs(int? workerid, int? weeknumber, int? year)
+        {
+            WorkerId = workerid.Value;
+            WeekNumber = weeknumber.Value;
+            Year = year.Value;
+            CostCenterId = 0;
+            PartnerId = 0;
+            SiteId = 0;
+            WorkAreaId = 0;
+            CustomerId = 0;
+            ChargeAccount = ChargeTo.Cost_Center;
         }
 
         private static List<DateTime> headers;
@@ -42,9 +65,16 @@ namespace TimeSheet.Models
         public SelectList InternalNumbers { get { return internalNumbers; } }
         public SelectList Descriptions { get { return descriptions; } }
 
+        [Range(1, int.MaxValue, ErrorMessage = "Select a Type of activity")]
         public int TimeTypeId { get; set; }
+
+        [Required(ErrorMessage = "Select or Add a Customer")]
         public string CustomerAdd { get; set; }
+        
+        [Required(ErrorMessage = "Select or Add a Description")]
         public string DescriptionAdd { get; set; }
+
+        [Required(ErrorMessage = "Select or Add an Internal Order")]
         public string InternalNumberAdd { get; set; }
 
         public List<DateTime> Columns { get { return headers; } set { headers = value; } }
@@ -54,6 +84,8 @@ namespace TimeSheet.Models
         public int WeekNumber { get; set; } 		
 		public int Year { get; set; } 		
 		public int WorkerId { get; set; }
+
+        [Required(ErrorMessage = "Select or Add a Description")]
 		public int DescriptionId { get; set; } 		
 		public string Comments { get; set; } 		
 		public bool IsOvertime { get; set; } 		
@@ -77,17 +109,31 @@ namespace TimeSheet.Models
 		public bool NewRequest { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Select a Site")]
-        public int? SiteId { get; set; } 		
+        public int? SiteId { get; set; }
 
+        [Range(1, int.MaxValue, ErrorMessage = "Select a WorkArea")]
 		public int? WorkAreaId { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Select a Partner")]
-        public int? PartnerId { get; set; } 		
-		public int? InternalNumberId { get; set; } 		
-		public int? CostCenterId { get; set; } 		
+        public int? PartnerId { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Select an Internal Order Number")]
+        public int? InternalNumberId { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Select a CostCenter")]
+        public int? CostCenterId { get; set; }
+
+        public List<AccType> charge { get; set; }
+        
+        [Required(ErrorMessage="Provide a Capital Account")]
 		public string CapitalNumber { get; set; } 		
+
+        [Required(ErrorMessage="Select or Add a Customer")]
 		public int? CustomerId { get; set; }
+        
+        [Required(ErrorMessage="Select a Charge Account")]
         public int? AccountType { get; set; }
+
         public ChargeTo? ChargeAccount 
         { 
             get { 
@@ -110,6 +156,7 @@ namespace TimeSheet.Models
 
         public string Save()
         {
+            CustomerId = CustomerId == 0 ? TimeTypeId : CustomerId;
             Week normal = new Week(this, true);
             Week overtime = new Week(this, false);
             return normal.SaveWeek() + overtime.SaveWeek();

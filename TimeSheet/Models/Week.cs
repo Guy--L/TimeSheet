@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 using NPoco;
 
 namespace TimeSheet.Models
@@ -38,10 +39,10 @@ namespace TimeSheet.Models
             CustomerId = b.CustomerId;
             SiteId = b.SiteId;
             PartnerId = b.PartnerId;
-            InternalNumberId = b.InternalNumberId;
+            InternalNumberId = b.InternalNumberId??0;
             WorkAreaId = b.WorkAreaId;
             NewRequest = b.NewRequest;
-            CostCenterId = b.CostCenterId;
+            CostCenterId = b.CostCenterId??0;
             CapitalNumber = b.CapitalNumber;
             AccountType = b.AccountType;
 
@@ -124,14 +125,17 @@ namespace TimeSheet.Models
                 switch ((ChargeTo)AccountType.Value)
                 {
                     case ChargeTo.Cost_Center:
+                        if (CostCenterId == 0) return new HtmlString("");
                         var cc = costCenters.FirstOrDefault(i => i.CostCenterId == CostCenterId);
                         return new HtmlString((cc == null) ? "" : ("<i class='icon-bullseye'></i> " + cc._CostCenter));
 
                     case ChargeTo.Internal_Number:
+                        if (InternalNumberId == 0) return new HtmlString("");
                         var inn = internalNumbers.FirstOrDefault(i => i.InternalNumberId == InternalNumberId);
                         return new HtmlString((inn == null) ? "" : ("<i class='icon-building'></i> " + inn.InternalOrder));
 
                     case ChargeTo.Capital_Number:
+                        if (string.IsNullOrWhiteSpace(CapitalNumber)) return new HtmlString("");
                         return new HtmlString(("<i class='icon-money'></i> " + CapitalNumber));
                 }
                 return null;
