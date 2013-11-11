@@ -123,8 +123,6 @@ namespace TimeSheet.Models
         [Range(1, int.MaxValue, ErrorMessage = "Select a CostCenter")]
         public int? CostCenterId { get; set; }
 
-        public List<AccType> charge { get; set; }
-        
         [Required(ErrorMessage="Provide a Capital Account")]
 		public string CapitalNumber { get; set; } 		
 
@@ -157,6 +155,7 @@ namespace TimeSheet.Models
         public string Save()
         {
             CustomerId = CustomerId == 0 ? TimeTypeId : CustomerId;
+            WorkAreaId = WorkAreaId ?? 0;
             Week normal = new Week(this, true);
             Week overtime = new Week(this, false);
             return normal.SaveWeek() + overtime.SaveWeek();

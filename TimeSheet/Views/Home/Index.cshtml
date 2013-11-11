@@ -258,8 +258,10 @@
 
             if (isNaN(parseInt($cust.val()))) $cust.val(0);
             if (isNaN(parseInt($desc.val()))) $desc.val(0);
+            console.log($('#weeksheet').serialize());
 
-            if (isNaN(parseInt($('.interno', '#weeksheet').val()))) {
+            var $intern = $('.interno', '#weeksheet');
+            if (isNaN(parseInt($intern.val())) && $intern.not('[disabled=disabled]')) {
                 e.preventDefault();
                 $('#confirminternal').html($('.interno', '#weeksheet').val());
                 $('#dialog-confirm-newnumber').show();
