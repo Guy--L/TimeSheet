@@ -16,6 +16,7 @@ namespace TimeSheet.App_Start
                 "~/Scripts/bootstrap.js"
                 ,"~/Scripts/bootstrap-inputmask.js"
                 ,"~/Scripts/bootstrap-combobox.js"
+                ,"~/Scripts/respond.js"
                 ));
 			BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/base").Include(
                 "~/Content/bootstrap.css"
