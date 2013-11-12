@@ -216,6 +216,7 @@
             var newhr = ($(this).val().charAt(1) == '_' && $(this).val().charAt(0) != '_') ? Number(newt[0].charAt(0)) : Number(newt[0]);
             newhr = newhr > 24 ? 8 : newhr;
             var g = getHours(newhr, Number(newt[1]));
+            console.log(g);
             g = g.length < 5 ? '0' + g : g;
             $(this).val(g);
             resumLine($(e.target).closest('tr').attr('id'));

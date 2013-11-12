@@ -222,16 +222,16 @@ namespace TimeSheet.Controllers
         {
             tsDB _db = new tsDB();
 
-            if (hours.DescriptionId==0 && !string.IsNullOrWhiteSpace(hours.DescriptionAdd))
+            if ((hours.DescriptionId==null || hours.DescriptionId==0) && !string.IsNullOrWhiteSpace(hours.DescriptionAdd))
                 hours.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(hours.WorkerId, hours.DescriptionAdd));
             else if (Week.descriptions.Any(i => (i.DescriptionId == hours.DescriptionId && !i.IsActive)))
                 _db.Execute(Models.Description.Activate(hours.DescriptionId));
             // else update date last used
 
-            if (hours.CustomerId==0 && !string.IsNullOrWhiteSpace(hours.CustomerAdd))
+            if ((hours.CustomerId==null || hours.CustomerId==0) && !string.IsNullOrWhiteSpace(hours.CustomerAdd))
                 hours.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(hours.WorkerId, hours.CustomerAdd));
             
-            if (hours.InternalNumberId==0 && !string.IsNullOrWhiteSpace(hours.InternalNumberAdd))
+            if ((hours.InternalNumberId==null || hours.InternalNumberId==0) && !string.IsNullOrWhiteSpace(hours.InternalNumberAdd))
                 hours.InternalNumberId = _db.ExecuteScalar<int>(Models.InternalNumber.Save(hours.InternalNumberAdd));
 
             dbExec(hours.Save());

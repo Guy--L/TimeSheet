@@ -246,7 +246,9 @@ namespace TimeSheet.Models
         {
             if (!hours.HasValue || hours.Value == 0)
                 return "";
-            TimeSpan ts = TimeSpan.FromHours(Decimal.ToDouble(hours.Value));
+            double hour = Math.Floor((double)hours);
+            double minute = ((double)hours - hour) * 60d;
+            TimeSpan ts = new TimeSpan((int)hour, (int)Math.Round(minute), 0);
             return string.Format("{0}:{1:00}", (int)ts.TotalHours, ts.Minutes);
         }
 
@@ -254,21 +256,17 @@ namespace TimeSheet.Models
         {
             if (string.IsNullOrWhiteSpace(hours))
                 return null;
-            var part = hours.Split(':');
-            int hrs = 0, mns = 0;
+            decimal result = 0;
             try
             {
-                hrs = int.Parse(part[0]);
-                mns = int.Parse(part[1]);
+                result = Convert.ToDecimal(TimeSpan.Parse(hours).TotalHours);
             }
             catch (Exception e)
             {
                 Exception frame = new Exception(hours, e);
                 Elmah.ErrorSignal.FromCurrentContext().Raise(frame);
             }
-            hrs += mns / 60;
-            mns %= 60;
-            return (decimal?)(hrs + mns * (10.0 / 6.0));
+            return result;
         }
 
         public decimal subTotal
