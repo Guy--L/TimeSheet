@@ -78,6 +78,7 @@
                 </thead>
                 <tbody>
                     <tr class="hourline" id="normal">
+                        @Html.HiddenFor(m => m.TotalMinutes)
                         <td class="hrsum">Normal</td>
                         <td>@form.FormGroup().TextBoxFor(m => m.nMon).Data(new { mask = "99:99" }).WidthXs(12).Label().Class("sr-only")</td>
                         <td>@form.FormGroup().TextBoxFor(m => m.nTue).Data(new { mask = "99:99" }).WidthXs(12).Label().Class("sr-only")</td>

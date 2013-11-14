@@ -280,6 +280,8 @@ namespace TimeSheet.Controllers
                     hrs.oSat = d(overtime.Sat);
                     hrs.oSun = d(overtime.Sun);
                 }
+                if (hrs.PartnerId == Week.NonDemand)
+                    hrs.TimeTypeId = hrs.CustomerId.Value;
                 Debug.WriteLine("Edit>WeekId: " + hrs.WeekId + ", WeekNumber: " + hrs.WeekNumber);
                 return PartialView("_Hours", hrs);
             }

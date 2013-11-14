@@ -179,6 +179,13 @@
         location.href = url.replace('-1', week);
     }
 
+    function resumHours()
+    {
+        $('#TotalMinutes').val(0);
+        resumLine("normal");
+        resumLine("overtime");
+    }
+
     function resumLine(line) {
         var hrs = 0;
         var mns = 0;
@@ -186,6 +193,7 @@
             hrs += Number($(this).val().substr(0, 2));
             mns += Number($(this).val().substr(3, 2));
         });
+        $('#TotalMinutes').val(hrs+mns+$('#TotalMinutes').val());
         $('#hrs' + line, 'tr.hourline').html(getHours(hrs, mns));
     }
 
@@ -208,8 +216,7 @@
         $intn.combobox({ freeform: '#InternalNumberAdd', selected: true });
         $("button.demand").button();
 
-        resumLine("normal");
-        resumLine("overtime");
+        resumHours();
 
         $('tr.hourline input').on('blur', function (e) {
             var newt = $(this).val().replace(/_/g, '0').split(':');
@@ -219,7 +226,8 @@
             console.log(g);
             g = g.length < 5 ? '0' + g : g;
             $(this).val(g);
-            resumLine($(e.target).closest('tr').attr('id'));
+            resumHours();
+//          resumLine($(e.target).closest('tr').attr('id'));
         });
         $('tr.hourline input').on('keypress', function (e) {
             /* ENTER PRESSED*/
@@ -253,15 +261,20 @@
         });
         $('#savehrs').on('click', function (e) {
             var result = $('#weeksheet').valid();
-
             if (!result)
                 return false;
 
+            if ($('#TotalMinutes').val() == 0) {
+                alert('Please enter some hours.  They are empty.');
+                $('#nMon').focus();
+                return false;
+            }
             if (isNaN(parseInt($cust.val()))) $cust.val(0);
             if (isNaN(parseInt($desc.val()))) $desc.val(0);
             console.log($('#weeksheet').serialize());
 
             var $intern = $('.interno', '#weeksheet');
+
             if (isNaN(parseInt($intern.val())) && $intern.not('[disabled=disabled]')) {
                 e.preventDefault();
                 $('#confirminternal').html($('.interno', '#weeksheet').val());
@@ -276,6 +289,7 @@
                             $(this).dialog("close");
                             $('#dialog-confirm-newnumber').hide();
                             $('input[name="InternalNumberId"]', '#weeksheet').val(0);
+                            console.log($('#weeksheet').serialize());
                             $('#weeksheet').submit();
                             return true;
                         },
@@ -287,6 +301,8 @@
                     }
                 });
             }
+            //e.preventDefault();
+            console.log($('#weeksheet').serialize());
             $('#weekline').modal('hide');
         });
         $('#deletehrs').on('click', function (e) {
@@ -304,6 +320,7 @@
             var $target = $('.' + $(this).attr('id'));
             $target.parent().parent().css('display', 'block');
             $target.removeAttr('disabled');
+            console.log($target.attr('name'));
         });
         $('#newreq').on('click', function () {
             if ($('#newreq').hasClass('active')) {

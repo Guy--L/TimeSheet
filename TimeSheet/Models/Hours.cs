@@ -132,6 +132,9 @@ namespace TimeSheet.Models
         [Required(ErrorMessage="Select a Charge Account")]
         public int? AccountType { get; set; }
 
+        [Range(1, 2440, ErrorMessage = "Enter Hours")]
+        public int TotalMinutes { get; set; }
+
         public ChargeTo? ChargeAccount 
         { 
             get { 
@@ -154,7 +157,7 @@ namespace TimeSheet.Models
 
         public string Save()
         {
-            CustomerId = CustomerId == 0 ? TimeTypeId : CustomerId;
+            CustomerId = (CustomerId == null || CustomerId == 0) ? TimeTypeId : CustomerId;
             WorkAreaId = WorkAreaId ?? 0;
             Week normal = new Week(this, true);
             Week overtime = new Week(this, false);
