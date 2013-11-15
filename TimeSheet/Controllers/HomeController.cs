@@ -48,12 +48,10 @@ namespace TimeSheet.Controllers
                 Week.sites = db.Fetch<Site>("");
                 Week.partners = db.Fetch<Partner>("");
                 Week.workAreas = db.Fetch<WorkArea>("");
-                Week.costCenters = db.Fetch<CostCenter>("");
 
                 if (!Week.sites.Any(s => s.SiteId == 0)) Week.sites.Add(new Site { SiteId = 0, _Site = "" });
                 if (!Week.partners.Any(p => p.PartnerId == 0)) Week.partners.Add(new Partner { PartnerId = 0, _Partner = "" });
                 if (!Week.workAreas.Any(w => w.WorkAreaId == 0)) Week.workAreas.Add(new WorkArea { WorkAreaId = 0, _WorkArea = "" });
-                if (!Week.costCenters.Any(c => c.CostCenterId == 0)) Week.costCenters.Add(new CostCenter { CostCenterId = 0, _CostCenter = "" });
             }
             Week.NonDemand = Week.partners.Where(p => p._Partner == "RDSS").Select(q => q.PartnerId).Single();
         }
@@ -144,6 +142,7 @@ namespace TimeSheet.Controllers
             Week.customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = emp.WorkerId });
 
             Week.internalNumbers = db.Fetch<InternalNumber>("");
+            Week.costCenters = db.Fetch<CostCenter>("");
 
             Session["WorkerId"] = emp.WorkerId;
 
@@ -220,19 +219,7 @@ namespace TimeSheet.Controllers
         [HttpPost]
         public ActionResult Save(Hrs hours)
         {
-            tsDB _db = new tsDB();
-
-            if ((hours.DescriptionId==null || hours.DescriptionId==0) && !string.IsNullOrWhiteSpace(hours.DescriptionAdd))
-                hours.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(hours.WorkerId, hours.DescriptionAdd));
-            else if (Week.descriptions.Any(i => (i.DescriptionId == hours.DescriptionId && !i.IsActive)))
-                _db.Execute(Models.Description.Activate(hours.DescriptionId));
-            // else update date last used
-
-            if ((hours.CustomerId==null || hours.CustomerId==0) && !string.IsNullOrWhiteSpace(hours.CustomerAdd))
-                hours.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(hours.WorkerId, hours.CustomerAdd));
-            
-            if ((hours.InternalNumberId==null || hours.InternalNumberId==0) && !string.IsNullOrWhiteSpace(hours.InternalNumberAdd))
-                hours.InternalNumberId = _db.ExecuteScalar<int>(Models.InternalNumber.Save(hours.InternalNumberAdd));
+            hours.AddIfNew();           // add new records for Customer, Description, Cost Center or Internal Number
 
             dbExec(hours.Save());
             return RedirectToAction("Index", new { id = hours.WeekNumber });

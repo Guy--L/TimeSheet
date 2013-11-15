@@ -125,14 +125,14 @@ namespace TimeSheet.Models
 		[Column] public string CustomerName { get; set; } 	
 	}
 
-	[TableName("Description")]
+    [TableName("Description")]
 	[PrimaryKey("DescriptionId")]
 	[ExplicitColumns]
     public partial class Description : tsDB.Record<Description>  
     {		
 		[Column] public int DescriptionId { get; set; } 		
-		[Column] public int WorkerId { get; set; } 		
-		[Column("Description")] public string _Description { get; set; }
+		[Column] public int WorkerId { get; set; }
+        [Column("Description")] public string _Description { get; set; }
 		
 		[Column] public string AccountNumber { get; set; } 		
 		[Column] public int HashCode { get; set; } 		

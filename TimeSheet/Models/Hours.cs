@@ -70,7 +70,10 @@ namespace TimeSheet.Models
 
         [Required(ErrorMessage = "Select or Add a Customer")]
         public string CustomerAdd { get; set; }
-        
+
+        [Required(ErrorMessage = "Select or Add a Cost Center")]
+        public string CostCenterAdd { get; set; }
+
         [Required(ErrorMessage = "Select or Add a Description")]
         public string DescriptionAdd { get; set; }
 
@@ -181,6 +184,26 @@ namespace TimeSheet.Models
             AccountType = b.AccountType;
             Year = b.Year;
             NewRequest = b.NewRequest;
+        }
+
+        public void AddIfNew()
+        {
+            using (tsDB _db = new tsDB())
+            {
+                if ((DescriptionId == null || DescriptionId == 0) && !string.IsNullOrWhiteSpace(DescriptionAdd))
+                    DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(WorkerId, DescriptionAdd));
+                else if (Week.descriptions.Any(i => (i.DescriptionId == DescriptionId && !i.IsActive)))
+                    _db.Execute(Models.Description.Activate(DescriptionId));
+
+                if ((CustomerId == null || CustomerId == 0) && !string.IsNullOrWhiteSpace(CustomerAdd))
+                    CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(WorkerId, CustomerAdd));
+
+                if ((InternalNumberId == null || InternalNumberId == 0) && !string.IsNullOrWhiteSpace(InternalNumberAdd))
+                    InternalNumberId = _db.ExecuteScalar<int>(Models.InternalNumber.Save(InternalNumberAdd));
+
+                if ((CostCenterId == null || CostCenterId == 0) && !string.IsNullOrWhiteSpace(CostCenterAdd))
+                    CostCenterId = _db.ExecuteScalar<int>(Models.CostCenter.Save(CostCenterAdd));
+            }
         }
     }
 }
