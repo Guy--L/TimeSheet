@@ -227,7 +227,6 @@
             var newhr = ($(this).val().charAt(1) == '_' && $(this).val().charAt(0) != '_') ? Number(newt[0].charAt(0)) : Number(newt[0]);
             newhr = newhr > 24 ? 8 : newhr;
             var g = getHours(newhr, Number(newt[1]));
-            console.log(g);
             g = g.length < 5 ? '0' + g : g;
             $(this).val(g);
             resumHours();
@@ -275,38 +274,61 @@
             }
             if (isNaN(parseInt($cust.val()))) $cust.val(0);
             if (isNaN(parseInt($desc.val()))) $desc.val(0);
-            console.log($('#weeksheet').serialize());
+            if (isNaN(parseInt($cost.val()))) $cost.val(0);
 
             var $intern = $('.interno', '#weeksheet');
 
             if (isNaN(parseInt($intern.val())) && $intern.not('[disabled=disabled]')) {
                 e.preventDefault();
-                $('#confirminternal').html($('.interno', '#weeksheet').val());
-                $('#dialog-confirm-newnumber').show();
-                $("#dialog-confirm-newnumber").dialog({
-                    resizable: false,
-                    height: 200,
-                    width: 400,
-                    modal: true,
-                    buttons: {
-                        "Use new Internal Order": function () {
-                            $(this).dialog("close");
-                            $('#dialog-confirm-newnumber').hide();
-                            $('input[name="InternalNumberId"]', '#weeksheet').val(0);
-                            console.log($('#weeksheet').serialize());
-                            $('#weeksheet').submit();
-                            return true;
-                        },
-                        Cancel: function () {
-                            $(this).dialog("close");
-                            $('#dialog-confirm-newnumber').hide();
-                            return false;
-                        }
-                    }
-                });
+
+                var answer = confirm("Use this new Internal Number: " + $intern.val());
+
+                if (!answer) 
+                    return false;
+
+                $('input[name="InternalNumberId"]', '#weeksheet').val(0);
+                $('#weeksheet').submit();
+                $('#weekline').modal('hide');
+                return true;
             }
+
+            var $intern = $('.interno', '#weeksheet');
+
+            if (isNaN(parseInt($intern.val())) && $intern.not('[disabled=disabled]')) {
+                e.preventDefault();
+
+                var answer = confirm("Use this new Internal Number: " + $intern.val());
+
+                if (!answer) {
+                    $intern.focus();
+                    return false;
+                }
+
+                $('input[name="InternalNumberId"]', '#weeksheet').val(0);
+                $('#weeksheet').submit();
+                $('#weekline').modal('hide');
+                return true;
+            }
+
+            var $ctr = $('.costc', '#weeksheet');
+
+            if (isNaN(parseInt($ctr.val())) && $ctr.not('[disabled=disabled]')) {
+                e.preventDefault();
+
+                var answer = confirm("Use this new Cost Center: " + $ctr.val());
+
+                if (!answer) {
+                    $ctr.focus();
+                    return false;
+                }
+
+                $('input[name="CostCenterId"]', '#weeksheet').val(0);
+                $('#weeksheet').submit();
+                $('#weekline').modal('hide');
+                return true;
+            }
+
             //e.preventDefault();
-            console.log($('#weeksheet').serialize());
             $('#weekline').modal('hide');
         });
         $('#deletehrs').on('click', function (e) {
@@ -324,7 +346,6 @@
             var $target = $('.' + $(this).attr('id'));
             $target.parent().parent().css('display', 'block');
             $target.removeAttr('disabled');
-            console.log($target.attr('name'));
         });
         $('#newreq').on('click', function () {
             if ($('#newreq').hasClass('active')) {
@@ -349,7 +370,6 @@
         $('.datepicker').on('change', function (e) {
             var test = new Date(e.target.value);
             if (test.getDay() != 0) {
-                console.log('@Url.Action("PickDate", "Home", null, Request.Url.Scheme)');
                 location.href = '@Url.Action("PickDate", "Home", null, Request.Url.Scheme)/' + $.datepicker.formatDate('yy-mm-dd', test);
             }
         });
