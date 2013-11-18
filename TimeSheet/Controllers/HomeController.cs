@@ -34,7 +34,6 @@ namespace TimeSheet.Controllers
             }
         }
 
-
         /// <summary>
         /// Static constructor to get static lists and set constants
         /// </summary>
@@ -55,7 +54,6 @@ namespace TimeSheet.Controllers
             }
             Week.NonDemand = Week.partners.Where(p => p._Partner == "RDSS").Select(q => q.PartnerId).Single();
         }
-
 
         /// <summary>
         /// Find the first week (a cultural dependency) then first date of week
@@ -87,7 +85,7 @@ namespace TimeSheet.Controllers
         /// </summary>
         /// <param name="timespan"></param>
         /// <returns></returns>
-        private static string d(string timespan)
+        private string d(string timespan)
         {
             if (string.IsNullOrWhiteSpace(timespan)) return "00:00";
             if (timespan.Length == 4) return "0" + timespan;
@@ -130,25 +128,16 @@ namespace TimeSheet.Controllers
         {
             tsDB db = new tsDB();
 
-            string[] worker = Sheet.user.Split('\\');
+            string[] worker = Session["user"].ToString().Split('\\');
             Worker emp = db.FirstOrDefault<Worker>("where ionname = @0", worker[worker.Length-1]);
             if (emp == null)
-                return RedirectToAction("Contact", Sheet.user.Replace('\\','_'));
-
-            Week.descriptions = db.Fetch<Description>("where workerid = @0", emp.WorkerId);
-            Week.descriptions.Add(new Description { DescriptionId = 0, _Description = "" });
-            Week.customers = db.Fetch<Customer>("where workerid = @0 or workerid = 0", emp.WorkerId);
-            Week.customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = 0 });
-            Week.customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = emp.WorkerId });
-
-            Week.internalNumbers = db.Fetch<InternalNumber>("");
-            Week.costCenters = db.Fetch<CostCenter>("");
+                return RedirectToAction("Contact", string.Join("_",worker));
 
             Session["WorkerId"] = emp.WorkerId;
 
             Debug.WriteLine("Index>WorkerId: "+emp.WorkerId);
 
-            Sheet ts = new Sheet() { employee = emp };
+            Sheet ts = new Sheet() { employee = emp, User = Session["user"].ToString() };
 
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
             DateTime init = DateTime.Today;
@@ -156,10 +145,12 @@ namespace TimeSheet.Controllers
             if (!id.HasValue)
                 id = Session["CurrentWeek"] as int?;
 
+            Session["CurrentYear"] = Session["CurrentYear"] ?? DateTime.Today.Year;         // problems at year boundaries
+            ts.year = (int)Session["CurrentYear"];
+
             if (id.HasValue)
             {
-                Session["CurrentYear"] = Session["CurrentYear"] ?? DateTime.Today.Year;
-                init = FirstDateOfWeek((int)Session["CurrentYear"], id.Value);
+                init = FirstDateOfWeek(ts.year, id.Value);
                 ts.weekNumber = id.Value;
             }
             else
@@ -167,12 +158,12 @@ namespace TimeSheet.Controllers
                 ts.weekNumber = calendar.GetWeekOfYear(init, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
             }
 
-            ts.hours = db.Fetch<Week>(string.Format(Week.lst_week, emp.WorkerId, ts.weekNumber));
+            ts.hours = Week.Get(emp.WorkerId, ts.weekNumber, ts.year);
             ts.Stats = Week.Stats(ts.hours);
             ts.Submitted = ts.hours.Any(d => d.Submitted.HasValue);
 
             var idsEntered = ts.hours.Select(d => d.DescriptionId);
-            ts.CarryOver = Week.descriptions.Where(d => !idsEntered.Contains(d.DescriptionId) && d.IsActive).ToList();
+            ts.CarryOver = ts.hours[0].descriptions.Where(d => !idsEntered.Contains(d.DescriptionId) && d.IsActive).ToList();
 
             int nextSunday = init.DayOfWeek == DayOfWeek.Sunday ? 0 : (7 - (int) init.DayOfWeek);
             init = init.AddDays(nextSunday);
@@ -234,11 +225,11 @@ namespace TimeSheet.Controllers
                 if (workerid == null || !workerid.HasValue)
                     throw new Exception("No workerid when creating blank hours from description");
 
-                Hrs hrs = new Hrs();
                 tsDB db = new tsDB();
                 var sheet = db.Fetch<Week>(string.Format(Week.get_hours, id, id2));
                 Week normal = sheet.Where(a => !a.IsOvertime).SingleOrDefault();
                 Week overtime = sheet.Where(a => a.IsOvertime).SingleOrDefault();
+                Hrs hrs = new Hrs(normal);
 
                 hrs.WorkerId = workerid.Value;
                 hrs.CopyHeader(normal??overtime);
@@ -297,7 +288,8 @@ namespace TimeSheet.Controllers
                 if (!year.HasValue)
                     throw new Exception("No year in Home.Create");
 
-                Hrs hrs = new Hrs(workerid, weekno, year);
+                Week wk = new Week(workerid.Value, weekno.Value, year.Value);
+                Hrs hrs = new Hrs(wk);
 
                 if (id == 0)
                     return PartialView("_Hours", hrs);

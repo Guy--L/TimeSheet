@@ -40,7 +40,7 @@
                     <li><a href="#contact">Contact</a></li>
                 </ul>
                 <ul class="nav navbar-nav pull-right">
-                    <li><a href="#"><small>built @File.GetCreationTime(assembly.Location)</small></a></li>
+                    <li><a href="#"><small>built @File.GetLastWriteTime(assembly.Location)</small></a></li>
                     <li><a href="#"><i class="icon-user icon-white"></i> @RenderSection("login", required: false)</a></li>
                     <li><a href="#"><i class="icon-question icon-white"></i></a></li>
                 </ul>

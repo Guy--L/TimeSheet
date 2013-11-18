@@ -16,11 +16,12 @@ namespace TimeSheet.Models
 
     public partial class Week
     {
-        public static List<CostCenter> costCenters;
-        public static List<InternalNumber> internalNumbers;
+        public List<CostCenter> costCenters;
+        public List<InternalNumber> internalNumbers;
+        public List<Customer> customers;
+        public List<Description> descriptions;
+
         public static List<WorkArea> workAreas;
-        public static List<Customer> customers;
-        public static List<Description> descriptions;
         public static List<Site> sites;
         public static List<Partner> partners;
 
@@ -28,6 +29,14 @@ namespace TimeSheet.Models
 
         public Week()
         { }
+
+        public Week(int worker, int weekno, int year)
+        {
+            WeekNumber = weekno;
+            WorkerId = worker;
+            Year = year;
+            GetLists(worker);
+        }
 
         public Week(Hrs b, bool isNormal)
         {
@@ -288,10 +297,10 @@ namespace TimeSheet.Models
         public string[] serializeDT()
         {
             var tot = subTotal;
-            var description = Week.descriptions[DescriptionId]._Description;
-            var intern = InternalNumberId.HasValue ? Week.internalNumbers[InternalNumberId.Value].InternalOrder : CapitalNumber;
-            var costctr = CostCenterId.HasValue ? Week.costCenters[CostCenterId.Value]._CostCenter : "";
-            var customer = (CustomerId.HasValue && CustomerId.Value > 0) ? Week.customers.First(v => v.CustomerId == CustomerId.Value).CustomerName : "";
+            var description = descriptions[DescriptionId]._Description;
+            var intern = InternalNumberId.HasValue ? internalNumbers[InternalNumberId.Value].InternalOrder : CapitalNumber;
+            var costctr = CostCenterId.HasValue ? costCenters[CostCenterId.Value]._CostCenter : "";
+            var customer = (CustomerId.HasValue && CustomerId.Value > 0) ? customers.First(v => v.CustomerId == CustomerId.Value).CustomerName : "";
             var workarea = WorkAreaId.HasValue ? Week.workAreas[WorkAreaId.Value]._WorkArea : "";
             var partner = PartnerId.HasValue ? Week.partners[PartnerId.Value]._Partner : "";
             var site = SiteId.HasValue ? Week.sites[SiteId.Value]._Site : "";
@@ -529,5 +538,38 @@ namespace TimeSheet.Models
              WHERE WeekId = {0} ";
 
         public static string get_hours = @" select * from week where weekid = {0} or weekid = {1} ";
+
+        internal void GetLists(int worker)
+        {
+            using (tsDB db = new tsDB())
+            {
+                descriptions = db.Fetch<Description>("where workerid = @0", worker);
+                descriptions.Add(new Description { DescriptionId = 0, _Description = "" });
+                customers = db.Fetch<Customer>("where workerid = @0 or workerid = 0", worker);
+                customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = 0 });         // for RDSS time
+                customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = worker });    // normal customers
+
+                internalNumbers = db.Fetch<InternalNumber>("");
+                costCenters = db.Fetch<CostCenter>("");
+            }
+        }
+
+        internal static List<Week> Get(int worker, int week, int year)
+        {
+            List<Week> list;
+            using (tsDB db = new tsDB())
+            {
+                list = db.Fetch<Week>(string.Format(Week.lst_week, worker, week));
+                if (list == null || list.Count == 0)
+                {
+                    list = new List<Week>();
+                    Week w = new Week(worker, week, year);
+                    list.Add(w);
+                }
+                else
+                    list[0].GetLists(worker);
+            }
+            return list;
+        }
     }
 }

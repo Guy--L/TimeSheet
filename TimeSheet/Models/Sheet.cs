@@ -9,14 +9,15 @@ namespace TimeSheet.Models
     public class Sheet
     {
         public Worker employee { get; set; }
-        public static string user;
+        public string User;
 
         public List<Week> hours { get; set; }
         public string[] Stats { get; set; }
 
         public static List<DateTime> headers;
-        public List<DateTime> Headers { get { return headers; } set { headers = value; } } 
+        public List<DateTime> Headers { get { return headers; } set { headers = value; } }
 
+        public int year { get; set; }
         public int weekNumber { get; set; }
         public string NewDescription { get; set; }
         public string NewCustomer { get; set; }
@@ -30,8 +31,6 @@ namespace TimeSheet.Models
         public Week normal { get; set; }
         public Week overtime { get; set; }
         
-        public string User { get { return user; } set { user = value; } }
-
         public List<Description> CarryOver;
 
         /// <summary>

@@ -37,7 +37,6 @@ namespace TimeSheet
 #endif
             //scheduleDB _db = new scheduleDB();
             HttpContext.Current.Session["user"] = user;
-            Sheet.user = user;
             //HttpContext.Current.Session["authority"] = _db.Fetch<User>(string.Format(Models.User.get_role, user)).FirstOrDefault();
         }
     }

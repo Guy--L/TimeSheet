@@ -20,12 +20,8 @@ namespace TimeSheet.Models
         {
             partners = new SelectList(Week.partners, "PartnerId", "_Partner", 0);
             sites = new SelectList(Week.sites, "SiteId", "_Site");
-            internalNumbers = new SelectList(Week.internalNumbers, "InternalNumberId", "InternalOrder");
             workAreas = new SelectList(Week.workAreas, "WorkAreaId", "_WorkArea");
-            times = new SelectList(Week.customers.Where(c => c.WorkerId == 0), "CustomerId", "CustomerName");
-            customers = new SelectList(Week.customers.Where(c => c.WorkerId != 0), "CustomerId", "CustomerName");
-            descriptions = new SelectList(Week.descriptions, "DescriptionId", "_Description", 0);
-            costCenters = new SelectList(Week.costCenters, "CostCenterId", "_CostCenter");
+
             headers = Sheet.headers;
         }
 
@@ -33,11 +29,17 @@ namespace TimeSheet.Models
         {
         }
 
-        public Hrs(int? workerid, int? weeknumber, int? year)
+        public Hrs(Week w)
         {
-            WorkerId = workerid.Value;
-            WeekNumber = weeknumber.Value;
-            Year = year.Value;
+            internalNumbers = new SelectList(w.internalNumbers, "InternalNumberId", "InternalOrder");
+            times = new SelectList(w.customers.Where(c => c.WorkerId == 0), "CustomerId", "CustomerName");
+            customers = new SelectList(w.customers.Where(c => c.WorkerId != 0), "CustomerId", "CustomerName");
+            descriptions = new SelectList(w.descriptions, "DescriptionId", "_Description", 0);
+            costCenters = new SelectList(w.costCenters, "CostCenterId", "_CostCenter");
+
+            WorkerId = w.WorkerId;
+            WeekNumber = w.WeekNumber;
+            Year = w.Year;
             CostCenterId = 0;
             PartnerId = 0;
             SiteId = 0;
@@ -50,11 +52,12 @@ namespace TimeSheet.Models
         private static SelectList partners;
         private static SelectList sites;
         private static SelectList times;
-        private static SelectList customers;
         private static SelectList workAreas;
-        private static SelectList costCenters;
-        private static SelectList internalNumbers;
-        private static SelectList descriptions;
+
+        private SelectList customers;
+        private SelectList costCenters;
+        private SelectList internalNumbers;
+        private SelectList descriptions;
 
         public SelectList Partners { get { return partners; } }
         public SelectList Sites { get { return sites; } }
@@ -192,8 +195,10 @@ namespace TimeSheet.Models
             {
                 if ((DescriptionId == null || DescriptionId == 0) && !string.IsNullOrWhiteSpace(DescriptionAdd))
                     DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(WorkerId, DescriptionAdd));
-                else if (Week.descriptions.Any(i => (i.DescriptionId == DescriptionId && !i.IsActive)))
+                else
+                {
                     _db.Execute(Models.Description.Activate(DescriptionId));
+                }
 
                 if ((CustomerId == null || CustomerId == 0) && !string.IsNullOrWhiteSpace(CustomerAdd))
                     CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(WorkerId, CustomerAdd));
