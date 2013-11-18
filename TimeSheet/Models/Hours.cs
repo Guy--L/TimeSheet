@@ -31,6 +31,9 @@ namespace TimeSheet.Models
 
         public Hrs(Week w)
         {
+            if (w.internalNumbers == null)
+                w.GetLists(w.WorkerId);
+
             internalNumbers = new SelectList(w.internalNumbers, "InternalNumberId", "InternalOrder");
             times = new SelectList(w.customers.Where(c => c.WorkerId == 0), "CustomerId", "CustomerName");
             customers = new SelectList(w.customers.Where(c => c.WorkerId != 0), "CustomerId", "CustomerName");

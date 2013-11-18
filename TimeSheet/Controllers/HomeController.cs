@@ -229,6 +229,7 @@ namespace TimeSheet.Controllers
                 var sheet = db.Fetch<Week>(string.Format(Week.get_hours, id, id2));
                 Week normal = sheet.Where(a => !a.IsOvertime).SingleOrDefault();
                 Week overtime = sheet.Where(a => a.IsOvertime).SingleOrDefault();
+
                 Hrs hrs = new Hrs(normal);
 
                 hrs.WorkerId = workerid.Value;

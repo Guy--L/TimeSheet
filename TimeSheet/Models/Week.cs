@@ -567,7 +567,16 @@ namespace TimeSheet.Models
                     list.Add(w);
                 }
                 else
+                {
                     list[0].GetLists(worker);
+                    foreach (var wk in list.Skip(1))
+                    {
+                        wk.descriptions = list[0].descriptions;
+                        wk.customers = list[0].customers;
+                        wk.internalNumbers = list[0].internalNumbers;
+                        wk.costCenters = list[0].costCenters;
+                    }
+                }
             }
             return list;
         }

@@ -127,20 +127,21 @@
         var empid = '@Model.employee.WorkerId';
 
         function switchUI() {
+            var selector = 'input[type="text"],input[type="hidden"],input[type="radio"],select';
             var $nondmd = $('.nondemand').parent().parent();
             var $dmd = $('.demand').parent().parent();
 
             if ($('#PartnerId').find('option:selected').html() == 'RDSS') {
                 $nondmd.css('display', 'block');
-                $nondmd.find('input[type="text"],input[type="hidden"],input[type="radio"],select').removeAttr('disabled');
+                $nondmd.find(selector).removeAttr('disabled');
                 $dmd.css('display', 'none');
-                $dmd.find('input[type="text"], input[type="hidden"], input[type="radio"], select').attr('disabled', 'disabled');
+                $dmd.find(selector).attr('disabled', 'disabled');
             }
             else {
                 $nondmd.css('display', 'none');
-                $nondmd.find('input[type="text"], input[type="hidden"], input[type="radio"], select').attr('disabled', 'disabled');
+                $nondmd.find(selector).attr('disabled', 'disabled');
                 $dmd.css('display', 'block');
-                $dmd.find('input[type="text"], input[type="hidden"], input[type="radio"], select').removeAttr('disabled');
+                $dmd.find(selector).removeAttr('disabled');
             }
             $('.acct').css('display', 'none');
             $('.acct').find('input[type="text"], select').attr('disabled', 'disabled');
@@ -247,17 +248,6 @@
                 }
                 return false;
             }
-            //if (String.fromCharCode(e.which) == '+') {
-            //    $(this).val(getHours(0, getMins($(this).val()) + 5));
-            //    return false;
-            //}
-            //if (String.fromCharCode(e.which) == '-') {
-            //    console.log($(this).val());
-            //    var m = getMins($(this).val());
-            //    if (m <= 0) return false;
-            //    $(this).val(getHours(0, getMins($(this).val()) - 5));
-            //    return false;
-            //}
         });
         $('#PartnerId').on('change', function () {
             switchUI();
@@ -292,24 +282,6 @@
                 return true;
             }
 
-            var $intern = $('.interno', '#weeksheet');
-
-            if (isNaN(parseInt($intern.val())) && $intern.not('[disabled=disabled]')) {
-                e.preventDefault();
-
-                var answer = confirm("Use this new Internal Number: " + $intern.val());
-
-                if (!answer) {
-                    $intern.focus();
-                    return false;
-                }
-
-                $('input[name="InternalNumberId"]', '#weeksheet').val(0);
-                $('#weeksheet').submit();
-                $('#weekline').modal('hide');
-                return true;
-            }
-
             var $ctr = $('.costc', '#weeksheet');
 
             if (isNaN(parseInt($ctr.val())) && $ctr.not('[disabled=disabled]')) {
@@ -329,6 +301,7 @@
             }
 
             //e.preventDefault();
+            console.log($('#weeksheet').serialize());
             $('#weekline').modal('hide');
         });
         $('#deletehrs').on('click', function (e) {
@@ -432,6 +405,7 @@
 
                     $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
                         $('#weekline').replaceWith(data);
+                        console.log(data);
                         popuploaded();
                     });
                 });
