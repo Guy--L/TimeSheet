@@ -48,6 +48,7 @@ namespace TimeSheet.Models
             SiteId = 0;
             WorkAreaId = 0;
             CustomerId = 0;
+            CapitalNumber = "";
             ChargeAccount = ChargeTo.Cost_Center;
         }
 

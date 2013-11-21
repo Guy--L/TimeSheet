@@ -550,7 +550,9 @@ namespace TimeSheet.Models
                 customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = worker });    // normal customers
 
                 internalNumbers = db.Fetch<InternalNumber>("");
+                internalNumbers.Insert(0, new InternalNumber { InternalNumberId = 0, InternalOrder = "" });
                 costCenters = db.Fetch<CostCenter>("");
+                costCenters.Insert(0, new CostCenter { CostCenterId = 0, _CostCenter = "" });
             }
         }
 

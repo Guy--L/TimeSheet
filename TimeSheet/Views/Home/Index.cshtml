@@ -208,6 +208,18 @@
         $('select option[value="0"]').attr('selected', true);
         $('td.hrsum[id^="hrs"]', 'tr.hourline').html('');
     }
+    function acctnumber(event) {                                         // Allow: backspace, delete, tab, escape, enter and .
+        if ( $.inArray(event.keyCode,[46,8,9,27,13,190]) !== -1 ||       // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) ||           // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {              // let it happen, don't do anything
+            return;
+        }
+        else {                                                           // Ensure that it is a number and stop the keypress
+            if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                event.preventDefault(); 
+            }   
+        }
+    }
     function popuploaded() {
         $cust = $('#CustomerId', '#weeksheet');
         $desc = $('#DescriptionId', '#weeksheet');
@@ -219,7 +231,22 @@
         $intn.combobox({ freeform: '#InternalNumberAdd', selected: true });
         $cost.combobox({ freeform: '#CostCenterAdd', selected: true });
 
+        if ($('#WeekId', '#weeksheet').val() == '0' && $('#oWeekId', '#weeksheet').val() == '0') {
+            $('#modaltitle').html('Add Hours');
+            $('input[name="InternalNumberId"]', '#weeksheet').val(0);
+            $('input[name="CostCenterId"]', '#weeksheet').val(0);
+            //console.log($('select.interno', '#weeksheet').length);
+            //$("select.costc option[value='0']").attr("selected", "selected");
+            //$("select.interno option[value='0']").attr("selected", "selected");
+        }
+        else
+            $('#modaltitle').html('Edit Hours');
+
+        $('input[name="InternalNumberAdd"]', '#weeksheet').keydown(acctnumber);
+        $('input[name="CostCenterAdd"]', '#weeksheet').keydown(acctnumber);
         $("button.demand").button();
+
+        console.log("popped up: " + $intn.val(), $cost.val());
 
         resumHours();
 
@@ -299,8 +326,15 @@
                 $('#weekline').modal('hide');
                 return true;
             }
+            var $cn = $('input[name="CapitalNumber"]', '#weeksheet');
+            $cn.val(encodeURIComponent($cn.val()));
 
-            //e.preventDefault();
+            var $ds = $('input[name="DescriptionAdd"]', '#weeksheet');
+            $ds.val(encodeURIComponent($ds.val()));
+
+            var $cs = $('input[name="CustomerAdd"]', '#weeksheet');
+            $cs.val(encodeURIComponent($cs.val()));
+
             console.log($('#weeksheet').serialize());
             $('#weekline').modal('hide');
         });
@@ -319,6 +353,7 @@
             var $target = $('.' + $(this).attr('id'));
             $target.parent().parent().css('display', 'block');
             $target.removeAttr('disabled');
+            $target.attr('onbeforepaste', 'return false;');
         });
         $('#newreq').on('click', function () {
             if ($('#newreq').hasClass('active')) {
@@ -405,7 +440,6 @@
 
                     $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
                         $('#weekline').replaceWith(data);
-                        console.log(data);
                         popuploaded();
                     });
                 });

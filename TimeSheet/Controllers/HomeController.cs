@@ -135,8 +135,6 @@ namespace TimeSheet.Controllers
 
             Session["WorkerId"] = emp.WorkerId;
 
-            Debug.WriteLine("Index>WorkerId: "+emp.WorkerId);
-
             Sheet ts = new Sheet() { employee = emp, User = Session["user"].ToString() };
 
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
@@ -261,7 +259,6 @@ namespace TimeSheet.Controllers
                 }
                 if (hrs.PartnerId == Week.NonDemand)
                     hrs.TimeTypeId = hrs.CustomerId.Value;
-                Debug.WriteLine("Edit>WeekId: " + hrs.WeekId + ", WeekNumber: " + hrs.WeekNumber);
                 return PartialView("_Hours", hrs);
             }
             catch (Exception e)
@@ -295,6 +292,8 @@ namespace TimeSheet.Controllers
                 if (id == 0)
                     return PartialView("_Hours", hrs);
 
+                // prior description selected
+
                 tsDB db = new tsDB();
                 
                 var prior = db.Fetch<Week>(string.Format(Week.get_prior, workerid.Value, id)).SingleOrDefault();
@@ -302,7 +301,6 @@ namespace TimeSheet.Controllers
                 hrs.CopyHeader(prior);
                 hrs.WeekNumber = weekno.Value;                  // stay on currently viewed week not the prior
                 if (prior == null) hrs.DescriptionId = id;
-                Debug.WriteLine("Create>WeekId: " + hrs.WeekId+", WeekNumber: "+hrs.WeekNumber);
                 return PartialView("_Hours", hrs);
             }
             catch (Exception e)
