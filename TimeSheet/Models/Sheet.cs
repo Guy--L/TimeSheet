@@ -31,7 +31,7 @@ namespace TimeSheet.Models
         public Week normal { get; set; }
         public Week overtime { get; set; }
         
-        public List<Description> CarryOver;
+        public List<Week> CarryOver;
 
         /// <summary>
         /// http://stackoverflow.com/questions/5377851/get-date-range-by-week-number-c-sharp

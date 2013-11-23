@@ -161,7 +161,16 @@ namespace TimeSheet.Controllers
             ts.Submitted = ts.hours.Any(d => d.Submitted.HasValue);
 
             var idsEntered = ts.hours.Select(d => d.DescriptionId);
-            ts.CarryOver = ts.hours[0].descriptions.Where(d => !idsEntered.Contains(d.DescriptionId) && d.IsActive).ToList();
+            var idsPrior = ts.hours[0].descriptions.Where(d => !idsEntered.Contains(d.DescriptionId) && d.IsActive);
+            ts.CarryOver = idsPrior.Select(d => db.Fetch<Week>(string.Format(Week.get_prior, emp.WorkerId, d.DescriptionId)).SingleOrDefault()).ToList();
+            ts.CarryOver.ForEach(c => { 
+                if (c == null) return; 
+                c.Year = -1;
+                c.descriptions = ts.hours[0].descriptions;
+                c.customers = ts.hours[0].customers;
+                c.internalNumbers = ts.hours[0].internalNumbers;
+                c.costCenters = ts.hours[0].costCenters;
+            });
 
             int nextSunday = init.DayOfWeek == DayOfWeek.Sunday ? 0 : (7 - (int) init.DayOfWeek);
             init = init.AddDays(nextSunday);

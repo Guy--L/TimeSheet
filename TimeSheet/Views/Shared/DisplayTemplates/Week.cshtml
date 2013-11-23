@@ -1,26 +1,41 @@
 ﻿@model TimeSheet.Models.Week
 
 @{
-    if (Model.WeekId == 0) { 
+    if (Model == null || Model.WeekId == 0) { 
         return;
     }
+    if (Model.Year >= 0) { 
+        <tr class="hoursrow" data-id="@Model.WeekId" data-pairid="@Model.PairId" title="@Model.Description">
+            <td>@Html.Raw(Model.IsOvertime?"<i class='icon-time'></i>":"")</td>
+            <td>@Model.ShortDescription</td>
+            <td title="@Model.ChargeType">@Model.ChargeNumber</td>
+            <td class="day">@Model.Mon</td>
+            <td class="day">@Model.Tue</td>
+            <td class="day">@Model.Wed</td>
+            <td class="day">@Model.Thu</td>
+            <td class="day">@Model.Fri</td>
+            <td class="day">@Model.Sat</td>
+            <td class="day">@Model.Sun</td>
+            <td class="day subt">@Model.SubTotal</td>
+            <td>@Html.Raw(Model.NewRequest ? "<i class='icon-asterisk'></i>" : "")</td>
+            <td>@Model.Customer</td>
+            <td>@Model.WorkArea</td>
+            <td>@Model.Partner</td>
+            <td>@Model.Site</td>
+        </tr>
+    }
+    else if (Model.Description != null)
+    {
+        <tr class="descriptionrow" data-id="@Model.DescriptionId" title="click to add hours for this row">
+            <td class="inactivate" title="click to hide this row from empty timesheets"><i class='icon-ban-circle'></i></td>
+            <td title="@Model.Description">@Model.ShortDescription</td>
+            <td title="@Model.ChargeType">@Model.ChargeNumber</td>
+            <td colspan="8"></td>
+            <td>@Html.Raw(Model.NewRequest ? "<i class='icon-asterisk'></i>" : "")</td>
+            <td>@Model.Customer</td>
+            <td>@Model.WorkArea</td>
+            <td>@Model.Partner</td>
+            <td>@Model.Site</td>
+        </tr>
+    }
 }
-
-<tr class="hoursrow" data-id="@Model.WeekId" data-pairid="@Model.PairId" title="@Model.Description">
-    <td>@Html.Raw(Model.IsOvertime?"<i class='icon-time'></i>":"")</td>
-    <td>@Model.ShortDescription</td>
-    <td title="@Model.ChargeType">@Model.ChargeNumber</td>
-    <td class="day">@Model.Mon</td>
-    <td class="day">@Model.Tue</td>
-    <td class="day">@Model.Wed</td>
-    <td class="day">@Model.Thu</td>
-    <td class="day">@Model.Fri</td>
-    <td class="day">@Model.Sat</td>
-    <td class="day">@Model.Sun</td>
-    <td class="day subt">@Model.SubTotal</td>
-    <td>@Html.Raw(Model.NewRequest ? "<i class='icon-asterisk'></i>" : "")</td>
-    <td>@Model.Customer</td>
-    <td>@Model.WorkArea</td>
-    <td>@Model.Partner</td>
-    <td>@Model.Site</td>
-</tr>

@@ -228,16 +228,14 @@
 
         $desc.combobox({ freeform: '#DescriptionAdd', selected: true });
         $cust.combobox({ freeform: '#CustomerAdd', selected: true });
-        $intn.combobox({ freeform: '#InternalNumberAdd', selected: true });
-        $cost.combobox({ freeform: '#CostCenterAdd', selected: true });
+        $intn.combobox({ freeform: '#InternalNumberAdd', selected: false });
+        $cost.combobox({ freeform: '#CostCenterAdd', selected: false });
 
         if ($('#WeekId', '#weeksheet').val() == '0' && $('#oWeekId', '#weeksheet').val() == '0') {
             $('#modaltitle').html('Add Hours');
-            $('input[name="InternalNumberId"]', '#weeksheet').val(0);
-            $('input[name="CostCenterId"]', '#weeksheet').val(0);
-            //console.log($('select.interno', '#weeksheet').length);
-            //$("select.costc option[value='0']").attr("selected", "selected");
-            //$("select.interno option[value='0']").attr("selected", "selected");
+            console.log($cost);
+            //$('input[name="InternalNumberId"]', '#weeksheet').val(0);
+            //$('input[name="CostCenterId"]', '#weeksheet').val(0);
         }
         else
             $('#modaltitle').html('Edit Hours');
@@ -245,8 +243,6 @@
         $('input[name="InternalNumberAdd"]', '#weeksheet').keydown(acctnumber);
         $('input[name="CostCenterAdd"]', '#weeksheet').keydown(acctnumber);
         $("button.demand").button();
-
-        console.log("popped up: " + $intn.val(), $cost.val());
 
         resumHours();
 
@@ -335,7 +331,6 @@
             var $cs = $('input[name="CustomerAdd"]', '#weeksheet');
             $cs.val(encodeURIComponent($cs.val()));
 
-            console.log($('#weeksheet').serialize());
             $('#weekline').modal('hide');
         });
         $('#deletehrs').on('click', function (e) {
