@@ -289,9 +289,9 @@
             if (isNaN(parseInt($desc.val()))) $desc.val(0);
             if (isNaN(parseInt($cost.val()))) $cost.val(0);
 
-            var $intern = $('.interno', '#weeksheet');
+            var $intern = $('input.interno', '#weeksheet');
 
-            if (isNaN(parseInt($intern.val())) && $intern.not('[disabled=disabled]')) {
+            if ($intern.next().val()==0 && !$intern.prop('disabled')) {
                 e.preventDefault();
 
                 var answer = confirm("Use this new Internal Number: " + $intern.val());
@@ -305,9 +305,9 @@
                 return true;
             }
 
-            var $ctr = $('.costc', '#weeksheet');
+            var $ctr = $('input.costc', '#weeksheet');
 
-            if (isNaN(parseInt($ctr.val())) && $ctr.not('[disabled=disabled]')) {
+            if ($ctr.next().val()==0 && !$ctr.prop('disabled')) {
                 e.preventDefault();
 
                 var answer = confirm("Use this new Cost Center: " + $ctr.val());
