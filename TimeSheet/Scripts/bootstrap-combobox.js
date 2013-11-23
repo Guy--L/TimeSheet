@@ -84,7 +84,9 @@
   , transferAttributes: function() {
     this.options.placeholder = this.$source.attr('data-placeholder') || this.options.placeholder;
     this.$element.attr('placeholder', this.options.placeholder);
-    this.$element.prop('name', this.$source.prop('name').replace('Id', 'Add'));
+    var addid = this.$source.prop('name').replace('Id', 'Add')
+    this.$element.prop('name', addid);
+    this.$element.prop('id', addid);
     this.$element.attr('data-val-required', this.$source.attr('data-val-required'));
     this.$element.attr('data-val', this.$source.attr('data-val'));
     $('span.field-validation-valid', this.$container.parent()).attr('data-valmsg-for', this.$element.prop('name'));
@@ -224,6 +226,7 @@
       this.clearTarget();
       this.triggerChange();
       this.clearElement();
+      this.$element.attr('placeholder', 'type to add or match, click again for list');
     } else {
       if (this.shown) {
         this.hide();

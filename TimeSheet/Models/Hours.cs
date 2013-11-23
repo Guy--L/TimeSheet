@@ -34,11 +34,11 @@ namespace TimeSheet.Models
             if (w.internalNumbers == null)
                 w.GetLists(w.WorkerId);
 
-            internalNumbers = new SelectList(w.internalNumbers, "InternalNumberId", "InternalOrder");
+            internalNumbers = new SelectList(w.internalNumbers, "InternalNumberId", "InternalOrder", 0);
             times = new SelectList(w.customers.Where(c => c.WorkerId == 0), "CustomerId", "CustomerName");
             customers = new SelectList(w.customers.Where(c => c.WorkerId != 0), "CustomerId", "CustomerName");
             descriptions = new SelectList(w.descriptions, "DescriptionId", "_Description", 0);
-            costCenters = new SelectList(w.costCenters, "CostCenterId", "_CostCenter");
+            costCenters = new SelectList(w.costCenters, "CostCenterId", "_CostCenter", 0);
 
             WorkerId = w.WorkerId;
             WeekNumber = w.WeekNumber;
@@ -127,10 +127,10 @@ namespace TimeSheet.Models
         [Range(1, int.MaxValue, ErrorMessage = "Select a Partner")]
         public int? PartnerId { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "Select an Internal Order Number")]
+        [Required(ErrorMessage = "Select an Internal Order Number"),Range(1, int.MaxValue, ErrorMessage = "Select an Internal Order Number")]
         public int? InternalNumberId { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "Select a CostCenter")]
+        [Required(ErrorMessage = "Select a Cost Center"), Range(1, int.MaxValue, ErrorMessage = "Select a CostCenter")]
         public int? CostCenterId { get; set; }
 
         [Required(ErrorMessage="Provide a Capital Account")]

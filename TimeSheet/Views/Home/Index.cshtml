@@ -114,8 +114,12 @@
     <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Proceed with Internal Order <span id="confirminternal"></span>.  Are you sure?</p>
 </div>
 
-<div class="submitchecks" id="dialog-confirm-hours" title="Regular hours do not sum to 40">
+<div class="submitchecks" id="dialog-confirm-hours" title="Regular hours sum up to more than 40">
     <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Your regular hours totals <span id="confirmhours"></span>.  Are you sure you want to submit?</p>
+</div>
+
+<div class="submitchecks" id="dialog-deny-hours" title="Less than 40 Regular hours">
+    <p><span class="ui-icon ui-icon-eject" style="float: left; margin: 0 7px 20px 0;"></span>Your regular hours totals <span id="denyhours"></span>.  Submissions less than 40 are not accepted.</p>
 </div>
 
 @section login{ @Model.User }
@@ -216,7 +220,8 @@
         }
         else {                                                           // Ensure that it is a number and stop the keypress
             if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
-                event.preventDefault(); 
+                event.preventDefault();
+                $(this).attr('placeholder', 'numbers only');
             }   
         }
     }
@@ -228,8 +233,8 @@
 
         $desc.combobox({ freeform: '#DescriptionAdd', selected: true });
         $cust.combobox({ freeform: '#CustomerAdd', selected: true });
-        $intn.combobox({ freeform: '#InternalNumberAdd', selected: false });
-        $cost.combobox({ freeform: '#CostCenterAdd', selected: false });
+        $intn.combobox({ freeform: '#InternalNumberAdd', selected: true });
+        $cost.combobox({ freeform: '#CostCenterAdd', selected: true });
 
         if ($('#WeekId', '#weeksheet').val() == '0' && $('#oWeekId', '#weeksheet').val() == '0') {
             $('#modaltitle').html('Add Hours');
@@ -360,9 +365,9 @@
                 $('#newreq input').val('true');
             }
         });
-        $.validator.unobtrusive.parse("#weeksheet");
         $('#weekline').modal('show');
         switchUI();
+        $.validator.unobtrusive.parse("#weeksheet");
     }
     // Page loaded document ready
     $(function () {
@@ -400,7 +405,7 @@
 
                 $('#submitsheet').on('click', function (e) {
                     var total = getMins('@Model.Stats[0]') + getMins('@Model.Stats[1]');
-                    if (total != 40 * 60) {
+                    if (total > 40 * 60) {
                         $('#confirmhours').text(getHours(0, total));
                         $('#dialog-confirm-hours').show();
                         e.preventDefault();
@@ -423,6 +428,25 @@
                                 }
                             }
                         });
+                    } else if (total < 40 * 60) {
+                        $('#denyhours').text(getHours(0, total));
+                        $('#dialog-deny-hours').show();
+                        e.preventDefault();
+                        $("#dialog-deny-hours").dialog({
+                            resizable: false,
+                            height: 170,
+                            width: 350,
+                            modal: true,
+                            buttons: {
+                                OK: function () {
+                                    $(this).dialog("close");
+                                    $('#dialog-deny-hours').hide();
+
+                                    return false;
+                                }
+                            }
+                        });
+
                     }
                 });
 
