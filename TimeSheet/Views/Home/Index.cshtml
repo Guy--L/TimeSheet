@@ -238,7 +238,6 @@
 
         if ($('#WeekId', '#weeksheet').val() == '0' && $('#oWeekId', '#weeksheet').val() == '0') {
             $('#modaltitle').html('Add Hours');
-            console.log($cost);
             //$('input[name="InternalNumberId"]', '#weeksheet').val(0);
             //$('input[name="CostCenterId"]', '#weeksheet').val(0);
         }
@@ -274,7 +273,8 @@
                     inputs[idx + 1].focus(); //  handles submit buttons
                     inputs[idx + 1].select();
                 }
-                return false;
+                e.preventDefault();
+                return;
             }
         });
         $('#PartnerId').on('change', function () {
@@ -282,13 +282,15 @@
         });
         $('#savehrs').on('click', function (e) {
             var result = $('#weeksheet').valid();
-            if (!result)
-                return false;
-
+            if (!result) {
+                e.preventDefault();
+                return;
+            }
             if ($('#TotalMinutes').val() == 0) {
+                e.preventDefault();
                 alert('Please enter some hours.  They are empty.');
                 $('#nMon').focus();
-                return false;
+                return;
             }
             if (isNaN(parseInt($cust.val()))) $cust.val(0);
             if (isNaN(parseInt($desc.val()))) $desc.val(0);
@@ -296,36 +298,36 @@
 
             var $intern = $('input.interno', '#weeksheet');
 
-            if ($intern.next().val()==0 && !$intern.prop('disabled')) {
+            if ($intn.val() == 0 && !$intern.prop('disabled')) {
                 e.preventDefault();
 
                 var answer = confirm("Use this new Internal Number: " + $intern.val());
 
-                if (!answer) 
-                    return false;
-
+                if (!answer)
+                    return;
+                
                 $('input[name="InternalNumberId"]', '#weeksheet').val(0);
                 $('#weeksheet').submit();
                 $('#weekline').modal('hide');
-                return true;
+                return;
             }
 
             var $ctr = $('input.costc', '#weeksheet');
 
-            if ($ctr.next().val()==0 && !$ctr.prop('disabled')) {
+            if ($cost.val() == 0 && !$ctr.prop('disabled')) {
                 e.preventDefault();
 
                 var answer = confirm("Use this new Cost Center: " + $ctr.val());
 
                 if (!answer) {
                     $ctr.focus();
-                    return false;
+                    return;
                 }
 
                 $('input[name="CostCenterId"]', '#weeksheet').val(0);
                 $('#weeksheet').submit();
                 $('#weekline').modal('hide');
-                return true;
+                return;
             }
             var $cn = $('input[name="CapitalNumber"]', '#weeksheet');
             $cn.val(encodeURIComponent($cn.val()));
@@ -424,7 +426,7 @@
                                     $(this).dialog("close");
                                     $('#dialog-confirm-hours').hide();
 
-                                    return false;
+                                    return;
                                 }
                             }
                         });
@@ -442,7 +444,7 @@
                                     $(this).dialog("close");
                                     $('#dialog-deny-hours').hide();
 
-                                    return false;
+                                    return;
                                 }
                             }
                         });

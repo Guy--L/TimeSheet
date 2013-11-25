@@ -238,6 +238,7 @@
   }
 
   , clearElement: function () {
+      this.$element.undo = this.$element.val();
     this.$element.val('').focus();
   }
 
@@ -322,9 +323,9 @@
 
   , keyup: function (e) {
       switch(e.keyCode) {
-        case 40: // down arrow
-        case 39: // right arrow
-        case 38: // up arrow
+          case 39: // right arrow
+          case 40: // down arrow
+          case 38: // up arrow
         case 37: // left arrow
         case 36: // home
         case 35: // end
@@ -368,7 +369,7 @@
             this.$target.val('').trigger('change');
             }
         else {
-            this.$source.val(val).trigger('change');
+            this.$source.val(0).trigger('change');
             this.$target.val(val).trigger('change');
             $(this.options.freeform).val(val);
             this.$container.addClass('combobox-selected');
