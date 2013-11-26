@@ -119,7 +119,7 @@
 </div>
 
 <div class="submitchecks" id="dialog-deny-hours" title="Less than 40 Regular hours">
-    <p><span class="ui-icon ui-icon-eject" style="float: left; margin: 0 7px 20px 0;"></span>Your regular hours totals <span id="denyhours"></span>.  Submissions less than 40 are not accepted.</p>
+    <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Your regular hours totals <span id="denyhours"></span>.  Submissions less than 40 are not accepted.</p>
 </div>
 
 @section login{ @Model.User }
@@ -151,6 +151,7 @@
             $('.acct').find('input[type="text"], select').attr('disabled', 'disabled');
             var $acct = $('.' + $('input[name="AccountType"]:checked').attr('id'));             // get ID of checked box
             if ($acct.length == 0) {                                                            // if none set one
+                $('#costc').parent().button('toggle');
                 $('#costc').prop('checked', true);
                 $('#costc').prev().attr("class", "icon-check");
                 $acct = $('.costc');
@@ -212,14 +213,15 @@
         $('select option[value="0"]').attr('selected', true);
         $('td.hrsum[id^="hrs"]', 'tr.hourline').html('');
     }
-    function acctnumber(event) {                                         // Allow: backspace, delete, tab, escape, enter and .
-        if ( $.inArray(event.keyCode,[46,8,9,27,13,190]) !== -1 ||       // Allow: Ctrl+A
-            (event.keyCode == 65 && event.ctrlKey === true) ||           // Allow: home, end, left, right
-            (event.keyCode >= 35 && event.keyCode <= 39)) {              // let it happen, don't do anything
+    function acctnumber(event) {                                        // Allow: backspace, delete, tab, escape, enter and .
+        var x = event.which;
+        if ( $.inArray(x,[46,8,9,27,13,190]) !== -1 ||                  // Allow: Ctrl+A
+            (x == 65 && event.ctrlKey === true) ||                      // Allow: home, end, left, right
+            (x >= 35 && x <= 39)) {                                     // let it happen, don't do anything
             return;
         }
         else {                                                           // Ensure that it is a number and stop the keypress
-            if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+            if (event.shiftKey || (x < 48 || x > 57) && (x < 96 || x > 105 )) {
                 event.preventDefault();
                 $(this).attr('placeholder', 'numbers only');
             }   
@@ -246,7 +248,8 @@
 
         $('input[name="InternalNumberAdd"]', '#weeksheet').keydown(acctnumber);
         $('input[name="CostCenterAdd"]', '#weeksheet').keydown(acctnumber);
-        $("button.demand").button();
+        $("div.demand").button();
+        $("input").placeholder();
 
         resumHours();
 
@@ -332,12 +335,6 @@
             var $cn = $('input[name="CapitalNumber"]', '#weeksheet');
             $cn.val(encodeURIComponent($cn.val()));
 
-            var $ds = $('input[name="DescriptionAdd"]', '#weeksheet');
-            $ds.val(encodeURIComponent($ds.val()));
-
-            var $cs = $('input[name="CustomerAdd"]', '#weeksheet');
-            $cs.val(encodeURIComponent($cs.val()));
-
             $('#weekline').modal('hide');
         });
         $('#deletehrs').on('click', function (e) {
@@ -354,6 +351,7 @@
             $('.acct').attr('disabled', 'disabled');
             var $target = $('.' + $(this).attr('id'));
             $target.parent().parent().css('display', 'block');
+            $target.parent().parent().removeAttr('disabled');
             $target.removeAttr('disabled');
             $target.attr('onbeforepaste', 'return false;');
         });
@@ -437,7 +435,7 @@
                         $("#dialog-deny-hours").dialog({
                             resizable: false,
                             height: 170,
-                            width: 350,
+                            width: 420,
                             modal: true,
                             buttons: {
                                 OK: function () {
