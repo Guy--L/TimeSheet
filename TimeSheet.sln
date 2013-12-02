@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeSheet", "TimeSheet\TimeSheet.csproj", "{A559137D-BA65-45CD-9CF3-80D597835A8D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0C2F0382-F5E4-4F4F-81FE-1BCC17FA25EE}"
@@ -11,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0C2F03
 	EndProjectSection
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "TimeSheetDB", "Database1\TimeSheetDB.sqlproj", "{6796AF6C-6223-4E03-85EE-CAE384CBCB99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reminder", "Reminder\Reminder.csproj", "{0FEB6344-3B99-4916-99BB-1D635E4FD413}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +38,12 @@ Global
 		{6796AF6C-6223-4E03-85EE-CAE384CBCB99}.Test|Any CPU.ActiveCfg = Test|Any CPU
 		{6796AF6C-6223-4E03-85EE-CAE384CBCB99}.Test|Any CPU.Build.0 = Test|Any CPU
 		{6796AF6C-6223-4E03-85EE-CAE384CBCB99}.Test|Any CPU.Deploy.0 = Test|Any CPU
+		{0FEB6344-3B99-4916-99BB-1D635E4FD413}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FEB6344-3B99-4916-99BB-1D635E4FD413}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FEB6344-3B99-4916-99BB-1D635E4FD413}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FEB6344-3B99-4916-99BB-1D635E4FD413}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FEB6344-3B99-4916-99BB-1D635E4FD413}.Test|Any CPU.ActiveCfg = Release|Any CPU
+		{0FEB6344-3B99-4916-99BB-1D635E4FD413}.Test|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

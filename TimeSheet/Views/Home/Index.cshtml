@@ -123,10 +123,9 @@
 </div>
 
 @section admin{
-    if (@Model.IsAdmin) {
+    @if (@Model.IsAdmin) {
         <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
     }
-    <li>@Html.ActionLink("Reports", "Reports", "Home")</li>
 }
 @section login{ @Model.User }
 @section scripts {
