@@ -8,12 +8,6 @@ using System.Web.Mvc;
 
 namespace TimeSheet.Models
 {
-    public class AccType
-    {
-        public int id { get; set; }
-        public string name { get; set; }
-    }
-
     public class Hrs
     {
         static Hrs()
@@ -155,15 +149,6 @@ namespace TimeSheet.Models
                 AccountType = (int?)value;
             }
         }
-
-        //public static Dictionary<int, string> chargeTo = new Dictionary<int, string>
-        //{
-        //    {0, "Cost Center" },
-        //    {1, "Internal Number"},
-        //    {2, "Capital Number"}
-        //};
-
-        //public Dictionary<int, string> ChargeTo { get { return chargeTo; } }
 
         public string Save()
         {

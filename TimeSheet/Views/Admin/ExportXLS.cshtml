@@ -1,0 +1,27 @@
+﻿@model TimeSheet.Models.Export
+@{
+    ViewBag.Title = "ExportXLS";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Export</h2>
+@using (var f = Html.Bootstrap().Begin(new Form("GetXLS", "Admin").Id("export").Type(FormType.Horizontal).LabelWidthXs(3)))
+{
+ 
+    @f.FormGroup().TextBoxFor(m => m.start).Class("datepicker").Size(InputSize.Small).WidthXs(1).Label().LabelText("Start")
+    @f.FormGroup().TextBoxFor(m => m.end).Class("datepicker").Size(InputSize.Small).WidthXs(1).Label().LabelText("End")
+    @f.FormGroup().RadioButtonsFromEnumFor(m => m.type).Label().LabelText("Type")
+    
+                    @(f.FormGroup().CustomControls(
+                    Html.Bootstrap().SubmitButton().Text("Submit").Id("submit").Style(ButtonStyle.Success)))
+}
+
+@section login{ @Model.User }
+
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            $('.datepicker').datepicker();
+        });
+    </script>
+}

@@ -51,9 +51,15 @@
     <Reference Include="Elmah.Mvc">
       <HintPath>..\packages\Elmah.MVC.2.1.1\lib\net40\Elmah.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="Ionic.Zip">
+      <HintPath>..\packages\NPOI.1.2.5\lib\net40\Ionic.Zip.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="NPoco">
       <HintPath>..\packages\NPoco.2.2.42\lib\net40\NPoco.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI">
+      <HintPath>..\packages\NPOI.1.2.5\lib\net40\NPOI.dll</HintPath>
     </Reference>
     <Reference Include="Portable.Licensing">
       <HintPath>..\packages\Portable.Licensing.1.1.0\lib\portable-net40+sl4+wp7+win8\Portable.Licensing.dll</HintPath>
@@ -169,12 +175,14 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HoursController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CostCenter.cs" />
+    <Compile Include="Models\Export.cs" />
     <Compile Include="Models\InternalNumber.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\Description.cs" />
@@ -317,6 +325,10 @@
     <Content Include="Content\bootstrap\font\fontawesome-webfont.ttf" />
     <Content Include="Content\bootstrap\font\fontawesome-webfont.eot" />
     <Content Include="Content\bootstrap\font\FontAwesome.otf" />
+    <Content Include="Content\Capital_Cost.xls" />
+    <Content Include="Content\Cross_Charge.xls" />
+    <Content Include="Content\Dash_Board.xlsx" />
+    <Content Include="Content\Dash_Board.xls" />
     <None Include="Properties\PublishProfiles\Test.pubxml" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="Scripts\bootstrap-combobox.js" />
@@ -384,6 +396,7 @@
     <Content Include="Views\Home\_Hours.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Description.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Week.cshtml" />
+    <Content Include="Views\Admin\ExportXLS.cshtml" />
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

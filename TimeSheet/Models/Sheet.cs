@@ -9,6 +9,7 @@ namespace TimeSheet.Models
     public class Sheet
     {
         public Worker employee { get; set; }
+        public bool IsAdmin { get; set; }
         public string User;
 
         public List<Week> hours { get; set; }

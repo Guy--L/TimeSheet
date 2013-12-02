@@ -135,7 +135,7 @@ namespace TimeSheet.Controllers
 
             Session["WorkerId"] = emp.WorkerId;
 
-            Sheet ts = new Sheet() { employee = emp, User = Session["user"].ToString() };
+            Sheet ts = new Sheet() { employee = emp, User = Session["user"].ToString(), IsAdmin = true };
 
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
             DateTime init = DateTime.Today;

@@ -917,6 +917,11 @@ form#sheetform .control-label
     font-size: 14px;
 }
 
+.radio input[type="radio"]
+{
+    width: 20px;
+}
+
 div.submitchecks
 {
     display: none;

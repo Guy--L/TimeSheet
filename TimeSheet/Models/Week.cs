@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -16,6 +17,14 @@ namespace TimeSheet.Models
 
     public partial class Week
     {
+        [Column] public int? PairId { get; set; }
+        [Column] public int? LevelId { get; set; }
+        [Column] public string LastName { get; set; }
+        [Column] public string CustomerName { get; set; }
+        public CostCenter cc { get; set; }
+        public InternalNumber ino { get; set; }
+        public Description desc { get; set; }
+
         public List<CostCenter> costCenters;
         public List<InternalNumber> internalNumbers;
         public List<Customer> customers;
@@ -204,20 +213,17 @@ namespace TimeSheet.Models
 
         public string ShortDescription { get { return string.IsNullOrWhiteSpace(Description) ? "" : (Description.Length > 20 ? Description.Substring(0, 20) : Description); } }
 
-        public string Mon { get { return time2str(Monday); } set { Monday = time2dec(value); } }
-        public string Tue { get { return time2str(Tuesday); } set { Tuesday = time2dec(value); } }
+        public string Mon { get { return time2str(Monday); }    set { Monday = time2dec(value); } }
+        public string Tue { get { return time2str(Tuesday); }   set { Tuesday = time2dec(value); } }
         public string Wed { get { return time2str(Wednesday); } set { Wednesday = time2dec(value); } }
-        public string Thu { get { return time2str(Thursday); } set { Thursday = time2dec(value); } }
-        public string Fri { get { return time2str(Friday); } set { Friday = time2dec(value); } }
-        public string Sat { get { return time2str(Saturday); } set { Saturday = time2dec(value); } }
+        public string Thu { get { return time2str(Thursday); }  set { Thursday = time2dec(value); } }
+        public string Fri { get { return time2str(Friday); }    set { Friday = time2dec(value); } }
+        public string Sat { get { return time2str(Saturday); }  set { Saturday = time2dec(value); } }
         public string Sun
         {
             get { return time2str(Sunday); }
             set { Sunday = time2dec(value); }
         }
-
-        [Column]
-        public int? PairId { get; set; }
 
         public static string lst_week = @"
             select b.WeekId PairId, a.* from week a
@@ -538,6 +544,33 @@ namespace TimeSheet.Models
              WHERE WeekId = {0} ";
 
         public static string get_hours = @" select * from week where weekid = {0} or weekid = {1} ";
+
+        internal static int YearWeek(DateTime d)
+        {
+            var cal = CultureInfo.CurrentCulture.Calendar;
+            int week = cal.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            return d.Year * 100 + week;
+        }
+
+        private decimal[] array
+        {
+            get { return new decimal[] { Monday??0, Tuesday??0, Wednesday??0, Thursday??0, Friday??0, Saturday??0, Sunday??0}; }
+        }
+
+        internal decimal ChargeStart(decimal rate, DateTime start)
+        {
+            return array.Skip( ((int)start.DayOfWeek - 1) % 7 ).Sum() * rate;
+        }
+
+        internal decimal ChargeEnd(decimal rate, DateTime end)
+        {
+            return array.Take(((int)end.DayOfWeek - 1) % 7 + 1).Sum() * rate;
+        }
+
+        internal decimal Charge(decimal rate)
+        {
+            return array.Sum() * rate;
+        }
 
         internal void GetLists(int worker)
         {
