@@ -43,7 +43,8 @@ namespace TimeSheet.Models
                 join [Description] d on d.DescriptionId = w.DescriptionId
                 where p.Partner != 'RDSS' and w.[AccountType] = @2 and
                     @0 < 100*w.[Year] + w.[WeekNumber] and 
-                    100*w.[Year] + w.[WeekNumber] < @1 ";
+                    100*w.[Year] + w.[WeekNumber] < @1
+                order by w.capitalnumber ";
 
         public int expense(HSSFWorkbook wb)
         {
@@ -105,27 +106,34 @@ namespace TimeSheet.Models
                 try {
                 var level = db.Fetch<Level>();
                 var ex = db.Fetch<Week, Description>(capital_period, startyw, endyw, ChargeTo.Capital_Number);
+                var caps = ex.Select(c => c.CapitalNumber).Distinct();
 
-                foreach (var x in ex)
+                foreach (var c in caps)
                 {
-                    decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
-                    decimal charge = 0;
-                    int testedge = x.Year * 100 + x.WeekNumber;
+                    decimal capcharge = 0;
+                    var samecaps = ex.Where(d => d.CapitalNumber == c);
+                    foreach (var x in samecaps)
+                    {
+                        decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
+                        decimal charge = 0;
+                        int testedge = x.Year * 100 + x.WeekNumber;
 
-                    if (testedge == startyw + 1) charge = x.ChargeStart(rate, start);
-                    else if (testedge == endyw - 1) charge = x.ChargeEnd(rate, end);
-                    else charge = x.Charge(rate);
-                    if (charge == 0) continue;
-
-                    bool cc = x.AccountType.Value == (int)ChargeTo.Cost_Center;
+                        if (testedge == startyw + 1) charge = x.ChargeStart(rate, start);
+                        else if (testedge == endyw - 1) charge = x.ChargeEnd(rate, end);
+                        else charge = x.Charge(rate);
+                        if (charge == 0) continue;
+                        capcharge += charge;
+                    }
+                    if (capcharge == 0) continue;
+                    var y = samecaps.First();                               // dicey
                     IRow row = sheet.GetRow(rowy);
                     row.GetCell(1).SetCellValue(rowy - 22);
                     row.GetCell(2).SetCellValue(40);
                     row.GetCell(3).SetCellValue("001");
                     row.GetCell(4).SetCellValue("52970002");
-                    row.GetCell(6).SetCellValue(charge.ToString("0.00"));
-                    row.GetCell(9).SetCellValue(x.CapitalNumber);
-                    row.GetCell(10).SetCellValue(x.CustomerName + "-" + x.LastName + "-" + x.desc._Description);
+                    row.GetCell(6).SetCellValue(capcharge.ToString("0.00"));
+                    row.GetCell(9).SetCellValue(c);
+                    row.GetCell(10).SetCellValue(y.CustomerName + "-" + y.LastName + "-" + y.desc._Description);
                     rowy++;
                 }
                                 }
