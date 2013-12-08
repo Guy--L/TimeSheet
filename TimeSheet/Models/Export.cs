@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web;
 using NPOI.HSSF.UserModel;
+using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
 
 namespace TimeSheet.Models
@@ -46,14 +47,25 @@ namespace TimeSheet.Models
                     100*w.[Year] + w.[WeekNumber] < @1
                 order by w.capitalnumber ";
 
+        private static string dashboard_period = @"
+            select v.* from [HoursByWeek] v 
+                where @0 < v.YearWeek and v.YearWeek < @1 and
+                    v.SiteId in ({0}) and v.PartnerId in ({1}) and v.WorkAreaId in ({2}) ";
+
         public int expense(HSSFWorkbook wb)
         {
-            int startyw = Week.YearWeek(start)-1;
-            int endyw = Week.YearWeek(end)+1;
+            int startyw = Week.YearWeek(start) - 1;
+            int endyw = Week.YearWeek(end) + 1;
 
             ISheet sheet = wb.GetSheet("Journal Entry Form");
             int rowy = 35;
 
+            ICellStyle old = sheet.GetRow(36).GetCell(1).CellStyle;
+            ICellStyle style = wb.CreateCellStyle();
+            style.CloneStyleFrom(old);
+            style.FillPattern = FillPatternType.DIAMONDS;
+            style.FillBackgroundColor = HSSFColor.RED.index;
+        
             using (tsDB db = new tsDB())
             {
                 try
@@ -76,18 +88,23 @@ namespace TimeSheet.Models
 
                         bool cc = x.AccountType.Value == (int)ChargeTo.Cost_Center;
                         IRow row = sheet.GetRow(rowy);
-                        row.GetCell(1).SetCellValue(cc ? x.cc.LegalEntity : x.ino.LegalEntity);
+
+                        if (cc?(x.cc.LegalEntity == "0"):string.IsNullOrWhiteSpace(x.ino.LegalEntity))
+                            row.GetCell(1).CellStyle = style;
+                        else
+                            row.GetCell(1).SetCellValue(cc ? x.cc.LegalEntity : x.ino.LegalEntity);
+
                         row.GetCell(2).SetCellValue(40);
                         row.GetCell(3).SetCellValue("52970002");
                         row.GetCell(cc ? 5 : 4).SetCellValue(cc ? x.cc._CostCenter : x.ino.InternalOrder);
                         row.GetCell(6).SetCellValue(charge.ToString("0.00"));
-                        row.GetCell(11).SetCellValue(x.CustomerName + "-" + x.LastName + "-" + x.desc._Description);
+                        row.GetCell(11).SetCellValue(x.CustomerName + " / " + x.LastName + " / " + x.desc._Description);
                         rowy++;
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("expense query: "+db.LastCommand, e));
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("expense export: " + db.LastCommand, e));
                 }
             }
             return rowy - 35;
@@ -103,52 +120,120 @@ namespace TimeSheet.Models
 
             using (tsDB db = new tsDB())
             {
-                try {
-                var level = db.Fetch<Level>();
-                var ex = db.Fetch<Week, Description>(capital_period, startyw, endyw, ChargeTo.Capital_Number);
-                var caps = ex.Select(c => c.CapitalNumber).Distinct();
-
-                foreach (var c in caps)
+                try
                 {
-                    decimal capcharge = 0;
-                    var samecaps = ex.Where(d => d.CapitalNumber == c);
-                    foreach (var x in samecaps)
+                    var level = db.Fetch<Level>();
+                    var ex = db.Fetch<Week, Description>(capital_period, startyw, endyw, ChargeTo.Capital_Number);
+                    var caps = ex.Select(c => c.CapitalNumber).Distinct();
+
+                    foreach (var c in caps)
                     {
-                        decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
-                        decimal charge = 0;
-                        int testedge = x.Year * 100 + x.WeekNumber;
+                        decimal capcharge = 0;
+                        var samecaps = ex.Where(d => d.CapitalNumber == c);
+                        foreach (var x in samecaps)
+                        {
+                            decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
+                            decimal charge = 0;
+                            int testedge = x.Year * 100 + x.WeekNumber;
 
-                        if (testedge == startyw + 1) charge = x.ChargeStart(rate, start);
-                        else if (testedge == endyw - 1) charge = x.ChargeEnd(rate, end);
-                        else charge = x.Charge(rate);
-                        if (charge == 0) continue;
-                        capcharge += charge;
+                            if (testedge == startyw + 1) charge = x.ChargeStart(rate, start);
+                            else if (testedge == endyw - 1) charge = x.ChargeEnd(rate, end);
+                            else charge = x.Charge(rate);
+                            if (charge == 0) continue;
+                            capcharge += charge;
+                        }
+                        if (capcharge == 0) continue;
+                        var y = samecaps.First();                               // dicey
+                        IRow row = sheet.GetRow(rowy);
+                        row.GetCell(1).SetCellValue(rowy - 22);
+                        row.GetCell(2).SetCellValue(40);
+                        row.GetCell(3).SetCellValue("001");
+                        row.GetCell(4).SetCellValue("52970002");
+                        row.GetCell(6).SetCellValue(capcharge.ToString("0.00"));
+                        row.GetCell(9).SetCellValue(c);
+                        row.GetCell(10).SetCellValue(y.CustomerName + " / " + y.LastName + " / " + y.desc._Description);
+                        rowy++;
                     }
-                    if (capcharge == 0) continue;
-                    var y = samecaps.First();                               // dicey
-                    IRow row = sheet.GetRow(rowy);
-                    row.GetCell(1).SetCellValue(rowy - 22);
-                    row.GetCell(2).SetCellValue(40);
-                    row.GetCell(3).SetCellValue("001");
-                    row.GetCell(4).SetCellValue("52970002");
-                    row.GetCell(6).SetCellValue(capcharge.ToString("0.00"));
-                    row.GetCell(9).SetCellValue(c);
-                    row.GetCell(10).SetCellValue(y.CustomerName + "-" + y.LastName + "-" + y.desc._Description);
-                    rowy++;
                 }
-                                }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("expense query: "+db.LastCommand, e));
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("capital export: " + db.LastCommand, e));
                 }
 
             }
             return rowy - 23;
         }
-        
+
+        private bool comp4(string a, string b)
+        {
+            int al = a.Length < 4 ? a.Length : 4;
+            int bl = b.Length < 4 ? b.Length : 4;
+            return a.Substring(0, al) == b.Substring(0, bl);
+        }
+
+        private string join(IEnumerable<int> ids)
+        {
+            return string.Join(",", ids.Select(c => c.ToString()).ToArray());
+        }
+
         public void dashboard(HSSFWorkbook wb)
         {
+            int startyw = Week.YearWeek(start) - 1;
+            int endyw = Week.YearWeek(end) + 1;
 
+            ISheet sheet = wb.GetSheetAt(1);
+            IRow row = sheet.GetRow(13);
+            IRow rowe, rowc;
+            
+            var areaV = row.Cells.Skip(2).Take(9).Select(c => c.StringCellValue.ToLower());
+            List<string> partV = new List<string>(5);
+            for (int i = 14; i < 19; i++)
+                partV.Add(sheet.GetRow(i).GetCell(1).StringCellValue.ToLower());
+
+            List<string> siteV = new List<string>(4);
+            for (int i = 2; i < 6; i++)
+                siteV.Add(wb.GetSheetName(i).ToLower());
+
+            using (tsDB db = new tsDB())
+            {
+                var areas = db.Fetch<WorkArea>("");
+                var sites = db.Fetch<Site>("");
+                var partners = db.Fetch<Partner>("");
+
+                var colorder = areaV.Select(n => areas.Find(a => comp4(a._WorkArea.ToLower(), n)).WorkAreaId).ToList();
+                var roworder = partV.Select(n => partners.Find(a => comp4(a._Partner.ToLower(), n)).PartnerId).ToList();
+                var shtorder = siteV.Select(n => sites.Find(a => comp4(a._Site.ToLower(), n)).SiteId).ToList();
+                string query = string.Format(dashboard_period, join(shtorder), join(roworder), join(colorder));
+
+                var data = db.Fetch<HoursByWeek>(query, startyw, endyw);
+                IEnumerable<HoursByWeek> site;
+
+                var tst = db.LastCommand;
+                var tsa = db.LastSQL;
+
+                for (int i = 2; i < 6; i++)
+                {
+                    sheet = wb.GetSheetAt(i);
+                    site = data.Where(d => d.SiteId == shtorder[i-2]);
+                    for (int j = 14; j < 19; j++)
+                    {
+                        row = sheet.GetRow(j);
+                        rowc = sheet.GetRow(j + 10);
+                        rowe = sheet.GetRow(j + 21);
+                        var partner = site.Where(e => e.PartnerId == roworder[j-14]);
+                        for (int k = 3; k < 12; k++)
+                        {
+                            int count = partner.Count(f => f.WorkAreaId == colorder[k - 3]);
+                            decimal capital = partner.Where(p => p.accounttype == (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]).Sum(g => g.WeekAmount.Value);
+                            decimal expense = partner.Where(p => p.accounttype != (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]).Sum(h => h.WeekAmount.Value);
+                            row.GetCell(k).SetCellValue(count==0?"":count.ToString());
+                            rowc.GetCell(k).SetCellValue(capital == 0 ? "" : capital.ToString("0.00"));
+                            rowe.GetCell(k).SetCellValue(expense == 0 ? "" : expense.ToString("0.00"));
+                        }
+                    }
+                }
+            }
         }
+
     }
 }

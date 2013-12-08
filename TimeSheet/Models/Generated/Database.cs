@@ -8,7 +8,7 @@
 //     Provider:               `System.Data.SqlClient`
 //     Connection String:      `Data Source=AS-GUY-MBP;Initial Catalog=TimesheetDB;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False`
 //     Schema:                 `dbo`
-//     Include Views:          `False`
+//     Include Views:          `True`
 
 using System;
 using System.Collections.Generic;
@@ -125,14 +125,14 @@ namespace TimeSheet.Models
 		[Column] public string CustomerName { get; set; } 	
 	}
 
-    [TableName("Description")]
+	[TableName("Description")]
 	[PrimaryKey("DescriptionId")]
 	[ExplicitColumns]
     public partial class Description : tsDB.Record<Description>  
     {		
 		[Column] public int DescriptionId { get; set; } 		
-		[Column] public int WorkerId { get; set; }
-        [Column("Description")] public string _Description { get; set; }
+		[Column] public int WorkerId { get; set; } 		
+		[Column("Description")] public string _Description { get; set; }
 		
 		[Column] public string AccountNumber { get; set; } 		
 		[Column] public int HashCode { get; set; } 		
@@ -283,6 +283,27 @@ namespace TimeSheet.Models
     public partial class __RefactorLog : tsDB.Record<__RefactorLog>  
     {		
 		[Column] public Guid OperationKey { get; set; } 	
+	}
+
+	[TableName("HoursByWeek")]
+	[ExplicitColumns]
+    public partial class HoursByWeek : tsDB.Record<HoursByWeek>  
+    {		
+		[Column] public int WeekId { get; set; } 		
+		[Column] public string AccountNumber { get; set; } 		
+		[Column] public decimal? WeekHours { get; set; } 		
+		[Column] public int WorkerId { get; set; } 		
+		[Column] public int? SiteId { get; set; } 		
+		[Column] public int? PartnerId { get; set; } 		
+		[Column] public int? WorkAreaId { get; set; } 		
+		[Column] public int? accounttype { get; set; } 		
+		[Column] public bool IsOvertime { get; set; } 		
+		[Column] public decimal? WeekAmount { get; set; } 		
+		[Column] public string FullName { get; set; } 		
+		[Column] public bool NewRequest { get; set; } 		
+		[Column] public int WeekNumber { get; set; } 		
+		[Column] public int Year { get; set; } 		
+		[Column] public int? YearWeek { get; set; } 	
 	}
 
 }
