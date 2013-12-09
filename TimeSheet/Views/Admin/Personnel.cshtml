@@ -1,0 +1,54 @@
+﻿@using TimeSheet.Models
+@model TimeSheet.Models.Personnel
+
+<h2>Search for Worker </h2>
+<table id="emps" class="table table-striped table-hover table-condensed">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th title="is an admin"><i class="icon-briefcase"></i></th>
+            <th>Ion Name</th>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Employee Number</th>
+            <th>Level</th>
+            <th>Department</th>
+            <th>Site</th>
+            <th>Role</th>
+            <th title="is a manager"><i class="icon-user"></i></th>
+            <th title="is inactive"><i class="icon-ban-circle"></i></th>
+            <th title="is part time"><i class="icon-adjust"></i></th>
+            <th title="on disability"><i class="icon-h-sign"></i></th>
+        </tr>
+    </thead>
+    <tbody>
+        @Html.DisplayFor(m=>m.list)
+    </tbody>
+</table>
+
+@section scripts {
+<script type="text/javascript"> 
+    function attachDT() {
+        q = $('#emps').dataTable({
+            "sDom": "<'row'<'offset1'><'span4'f><'span2'r><'span4'i><'offset1'>>t",
+            "bPaginate": false,
+            "oLanguage": {
+                "sInfo": "_TOTAL_ personnel",
+                "sInfoFiltered": "(of _MAX_ unfiltered)",
+                "sProcessing": "<i class='icon-spinner icon-spin'></i>"
+            },
+            "aoColumnDefs": [{ "bVisible": false, "aTargets": [0] }],
+            "bProcessing": true
+        });
+    }
+    $(function () {
+        attachDT();
+        $('#emps tbody').on('click', 'tr', function () {
+            var id = $(this).data('id');
+            id = (id != '') ? id : 0;
+            console.log("clicked on id " + id);
+            window.href = '@Url.Action("Worker","Admin",null,Request.Url.Scheme)/' + id;
+        });
+    });
+</script>
+}

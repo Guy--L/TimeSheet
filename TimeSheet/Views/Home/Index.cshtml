@@ -125,6 +125,7 @@
 @section admin{
     @if (@Model.IsAdmin) {
         <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
+        <li>@Html.ActionLink("Personnel", "Personnel", "Admin")</li>
     }
 }
 @section login{ @Model.User }

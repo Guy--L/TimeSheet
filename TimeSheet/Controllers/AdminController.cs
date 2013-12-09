@@ -20,6 +20,30 @@ namespace TimeSheet.Controllers
             return View();
         }
 
+        public ActionResult Personnel()
+        {
+            Personnel p = new Personnel();
+            p.User = Session["user"].ToString();
+            p.IsAdmin = true;
+
+            using (tsDB db = new tsDB())
+            {
+                p.list = db.Fetch<Worker>(Models.Worker.all);
+            }
+            return View(p);
+        }
+
+        public ActionResult Worker(int id)
+        {
+            Worker w;
+
+            using (tsDB db = new tsDB())
+            {
+                w = db.SingleOrDefault<Worker>("where WorkerId = @0", id);
+            }
+            return View(w);
+        }
+
         public ActionResult ExportXLS()
         {
             Export xp = new Export();

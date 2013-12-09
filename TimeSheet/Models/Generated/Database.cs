@@ -273,7 +273,8 @@ namespace TimeSheet.Models
 		[Column] public bool IsManager { get; set; } 		
 		[Column] public bool IsActive { get; set; } 		
 		[Column] public bool IsPartTime { get; set; } 		
-		[Column] public bool OnDisability { get; set; } 		
+        [Column] public bool IsAdmin { get; set; }
+ 		[Column] public bool OnDisability { get; set; } 		
 		[Column] public string IonName { get; set; } 	
 	}
 

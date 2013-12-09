@@ -5,5 +5,5 @@
     <ConnectString>Data Source=AS-GUY-MBP;Initial Catalog=TimeSheetDB</ConnectString>
     <IntegratedSecurity>true</IntegratedSecurity>
   </ConnectionProperties>
-  <DataSourceID>d3f94cf3-527e-4fef-89f2-9b210f37d10a</DataSourceID>
+  <DataSourceID>e273c689-ea82-43b9-b5a7-97a3f043402e</DataSourceID>
 </RptDataSource>

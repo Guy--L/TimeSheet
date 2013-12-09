@@ -194,6 +194,7 @@
     <Compile Include="Models\Hours.cs" />
     <Compile Include="Models\Sheet.cs" />
     <Compile Include="Models\Week.cs" />
+    <Compile Include="Models\Worker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -397,6 +398,8 @@
     <Content Include="Views\Shared\DisplayTemplates\Description.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Week.cshtml" />
     <Content Include="Views\Admin\ExportXLS.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Worker.cshtml" />
+    <Content Include="Views\Admin\Personnel.cshtml" />
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

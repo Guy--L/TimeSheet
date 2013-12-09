@@ -12,5 +12,6 @@
     [IsActive] BIT NOT NULL, 
     [IsPartTime] BIT NOT NULL, 
     [OnDisability] BIT NOT NULL, 
-    [IonName] NVARCHAR(50) NULL
+    [IonName] NVARCHAR(50) NULL, 
+    [IsAdmin] BIT NOT NULL
 )
