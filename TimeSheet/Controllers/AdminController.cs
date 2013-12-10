@@ -54,7 +54,12 @@ namespace TimeSheet.Controllers
                         Session.Remove("admin");
                         return RedirectToAction("Personnel", "Admin");
                     }
-                    Session["user"] = string.IsNullOrWhiteSpace(user.IonName)?user.WorkerId.ToString():user.IonName;
+                    if (string.IsNullOrWhiteSpace(user.IonName)) 
+                        Session["user"] = user.WorkerId.ToString();
+                    else if (Session["user"].ToString().Contains(user.IonName))     // joker
+                        Session.Remove("admin");
+                    else
+                        Session["user"] = user.WorkerId.ToString();
                 }
             }
             else

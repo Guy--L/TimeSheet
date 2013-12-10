@@ -16,13 +16,11 @@ namespace TimeSheet.Models
         Dash_Board
     };
 
-    public class Export
+    public class Export : UserBase
     {
         public DateTime start { get; set; }
         public DateTime end { get; set; }
         public Template type { get; set; }
-        public string User { get; set; }
-        public bool IsAdmin { get; set; }
 
         private static string expenses_period = @"
             select w.*, r.LevelId, r.LastName, u.CustomerName, c.*, i.*, d.* from [Week] w
