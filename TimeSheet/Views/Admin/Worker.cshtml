@@ -1,0 +1,58 @@
+﻿@model TimeSheet.Models.WorkerView
+
+@{
+    ViewBag.Title = "Worker";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("saveworker").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
+    };
+    if (Model.w.WorkerId != 0) {
+      buttons.Insert(0, Html.Bootstrap().SubmitButton().Text("Impersonate").Id("impersonate").Style(ButtonStyle.Warning));
+    }
+}
+
+@using (var form = Html.Bootstrap().Begin(new Form("SaveWorker", "Admin").Id("workerform").Type(FormType.Horizontal).LabelWidthXs(5)))
+{
+    @Html.HiddenFor(m => m.w.WorkerId)
+
+    <div class="row">
+        <div class="col-xs-5">
+            @form.FormGroup().TextBoxFor(m => m.w.LastName).Size(InputSize.Small)
+            @form.FormGroup().TextBoxFor(m => m.w.FirstName).Size(InputSize.Small)
+            @form.FormGroup().TextBoxFor(m => m.w.EmployeeNumber).Size(InputSize.Small)
+            @form.FormGroup().TextBoxFor(m => m.w.IonName).Size(InputSize.Small)
+
+            @form.FormGroup().CheckBoxFor(m => m.w.IsAdmin)
+            @form.FormGroup().CheckBoxFor(m => m.w.IsActive)
+            @form.FormGroup().CheckBoxFor(m => m.w.IsManager)
+        </div>
+        <div class="col-xs-5">
+            @form.FormGroup().DropDownListFor(m => m.w.LevelId, Model.levels).Size(InputSize.Small).WidthXs(3).Label().LabelText("Level")
+            @form.FormGroup().DropDownListFor(m => m.w.FacilityId, Model.sites).Size(InputSize.Small).WidthXs(6).Label().LabelText("Site")
+            @form.FormGroup().DropDownListFor(m => m.w.WorkDeptId, Model.depts).Size(InputSize.Small).WidthXs(6).Label().LabelText("Dept")
+            @form.FormGroup().DropDownListFor(m => m.w.RoleId, Model.roles).Size(InputSize.Small).WidthXs(6).Label().LabelText("Role")
+            <br />
+            @form.FormGroup().CheckBoxFor(m => m.w.IsPartTime)
+            @form.FormGroup().CheckBoxFor(m => m.w.OnDisability)
+        </div>
+    </div>    
+    <div class="row">
+        @(form.FormGroup().CustomControls(buttons.ToArray()))
+    </div>
+}
+
+@section scripts{
+    <script type="text/javascript">    
+
+        $(function () {
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Personnel", "Admin",null,Request.Url.Scheme)';
+            });
+            $('#impersonate').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Impersonate", "Admin",null,Request.Url.Scheme)/@Model.w.WorkerId';
+            });
+        });
+    </script>
+}

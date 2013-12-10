@@ -1,0 +1,14 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@RenderBody()
+@section admin{
+    @if (@Model.IsAdmin) {
+        <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
+        <li>@Html.ActionLink("Personnel", "Personnel", "Admin")</li>
+    }
+}
+@section login{ @Model.User }
+@section scripts {
+    @RenderSection("scripts", required: false)
+}

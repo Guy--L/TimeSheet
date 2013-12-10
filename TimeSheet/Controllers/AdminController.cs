@@ -35,13 +35,41 @@ namespace TimeSheet.Controllers
 
         public ActionResult Worker(int id)
         {
-            Worker w;
-
-            using (tsDB db = new tsDB())
-            {
-                w = db.SingleOrDefault<Worker>("where WorkerId = @0", id);
-            }
+            WorkerView w = new WorkerView(id);
+            w.User = Session["user"].ToString();
+            w.IsAdmin = true;
             return View(w);
+        }
+
+        public ActionResult Impersonate(int id)
+        {
+            if (id > 0)
+            {
+                Session["admin"] = Session["user"];
+                using (tsDB db = new tsDB())
+                {
+                    var user = db.FirstOrDefault<Worker>("where WorkerId = @0", id);
+                    if (user == null)
+                    {
+                        Session.Remove("admin");
+                        return RedirectToAction("Personnel", "Admin");
+                    }
+                    Session["user"] = string.IsNullOrWhiteSpace(user.IonName)?user.WorkerId.ToString():user.IonName;
+                }
+            }
+            else
+            {
+                Session["user"] = Session["admin"];
+                Session.Remove("admin");
+            }
+            return RedirectToAction("Index", "Home");    
+        }
+
+        [HttpPost]
+        public ActionResult SaveWorker(WorkerView wv)
+        {
+            wv.w.Save();
+            return RedirectToAction("Personnel");
         }
 
         public ActionResult ExportXLS()

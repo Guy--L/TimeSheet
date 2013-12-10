@@ -20,6 +20,7 @@ namespace TimeSheet.App_Start
                 ));
 			BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/base").Include(
                 "~/Content/bootstrap.css"
+                ,"~/Content/navbar-custom.css"
                 ,"~/Content/bootstrap-combobox.css"
                 ,"~/Content/datepicker.css"
                 ,"~/Content/bootstrap/font-awesome.css"

@@ -193,6 +193,7 @@
     </Compile>
     <Compile Include="Models\Hours.cs" />
     <Compile Include="Models\Sheet.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Models\Week.cs" />
     <Compile Include="Models\Worker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -245,6 +246,7 @@
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\jquery-ui.min.css" />
     <Content Include="Content\jquery.dataTables.css" />
+    <Content Include="Content\navbar-custom.css" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -400,6 +402,9 @@
     <Content Include="Views\Admin\ExportXLS.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Worker.cshtml" />
     <Content Include="Views\Admin\Personnel.cshtml" />
+    <Content Include="Views\Admin\_ViewStart.cshtml" />
+    <Content Include="Views\Admin\_Layout.cshtml" />
+    <Content Include="Views\Admin\Worker.cshtml" />
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

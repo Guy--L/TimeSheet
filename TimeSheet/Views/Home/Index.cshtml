@@ -30,7 +30,7 @@
                                 </th></tr>
                         </thead>
                     </table>
-                        </div>
+                    </div>
                 </div>
             }
         </div>
@@ -46,11 +46,11 @@
     </div>
 </div>
 <div id="content">
-    <table id="week" class="table table-striped @(Model.Submitted?"":"table-hover") table-condensed table-bordered">
+    <table id="week" class="table table-striped @((Model.Submitted&&!Model.Impersonating)?"":"table-hover") table-condensed table-bordered">
         <thead @(Model.Submitted ? "class=locked" : "")>
             <tr class="sheetline">
                 <th class="addbutton" colspan="3">
-                    @if (!Model.Submitted)
+                    @if (!Model.Submitted || Model.Impersonating)
                     {
                         <button class="btn btn-success btn-mini pull-left" id="addline">
                             <i class="icon-plus icon-white"></i> New Row
@@ -62,7 +62,7 @@
                 <th class="submitbutton" colspan="5">
                     @if (Model.hours.Count() > 0)
                     {
-                        if (!Model.Submitted)
+                        if (!Model.Submitted || Model.Impersonating)
                         {
                             using (var subform = Html.Bootstrap().Begin(new Form("Submit", "Home").Id("submitsheet").Type(FormType.Horizontal)))
                             {
@@ -71,7 +71,7 @@
                                 @Html.Bootstrap().SubmitButton().Text("Submit").Style(ButtonStyle.Danger).PrependIcon("icon-power-off icon-white").Class("pull-right")
                             }
                         }
-                        else
+                        if (Model.Submitted || (Model.Impersonating && Model.hours[0].Submitted.HasValue))
                         {
                             <div class="text-danger pull-right">
                                 <i class="icon-lock"></i> @Model.hours[0].Submitted.ToString()
@@ -101,7 +101,7 @@
         </thead>
         <tbody>
             @Html.DisplayFor(m => m.hours)
-            @if (!Model.Submitted) { 
+            @if (!Model.Submitted || Model.Impersonating) { 
                 @Html.DisplayFor(m => m.CarryOver)
             }
         </tbody>
@@ -123,9 +123,13 @@
 </div>
 
 @section admin{
-    @if (@Model.IsAdmin) {
+    @if (@Model.IsAdmin && !@Model.Impersonating) {
         <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
         <li>@Html.ActionLink("Personnel", "Personnel", "Admin")</li>
+    }
+    @if (@Model.Impersonating)
+    {
+        <li>@Html.ActionLink("Exit Impersonation", "Impersonate", "Admin", new { id = 0, @class="text-warning" }, null)</li>
     }
 }
 @section login{ @Model.User }
@@ -399,7 +403,7 @@
 
         $('#periodEnding').val('@Model.sunday');
 
-        @if (!Model.Submitted) {
+        @if (!Model.Submitted || Model.Impersonating) {
                 <text>
                 $('#addline').on('click', function () {
                     $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
@@ -483,5 +487,4 @@
         });
     });
 </script>
-
 }

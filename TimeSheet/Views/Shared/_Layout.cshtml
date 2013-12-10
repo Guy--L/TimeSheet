@@ -22,7 +22,7 @@
 </head>
 <body>
     <div class="page-container">
-        <nav class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+        <nav class="navbar navbar-fixed-top @(Model.Impersonating?"navbar-custom":"navbar-inverse")" role="navigation">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                     <span class="sr-only">Toggle navigation</span>

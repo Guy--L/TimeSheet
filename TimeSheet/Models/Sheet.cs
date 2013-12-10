@@ -6,12 +6,9 @@ using System.Web;
 
 namespace TimeSheet.Models
 {
-    public class Sheet
+    public class Sheet : UserBase
     {
         public Worker employee { get; set; }
-        public bool IsAdmin { get; set; }
-        public string User;
-
         public List<Week> hours { get; set; }
         public string[] Stats { get; set; }
 

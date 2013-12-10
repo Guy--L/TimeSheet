@@ -128,14 +128,27 @@ namespace TimeSheet.Controllers
         {
             tsDB db = new tsDB();
 
-            string[] worker = Session["user"].ToString().Split('\\');
-            Worker emp = db.FirstOrDefault<Worker>("where ionname = @0", worker[worker.Length-1]);
+            string usr = Session["user"] as string;
+            string who = "where ionname = @0";
+            if (char.IsDigit(usr[0]))
+                who = "where workerid = @0";
+            else
+            {
+                string[] worker = usr.ToString().Split('\\');
+                usr = worker[worker.Length - 1];
+            }
+            Worker emp = db.FirstOrDefault<Worker>(who, usr);
             if (emp == null)
-                return RedirectToAction("Contact", string.Join("_",worker));
+                return RedirectToAction("Contact", "User was not found");
 
             Session["WorkerId"] = emp.WorkerId;
 
-            Sheet ts = new Sheet() { employee = emp, User = Session["user"].ToString(), IsAdmin = true };
+            Sheet ts = new Sheet() { 
+                employee = emp, 
+                User = Session["user"].ToString(), 
+                IsAdmin = emp.IsAdmin,
+                Impersonating = (Session["admin"] != null)
+            };
 
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
             DateTime init = DateTime.Today;
