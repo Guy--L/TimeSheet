@@ -11,7 +11,7 @@
     }
 }
 
-<div class="content">
+<div class="container">
 @using (var form = Html.Bootstrap().Begin(new Form("SaveWorker", "Admin").Id("workerform").Type(FormType.Horizontal).LabelWidthXs(5)))
 {
     @Html.HiddenFor(m => m.w.WorkerId)
