@@ -1,6 +1,8 @@
 ﻿@using TimeSheet.Models
 @model TimeSheet.Models.Personnel
 
+<div class="container">
+<br />
 <table id="emps" class="table table-striped table-hover table-condensed table-bordered">
     <thead>
         <tr>
@@ -12,11 +14,11 @@
                 </button>
                 }
             </th>
-            <th colspan="9">
+            <th colspan="4">
                 <b class="center">List of Personnel</b>
             </th>
-            <th>
-                <i><small>click row</small></i>
+            <th colspan="6">
+                <div class="text-muted"><i><small>click row to @(Model.IsAdmin?"edit":"impersonate")</small></i></div>
             </th>
         </tr>
         <tr>
@@ -40,12 +42,13 @@
         @Html.DisplayFor(m => m.list)
     </tbody>
 </table>
+</div>
 
 @section scripts {
 <script type="text/javascript">
     function attachDT() {
         q = $('#emps').dataTable({
-            "sDom": "<'row'<'offset-xs-1'><'col-xs-4'f><'col-xs-2'r><'col-xs-4'i><'offset-xs-1'>>t",
+            "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
             "bPaginate": false,
             "oLanguage": {
                 "sInfo": "_TOTAL_ personnel",

@@ -3,7 +3,8 @@
     ViewBag.Title = "ExportXLS";
 }
 
-<h2>Export</h2>
+<div class="container">
+    <h3>Export</h3>
 @using (var f = Html.Bootstrap().Begin(new Form("GetXLS", "Admin").Id("export").Type(FormType.Horizontal).LabelWidthXs(3)))
 {
  
@@ -12,9 +13,9 @@
     @f.FormGroup().RadioButtonsFromEnumFor(m => m.type).Label().LabelText("Type")
     
                     @(f.FormGroup().CustomControls(
-                    Html.Bootstrap().SubmitButton().Text("Submit").Id("submit").Style(ButtonStyle.Success)))
+                    Html.Bootstrap().SubmitButton().Text("Download 'Export'.xls").Id("submit").Style(ButtonStyle.Success)))
 }
-
+    </div>
 @section scripts {
     <script type="text/javascript">
         $(function () {
