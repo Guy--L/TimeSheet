@@ -557,19 +557,23 @@ namespace TimeSheet.Models
             get { return new decimal[] { Monday??0, Tuesday??0, Wednesday??0, Thursday??0, Friday??0, Saturday??0, Sunday??0}; }
         }
 
-        internal decimal ChargeStart(decimal rate, DateTime start)
+        internal decimal Charge(decimal rate, int now, int start, int end, DateTime sdate, DateTime edate)
         {
-            return array.Skip( ((int)start.DayOfWeek - 1) % 7 ).Sum() * rate;
-        }
+            decimal hours = 0;
 
-        internal decimal ChargeEnd(decimal rate, DateTime end)
-        {
-            return array.Take(((int)end.DayOfWeek - 1) % 7 + 1).Sum() * rate;
-        }
+            if (now == start + 1 && now == end - 1)
+                hours = array.Skip(((int)sdate.DayOfWeek - 1) % 7).Take(((int)edate.DayOfWeek - 1) % 7 + 1).Sum();
 
-        internal decimal Charge(decimal rate)
-        {
-            return array.Sum() * rate;
+            if (now == start + 1)
+                hours = array.Skip(((int)sdate.DayOfWeek - 1) % 7).Sum();
+
+            else if (now == end - 1)
+                hours = array.Take(((int)edate.DayOfWeek - 1) % 7 + 1).Sum();
+
+            else
+                hours = array.Sum();
+
+            return hours * rate;
         }
 
         internal void GetLists(int worker)

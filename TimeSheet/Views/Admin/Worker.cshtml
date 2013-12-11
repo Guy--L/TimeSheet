@@ -14,7 +14,9 @@
 @using (var form = Html.Bootstrap().Begin(new Form("SaveWorker", "Admin").Id("workerform").Type(FormType.Horizontal).LabelWidthXs(5)))
 {
     @Html.HiddenFor(m => m.w.WorkerId)
-
+    <div class="row">
+        <h3>@(Model.w.WorkerId==0?"Add ":"Edit ")Worker</h3>
+    </div>
     <div class="row">
         <div class="col-xs-5">
             @form.FormGroup().TextBoxFor(m => m.w.LastName).Size(InputSize.Small)

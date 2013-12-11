@@ -35,12 +35,24 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav">
-                    @RenderSection("admin", false)
+                    @if (@Model.IsAdmin && !@Model.Impersonating)
+                    {
+                        <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
+                        <li>@Html.ActionLink("Personnel", "Personnel", "Admin")</li>
+                    }
+                    @if (!@Model.IsAdmin && @Model.IsManager && !@Model.Impersonating)
+                    {
+                        <li>@Html.ActionLink("Personnel", "Personnel", "Admin")</li>
+                    }
+                    @if (@Model.Impersonating)
+                    {
+                        <li>@Html.ActionLink("Exit Impersonation", "Impersonate", "Admin", new { id = 0, @class = "text-warning" }, null)</li>
+                    }
                     <li><a href="#about">About</a></li>
                 </ul>
                 <ul class="nav navbar-nav pull-right">
                     <li><a href="#"><small>built @File.GetLastWriteTime(assembly.Location)</small></a></li>
-                    <li><a href="#"><i class="icon-user icon-white"></i> @RenderSection("login", false)</a></li>
+                    <li><a href="#"><i class="icon-user icon-white"></i> @Model.User</a></li>
                     <li><a href="#"><i class="icon-question icon-white"></i></a></li>
                 </ul>
             </div>

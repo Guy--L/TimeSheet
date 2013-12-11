@@ -122,17 +122,6 @@
     <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Your regular hours totals <span id="denyhours"></span>.  Submissions less than 40 are not accepted.</p>
 </div>
 
-@section admin{
-    @if (@Model.IsAdmin && !@Model.Impersonating) {
-        <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
-        <li>@Html.ActionLink("Personnel", "Personnel", "Admin")</li>
-    }
-    @if (@Model.Impersonating)
-    {
-        <li>@Html.ActionLink("Exit Impersonation", "Impersonate", "Admin", new { id = 0, @class="text-warning" }, null)</li>
-    }
-}
-@section login{ @Model.User }
 @section scripts {
     <script type="text/javascript">
         var week, sheet, $cust, $desc;

@@ -1,7 +1,6 @@
 ﻿@model TimeSheet.Models.Export
 @{
     ViewBag.Title = "ExportXLS";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Export</h2>
@@ -15,8 +14,6 @@
                     @(f.FormGroup().CustomControls(
                     Html.Bootstrap().SubmitButton().Text("Submit").Id("submit").Style(ButtonStyle.Success)))
 }
-
-@section login{ @Model.User }
 
 @section scripts {
     <script type="text/javascript">

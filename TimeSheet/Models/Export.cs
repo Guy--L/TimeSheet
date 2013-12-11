@@ -27,10 +27,11 @@ namespace TimeSheet.Models
                 join [Worker] r on r.WorkerId = w.WorkerId
                 join [Partner] p on p.PartnerId = w.PartnerId
                 join [Customer] u on u.CustomerId = w.CustomerId
-                join [CostCenter] c on c.CostCenterId = w.CostCenterId
-                join [InternalNumber] i on i.InternalNumberId = w.InternalNumberId
+                left join [CostCenter] c on c.CostCenterId = w.CostCenterId
+                left join [InternalNumber] i on i.InternalNumberId = w.InternalNumberId
                 join [Description] d on d.DescriptionId = w.DescriptionId
                 where p.Partner != 'RDSS' and w.[AccountType] != @2 and
+                    w.Submitted is not null and
                     @0 < 100*w.[Year] + w.[WeekNumber] and 
                     100*w.[Year] + w.[WeekNumber] < @1 ";
 
@@ -41,14 +42,23 @@ namespace TimeSheet.Models
                 join [Customer] u on u.CustomerId = w.CustomerId
                 join [Description] d on d.DescriptionId = w.DescriptionId
                 where p.Partner != 'RDSS' and w.[AccountType] = @2 and
+                    w.Submitted is not null and 
                     @0 < 100*w.[Year] + w.[WeekNumber] and 
                     100*w.[Year] + w.[WeekNumber] < @1
                 order by w.capitalnumber ";
 
-        private static string dashboard_period = @"
+        private static string dashboard_usingview = @"
             select v.* from [HoursByWeek] v 
                 where @0 < v.YearWeek and v.YearWeek < @1 and
                     v.SiteId in ({0}) and v.PartnerId in ({1}) and v.WorkAreaId in ({2}) ";
+
+        private static string dashboard_period = @"
+            select w.*, r.LevelId from [Week] w 
+                join [Worker] r on r.WorkerId =  w.WorkerId
+                where w.Submitted is not null and
+                     w.SiteId in ({0}) and w.PartnerId in ({1}) and w.WorkAreaId in ({2}) and
+                     @0 < 100*w.[Year] + w.[WeekNumber] and 
+                     100*w.[Year] + w.[WeekNumber] < @1 ";
 
         public int expense(HSSFWorkbook wb)
         {
@@ -61,8 +71,8 @@ namespace TimeSheet.Models
             ICellStyle old = sheet.GetRow(36).GetCell(1).CellStyle;
             ICellStyle style = wb.CreateCellStyle();
             style.CloneStyleFrom(old);
-            style.FillPattern = FillPatternType.DIAMONDS;
-            style.FillBackgroundColor = HSSFColor.RED.index;
+            style.FillPattern = FillPatternType.LEAST_DOTS;
+            style.FillBackgroundColor = HSSFColor.ROSE.index;
         
             using (tsDB db = new tsDB())
             {
@@ -71,24 +81,25 @@ namespace TimeSheet.Models
                     var level = db.Fetch<Level>("");
                     var ex = db.Fetch<Week, CostCenter, InternalNumber, Description>(expenses_period, startyw, endyw, ChargeTo.Capital_Number);
 
+                    var tst = db.LastCommand;
+                    var tot = db.LastSQL;
+
                     foreach (var x in ex)
                     {
                         decimal? rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).SingleOrDefault();
                         if (rate == null)
                             continue;
                         decimal charge = 0;
-                        int testedge = x.Year * 100 + x.WeekNumber;
+                        int nowyw = x.Year * 100 + x.WeekNumber;
 
-                        if (testedge == startyw + 1) charge = x.ChargeStart(rate.Value, start);
-                        else if (testedge == endyw - 1) charge = x.ChargeEnd(rate.Value, end);
-                        else charge = x.Charge(rate.Value);
+                        charge = x.Charge(rate.Value, nowyw, startyw, endyw, start, end);
                         if (charge == 0) continue;
 
                         bool cc = x.AccountType.Value == (int)ChargeTo.Cost_Center;
                         IRow row = sheet.GetRow(rowy);
 
                         if (cc?(x.cc.LegalEntity == "0"):string.IsNullOrWhiteSpace(x.ino.LegalEntity))
-                            row.GetCell(1).CellStyle = style;
+                            row.Cells.ForEach(c => { c.CellStyle = style; });
                         else
                             row.GetCell(1).SetCellValue(cc ? x.cc.LegalEntity : x.ino.LegalEntity);
 
@@ -122,7 +133,7 @@ namespace TimeSheet.Models
                 {
                     var level = db.Fetch<Level>();
                     var ex = db.Fetch<Week, Description>(capital_period, startyw, endyw, ChargeTo.Capital_Number);
-                    var caps = ex.Select(c => c.CapitalNumber).Distinct();
+                    var caps = ex.Where(n => n.NewRequest).Select(c => c.CapitalNumber).Distinct();
 
                     foreach (var c in caps)
                     {
@@ -132,11 +143,9 @@ namespace TimeSheet.Models
                         {
                             decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
                             decimal charge = 0;
-                            int testedge = x.Year * 100 + x.WeekNumber;
+                            int nowyw = x.Year * 100 + x.WeekNumber;
 
-                            if (testedge == startyw + 1) charge = x.ChargeStart(rate, start);
-                            else if (testedge == endyw - 1) charge = x.ChargeEnd(rate, end);
-                            else charge = x.Charge(rate);
+                            charge = x.Charge(rate, nowyw, startyw, endyw, start, end);
                             if (charge == 0) continue;
                             capcharge += charge;
                         }
@@ -197,17 +206,15 @@ namespace TimeSheet.Models
                 var areas = db.Fetch<WorkArea>("");
                 var sites = db.Fetch<Site>("");
                 var partners = db.Fetch<Partner>("");
+                var level = db.Fetch<Level>();
 
                 var colorder = areaV.Select(n => areas.Find(a => comp4(a._WorkArea.ToLower(), n)).WorkAreaId).ToList();
                 var roworder = partV.Select(n => partners.Find(a => comp4(a._Partner.ToLower(), n)).PartnerId).ToList();
                 var shtorder = siteV.Select(n => sites.Find(a => comp4(a._Site.ToLower(), n)).SiteId).ToList();
                 string query = string.Format(dashboard_period, join(shtorder), join(roworder), join(colorder));
 
-                var data = db.Fetch<HoursByWeek>(query, startyw, endyw);
-                IEnumerable<HoursByWeek> site;
-
-                var tst = db.LastCommand;
-                var tsa = db.LastSQL;
+                var data = db.Fetch<Week>(query, startyw, endyw);
+                IEnumerable<Week> site;
 
                 for (int i = 2; i < 6; i++)
                 {
@@ -222,10 +229,36 @@ namespace TimeSheet.Models
                         for (int k = 3; k < 12; k++)
                         {
                             int count = partner.Count(f => f.WorkAreaId == colorder[k - 3]);
-                            decimal capital = partner.Where(p => p.accounttype == (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]).Sum(g => g.WeekAmount.Value);
-                            decimal expense = partner.Where(p => p.accounttype != (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]).Sum(h => h.WeekAmount.Value);
+                            var capitals = partner.Where(p => p.AccountType == (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]);
+                            var expenses = partner.Where(p => p.AccountType != (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]);
                             row.GetCell(k).SetCellValue(count==0?"":count.ToString());
+
+                            decimal capital = 0;
+                            foreach (var x in capitals)
+                            {
+                                decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
+                                decimal charge = 0;
+                                int nowyw = x.Year * 100 + x.WeekNumber;
+
+                                charge = x.Charge(rate, nowyw, startyw, endyw, start, end);
+                                if (charge == 0) continue;
+                                capital += charge;
+                            }
+
                             rowc.GetCell(k).SetCellValue(capital == 0 ? "" : capital.ToString("0.00"));
+
+                            decimal expense = 0;
+                            foreach (var x in expenses)
+                            {
+                                decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
+                                decimal charge = 0;
+                                int nowyw = x.Year * 100 + x.WeekNumber;
+
+                                charge = x.Charge(rate, nowyw, startyw, endyw, start, end);
+                                if (charge == 0) continue;
+                                expense += charge;
+                            }
+
                             rowe.GetCell(k).SetCellValue(expense == 0 ? "" : expense.ToString("0.00"));
                         }
                     }
