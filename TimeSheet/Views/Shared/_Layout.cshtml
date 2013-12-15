@@ -34,25 +34,31 @@
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav">
-                    @if (@Model.Impersonating)
+                @using (var nav = Html.Bootstrap().Begin(new Nav().Class("navbar-nav")))
+                {
+                    if (@Model.Impersonating)
                     {
-                        <li>@Html.ActionLink("Exit Impersonation", "Impersonate", "Admin", new { id = 0, @class = "text-warning" }, null)</li>
+                        @nav.ActionLink("Exit Impersonation", "Impersonate", "Admin").Class("text-warning").Id("0");
                     }
                     else
                     {
                         if (@Model.IsAdmin)
                         {
-                            <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
-                            <li>@Html.ActionLink("Employees", "Personnel", "Admin")</li>
+                            @nav.ActionLink("Export", "ExportXLS", "Admin")
+                            using (var dd = nav.BeginDropDown(new DropDown("Maintain")))
+                            {
+                                @*@dd.Header("Maintain")*@
+                                @dd.ActionLink("Employees", "Personnel", "Admin")
+                                @*@dd.Divider()
+                                @dd.ActionLink("Line Text 2", "action2")*@
+                            }
                         }
                         else if (@Model.IsManager)
                         {
-                            <li>@Html.ActionLink("Employees", "Personnel", "Admin")</li>
+                            @nav.ActionLink("Employees", "Personnel", "Admin")
                         }                        
                     }
-                    <li><a href="#about">About</a></li>
-                </ul>
+                }
                 <ul class="nav navbar-nav pull-right">
                     <li><a href="#"><small>built @File.GetLastWriteTime(assembly.Location)</small></a></li>
                     <li><a href="#"><i class="icon-user icon-white"></i> @Model.User</a></li>
