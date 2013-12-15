@@ -28,7 +28,12 @@ namespace TimeSheet.Controllers
 
             using (tsDB db = new tsDB())
             {
-                p.list = db.Fetch<Worker>(Models.Worker.all);
+                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                p.IsAdmin = user.IsAdmin;
+                p.IsManager = user.IsManager;
+                var query = (user.IsManager && !user.IsAdmin) ? 
+                                string.Format(Models.Worker.delegates, user.WorkerId) : Models.Worker.all;
+                p.list = db.Fetch<Worker>(query);
             }
             return View(p);
         }

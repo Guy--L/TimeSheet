@@ -62,17 +62,17 @@
         attachDT();
         @if (Model.IsAdmin) {
             <text>
-        $('#emps tbody').on('click', 'tr', function () {
-            var id = $(this).data('id');
-            id = (id != '') ? id : 0;
-            location.href = '@Url.Action("Worker","Admin",null,Request.Url.Scheme)/' + id;
-        });
-        $('#addperson').on('click', function () {
-            location.href = '@Url.Action("Worker","Admin",null,Request.Url.Scheme)/0';
-        });
+                $('#emps tbody').on('click', 'tr', function () {
+                    var id = $(this).data('id');
+                    id = (id != '') ? id : 0;
+                    location.href = '@Url.Action("Worker","Admin",null,Request.Url.Scheme)/' + id;
+                });
+                $('#addperson').on('click', function () {
+                    location.href = '@Url.Action("Worker","Admin",null,Request.Url.Scheme)/0';
+                });
             </text>
         }
-        @if (Model.IsManager && !Model.IsAdmin)
+        else if (Model.IsManager)
         {
             <text>
                 $('#emps tbody').on('click', 'tr', function () {

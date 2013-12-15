@@ -35,18 +35,21 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav">
-                    @if (@Model.IsAdmin && !@Model.Impersonating)
-                    {
-                        <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
-                        <li>@Html.ActionLink("Personnel", "Personnel", "Admin")</li>
-                    }
-                    @if (!@Model.IsAdmin && @Model.IsManager && !@Model.Impersonating)
-                    {
-                        <li>@Html.ActionLink("Personnel", "Personnel", "Admin")</li>
-                    }
                     @if (@Model.Impersonating)
                     {
                         <li>@Html.ActionLink("Exit Impersonation", "Impersonate", "Admin", new { id = 0, @class = "text-warning" }, null)</li>
+                    }
+                    else
+                    {
+                        if (@Model.IsAdmin)
+                        {
+                            <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
+                            <li>@Html.ActionLink("Employees", "Personnel", "Admin")</li>
+                        }
+                        else if (@Model.IsManager)
+                        {
+                            <li>@Html.ActionLink("Employees", "Personnel", "Admin")</li>
+                        }                        
                     }
                     <li><a href="#about">About</a></li>
                 </ul>

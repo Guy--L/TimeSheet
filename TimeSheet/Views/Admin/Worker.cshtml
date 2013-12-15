@@ -31,10 +31,10 @@
         </div>
         <div class="col-xs-5">
             @form.FormGroup().DropDownListFor(m => m.w.LevelId, Model.levels).Size(InputSize.Small).WidthXs(3).Label().LabelText("Level")
+            @form.FormGroup().DropDownListFor(m => m.w.ManagerId, Model.managers).Size(InputSize.Small).WidthXs(6).Label().LabelText("Manager")
             @form.FormGroup().DropDownListFor(m => m.w.FacilityId, Model.sites).Size(InputSize.Small).WidthXs(6).Label().LabelText("Site")
             @form.FormGroup().DropDownListFor(m => m.w.WorkDeptId, Model.depts).Size(InputSize.Small).WidthXs(6).Label().LabelText("Dept")
             @form.FormGroup().DropDownListFor(m => m.w.RoleId, Model.roles).Size(InputSize.Small).WidthXs(6).Label().LabelText("Role")
-            <br />
             @form.FormGroup().CheckBoxFor(m => m.w.IsPartTime)
             @form.FormGroup().CheckBoxFor(m => m.w.OnDisability)
         </div>

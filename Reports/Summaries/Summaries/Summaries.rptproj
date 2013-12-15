@@ -9,8 +9,8 @@
   </DataSources>
   <DataSets>
     <ProjectItem>
-      <Name>HoursByWeek.rsd</Name>
-      <FullPath>HoursByWeek.rsd</FullPath>
+      <Name>HoursByDate.rsd</Name>
+      <FullPath>HoursByDate.rsd</FullPath>
     </ProjectItem>
   </DataSets>
   <Reports>
@@ -26,6 +26,7 @@
       <Options>
         <OutputPath>bin\Debug</OutputPath>
         <TargetServerVersion>SSRS2008R2</TargetServerVersion>
+        <TargetServerURL>http://localhost/reportserver</TargetServerURL>
         <TargetFolder>Summaries</TargetFolder>
         <TargetDataSourceFolder>Data Sources</TargetDataSourceFolder>
         <TargetDatasetFolder>Datasets</TargetDatasetFolder>

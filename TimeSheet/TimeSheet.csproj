@@ -55,6 +55,9 @@
       <HintPath>..\packages\NPOI.1.2.5\lib\net40\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MvcReportViewer">
+      <HintPath>..\packages\MvcReportViewer.0.2.1\lib\net40\MvcReportViewer.dll</HintPath>
+    </Reference>
     <Reference Include="NPoco">
       <HintPath>..\packages\NPoco.2.2.42\lib\net40\NPoco.dll</HintPath>
     </Reference>
@@ -334,6 +337,7 @@
     <Content Include="Content\Dash_Board.xls" />
     <None Include="Properties\PublishProfiles\Test.pubxml" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="MvcReportViewer.aspx" />
     <Content Include="Scripts\bootstrap-combobox.js" />
     <Content Include="Scripts\bootstrap-inputmask.js" />
     <Content Include="Scripts\bootstrap-inputmask.min.js" />

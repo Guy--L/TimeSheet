@@ -22,6 +22,8 @@ namespace TimeSheet.Models
             left join workdept d on w.WorkDeptId = d.WorkDeptId
             left join role r on w.RoleId = r.RoleId
         ";
+        public static string delegates = all + @" where w.ManagerId = {0}";
+
         [ResultColumn] public string level { get; set; }
         [ResultColumn] public string site { get; set; }
         [ResultColumn] public string WorkDeptDesc { get; set; }
@@ -35,6 +37,7 @@ namespace TimeSheet.Models
         public SelectList sites;
         public SelectList depts;
         public SelectList roles;
+        public SelectList managers;
 
         public WorkerView()
         { }
@@ -54,11 +57,19 @@ namespace TimeSheet.Models
                     };
                 }
 
-                levels = new SelectList(db.Fetch<Level>(""), "LevelId", "_Level", w.LevelId);
-                sites = new SelectList(db.Fetch<Site>(""), "SiteId", "_Site", w.FacilityId);
-                depts = new SelectList(db.Fetch<WorkDept>(""), "WorkDeptId", "WorkDeptDesc", w.WorkDeptId);
-                roles = new SelectList(db.Fetch<Role>(""), "RoleId", "_Role", w.RoleId);
+                levels = AddNone(new SelectList(db.Fetch<Level>(""), "LevelId", "_Level", w.LevelId));
+                sites = AddNone(new SelectList(db.Fetch<Site>(""), "SiteId", "_Site", w.FacilityId));
+                depts = AddNone(new SelectList(db.Fetch<WorkDept>(""), "WorkDeptId", "WorkDeptDesc", w.WorkDeptId));
+                roles = AddNone(new SelectList(db.Fetch<Role>(""), "RoleId", "_Role", w.RoleId));
+                managers = AddNone(new SelectList(db.Fetch<Worker>("where IsManager = 1"), "WorkerId", "LastName", w.ManagerId));
             }
+        }
+
+        private SelectList AddNone(SelectList list)
+        {
+            List<SelectListItem> _list = list.ToList();
+            _list.Insert(0, new SelectListItem() { Value = "0", Text = "" });
+            return new SelectList((IEnumerable<SelectListItem>)_list, "Value", "Text");
         }
     }
 }

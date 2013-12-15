@@ -276,6 +276,7 @@ namespace TimeSheet.Models
         [Column] public bool IsAdmin { get; set; }
  		[Column] public bool OnDisability { get; set; } 		
 		[Column] public string IonName { get; set; } 	
+        [Column] public int? ManagerId { get; set; }
 	}
 
 	[TableName("__RefactorLog")]

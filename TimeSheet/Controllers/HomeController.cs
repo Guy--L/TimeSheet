@@ -130,6 +130,9 @@ namespace TimeSheet.Controllers
 
             string usr = Session["user"] as string;
             string who = "where ionname = @0";
+            if (string.IsNullOrWhiteSpace(usr))
+                return RedirectToAction("Contact", "User was not found");
+
             if (char.IsDigit(usr[0]))
                 who = "where workerid = @0";
             else
@@ -147,6 +150,7 @@ namespace TimeSheet.Controllers
                 employee = emp, 
                 User = Session["user"].ToString(), 
                 IsAdmin = emp.IsAdmin,
+                IsManager = emp.IsManager,
                 Impersonating = (Session["admin"] != null)
             };
 
@@ -161,6 +165,16 @@ namespace TimeSheet.Controllers
 
             if (id.HasValue)
             {
+                if (id.Value > 100)
+                {
+                    ts.year++;
+                    id -= 100;
+                }
+                if (id.Value < 0)
+                {
+                    ts.year--;
+                    id = -id;
+                }
                 init = FirstDateOfWeek(ts.year, id.Value);
                 ts.weekNumber = id.Value;
             }
