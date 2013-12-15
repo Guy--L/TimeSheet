@@ -44,15 +44,21 @@
                         if (@Model.IsAdmin)
                         {
                             <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
-                            <li>@Html.ActionLink("Employees", "Personnel", "Admin")</li>
+                            <li class="dropdown">
+                                <a href="#" data-toggle="dropdown">Maintain <span class="caret"></span></a>
+                                <ul class="dropdown-menu navbar-inverse">
+                                    <li class="navdrop">@Html.ActionLink("Employees", "Personnel", "Admin")</li>
+                                </ul>
+                            </li>
                         }
                         else if (@Model.IsManager)
                         {
                             <li>@Html.ActionLink("Employees", "Personnel", "Admin")</li>
-                        }                        
+                        }
                     }
                     <li><a href="#about">About</a></li>
                 </ul>
+
                 <ul class="nav navbar-nav pull-right">
                     <li><a href="#"><small>built @File.GetLastWriteTime(assembly.Location)</small></a></li>
                     <li><a href="#"><i class="icon-user icon-white"></i> @Model.User</a></li>

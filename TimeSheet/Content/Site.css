@@ -926,3 +926,15 @@ div.submitchecks
 {
     display: none;
 }
+
+.navbar-inverse.dropdown-menu > li.navdrop > a {
+    color: #999999;
+}
+
+.navbar-inverse.dropdown-menu > li.navdrop > a:hover,
+.navbar-inverse.dropdown-menu > li.navdrop > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #080808;
+  background-image: none;
+}
