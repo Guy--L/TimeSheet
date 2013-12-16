@@ -110,6 +110,35 @@ namespace TimeSheet.Controllers
             return RedirectToAction("InternalNumbers");
         }
 
+        public ActionResult CostCenters()
+        {
+            CostCenters i = new CostCenters();
+            i.User = Session["user"].ToString();
+            using (tsDB db = new tsDB())
+            {
+                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                i.IsAdmin = user.IsAdmin;
+                i.IsManager = user.IsManager;
+                i.list = db.Fetch<CostCenter>(string.Format(Models.CostCenter.all, (int)ChargeTo.Cost_Center));
+            }
+            return View(i);
+        }
+
+        public ActionResult CostCenter(int id)
+        {
+            CenterView w = new CenterView(id);
+            w.User = Session["user"].ToString();
+            w.IsAdmin = true;
+            return View(w);
+        }
+
+        [HttpPost]
+        public ActionResult SaveCostCenter(CenterView nv)
+        {
+            nv.cc.Save();
+            return RedirectToAction("CostCenters");
+        }
+
         public ActionResult ExportXLS()
         {
             Export xp = new Export();

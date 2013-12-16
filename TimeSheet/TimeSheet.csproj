@@ -415,6 +415,9 @@
     <Content Include="Views\Admin\InternalNumbers.cshtml" />
     <Content Include="Views\Admin\InternalNumber.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\InternalNumber.cshtml" />
+    <Content Include="Views\Admin\CostCenters.cshtml" />
+    <Content Include="Views\Admin\CostCenter.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\CostCenter.cshtml" />
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

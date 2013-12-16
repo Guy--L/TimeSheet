@@ -11,7 +11,7 @@ namespace TimeSheet.Models
         public List<InternalNumber> list { get; set; }
     }
 
-    public partial class NumberView : UserBase
+    public class NumberView : UserBase
     {
         public InternalNumber ino { get; set; }
         public NumberView()
@@ -31,7 +31,6 @@ namespace TimeSheet.Models
     {
         [ResultColumn] public int UseCount { get; set; }
         [ResultColumn] public int UserCount { get; set; }
-
 
         public static string SaveInPassing(string internalnumber)
         {

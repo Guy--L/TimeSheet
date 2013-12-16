@@ -1,0 +1,64 @@
+﻿@model TimeSheet.Models.CostCenters
+
+<div class="container">
+<br />
+    <table id="ccs" class="table table-striped table-hover table-condensed table-bordered">
+        <thead>
+            <tr>
+                <th></th>
+                <th>
+                    <button class="btn btn-success btn-mini" id="addcenter">
+                        <i class="icon-plus icon-white"></i> Add
+                    </button>
+                </th>
+                <th>
+                    <b class="center">CostCenters</b>
+                </th>
+                <th colspan="2">
+                    <div class="text-muted"><i><small>click to edit</small></i></div>
+                </th>
+            </tr>
+            <tr>
+                <th>ID</th>
+                <th>Cost Center</th>
+                <th>Legal Entity</th>
+                <th>Use Count</th>
+                <th>User Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.DisplayFor(m => m.list)
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+<script type="text/javascript">
+    function attachDT() {
+        q = $('#ccs').dataTable({
+            "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
+            "bPaginate": false,
+            "oLanguage": {
+                "sInfo": "_TOTAL_ center(s)",
+                "sInfoFiltered": "(of _MAX_ unfiltered)",
+                "sProcessing": "<i class='icon-spinner icon-spin'></i>"
+            },
+            "aoColumnDefs": [
+                { "bVisible": false, "aTargets": [0] },
+                { "asSorting": ["asc"], "aTargets": [2] }
+            ]
+        });
+    }
+    $(function () {
+        attachDT();
+        $('#ccs tbody').on('click', 'tr', function () {
+            var id = $(this).data('id');
+            id = (id != '') ? id : 0;
+            location.href = '@Url.Action("CostCenter","Admin",null,Request.Url.Scheme)/' + id;
+        });
+        $('#addcenter').on('click', function () {
+            location.href = '@Url.Action("CostCenter","Admin",null,Request.Url.Scheme)/0';
+        });
+    });
+</script>
+}

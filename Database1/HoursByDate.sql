@@ -32,7 +32,6 @@ FROM (
 		, SiteId
 		, PartnerId
 		, WorkAreaId
-		, WorkerId 
 		, AccountType
 		, CapitalNumber
 		, InternalNumberId
@@ -50,7 +49,6 @@ FROM (
 		, SiteId
 		, PartnerId
 		, WorkAreaId
-		, WorkerId 
 		, AccountType
 		, CapitalNumber
 		, InternalNumberId
@@ -68,7 +66,6 @@ FROM (
 		, SiteId
 		, PartnerId
 		, WorkAreaId
-		, WorkerId 
 		, AccountType
 		, CapitalNumber
 		, InternalNumberId
@@ -86,7 +83,6 @@ FROM (
 		, SiteId
 		, PartnerId
 		, WorkAreaId
-		, WorkerId 
 		, AccountType
 		, CapitalNumber
 		, InternalNumberId
@@ -104,7 +100,6 @@ FROM (
 		, SiteId
 		, PartnerId
 		, WorkAreaId
-		, WorkerId 
 		, AccountType
 		, CapitalNumber
 		, InternalNumberId
@@ -122,7 +117,6 @@ FROM (
 		, SiteId
 		, PartnerId
 		, WorkAreaId
-		, WorkerId 
 		, AccountType
 		, CapitalNumber
 		, InternalNumberId
@@ -140,7 +134,6 @@ FROM (
 		, SiteId
 		, PartnerId
 		, WorkAreaId
-		, WorkerId 
 		, AccountType
 		, CapitalNumber
 		, InternalNumberId
