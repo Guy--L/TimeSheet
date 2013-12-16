@@ -1,0 +1,39 @@
+﻿@model TimeSheet.Models.NumberView
+
+@{
+    ViewBag.Title = "Internal Number";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("savenumber").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
+    };
+}
+
+<div class="container">
+@using (var form = Html.Bootstrap().Begin(new Form("SaveInternalNumber", "Admin").Id("numberform").Type(FormType.Horizontal).LabelWidthXs(5)))
+{
+    @Html.HiddenFor(m => m.ino.InternalNumberId)
+    <div class="row">
+        <div class="col-xs-12 text-primary"><h3>@(Model.ino.InternalNumberId == 0 ? "Add " : "Edit ")Internal Order Number</h3></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            @form.FormGroup().TextBoxFor(m => m.ino.InternalOrder).Size(InputSize.Small)
+            @form.FormGroup().TextBoxFor(m => m.ino.LegalEntity).Size(InputSize.Small)
+        </div>
+    </div>
+    <div class="row">
+        @(form.FormGroup().CustomControls(buttons.ToArray()))
+    </div>
+}
+</div>
+@section scripts{
+    <script type="text/javascript">    
+
+        $(function () {
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("InternalNumbers", "Admin",null,Request.Url.Scheme)';
+            });
+        });
+    </script>
+}

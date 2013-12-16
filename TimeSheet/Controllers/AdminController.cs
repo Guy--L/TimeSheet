@@ -24,7 +24,6 @@ namespace TimeSheet.Controllers
         {
             Personnel p = new Personnel();
             p.User = Session["user"].ToString();
-            p.IsAdmin = true;
 
             using (tsDB db = new tsDB())
             {
@@ -80,6 +79,35 @@ namespace TimeSheet.Controllers
         {
             wv.w.Save();
             return RedirectToAction("Personnel");
+        }
+
+        public ActionResult InternalNumbers()
+        {
+            InternalNumbers i = new InternalNumbers();
+            i.User = Session["user"].ToString();
+            using (tsDB db = new tsDB())
+            {
+                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                i.IsAdmin = user.IsAdmin;
+                i.IsManager = user.IsManager;
+                i.list = db.Fetch<InternalNumber>(string.Format(Models.InternalNumber.all, (int)ChargeTo.Internal_Number));
+            }
+            return View(i);
+        }
+
+        public ActionResult InternalNumber(int id)
+        {
+            NumberView w = new NumberView(id);
+            w.User = Session["user"].ToString();
+            w.IsAdmin = true;
+            return View(w);
+        }
+
+        [HttpPost]
+        public ActionResult SaveInternalNumber(NumberView nv)
+        {
+            nv.ino.Save();
+            return RedirectToAction("InternalNumbers");
         }
 
         public ActionResult ExportXLS()

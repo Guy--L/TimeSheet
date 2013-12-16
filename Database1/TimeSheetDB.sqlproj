@@ -88,6 +88,8 @@
     <Build Include="HoursByWeek.sql" />
     <Build Include="DateFromYWD.sql" />
     <Build Include="HoursByDate.sql" />
+    <Build Include="WorkerCostCenter.sql" />
+    <Build Include="WorkerInternalNumber.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="TimeSheetDB.refactorlog" />

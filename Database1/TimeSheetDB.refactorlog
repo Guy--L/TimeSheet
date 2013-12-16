@@ -184,4 +184,18 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[InternalAcct]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="0903599f-1b36-4bd2-a58c-c52c2949559d" ChangeDateTime="12/15/2013 23:23:40">
+    <Property Name="ElementName" Value="[dbo].[WorkerCostCenter].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[WorkerCostCenter]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="WorkerCostCenterId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="69e7c270-3a09-428b-8395-5d9647a07968" ChangeDateTime="12/16/2013 00:13:13">
+    <Property Name="ElementName" Value="[dbo].[WorkerInternalNumber].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[WorkerInternalNumber]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="WorkerInternalNumberId" />
+  </Operation>
 </Operations>

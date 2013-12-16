@@ -5,6 +5,11 @@ using System.Web;
 
 namespace TimeSheet.Models
 {
+    public class Customers : UserBase
+    {
+        public List<Customer> list { get; set; }
+    }
+
     public partial class Customer
     {
         public static string Save(int id, string customer)

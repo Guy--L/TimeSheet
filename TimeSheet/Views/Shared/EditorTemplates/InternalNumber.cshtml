@@ -1,0 +1,16 @@
+﻿@model TimeSheet.Models.InternalNumber
+@{
+    //var form = ViewData["_form"] as TwitterBootstrapMVC.Controls.FormBuilder<TimeSheet.Models.InternalNumber>;
+    TwitterBootstrapMVC.Controls.FormBuilder<TimeSheet.Models.InternalNumber> form = ViewBag.Form;    
+}
+
+@Html.HiddenFor(m => m.InternalNumberId)
+<div class="row">
+    <div class="col-xs-12 text-primary"><h3>@(Model.InternalNumberId == 0 ? "Add " : "Edit ")Internal Order Number</h3></div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        @form.FormGroup().TextBoxFor(m => m.InternalOrder).Size(InputSize.Small)
+        @form.FormGroup().TextBoxFor(m => m.LegalEntity).Size(InputSize.Small)
+    </div>
+</div>

@@ -193,7 +193,7 @@ namespace TimeSheet.Models
                     CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(WorkerId, CustomerAdd));
 
                 if ((InternalNumberId == null || InternalNumberId == 0) && !string.IsNullOrWhiteSpace(InternalNumberAdd))
-                    InternalNumberId = _db.ExecuteScalar<int>(Models.InternalNumber.Save(InternalNumberAdd));
+                    InternalNumberId = _db.ExecuteScalar<int>(Models.InternalNumber.SaveInPassing(InternalNumberAdd));
 
                 if ((CostCenterId == null || CostCenterId == 0) && !string.IsNullOrWhiteSpace(CostCenterAdd))
                     CostCenterId = _db.ExecuteScalar<int>(Models.CostCenter.Save(CostCenterAdd));

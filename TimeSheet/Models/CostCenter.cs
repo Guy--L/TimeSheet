@@ -5,8 +5,16 @@ using System.Web;
 
 namespace TimeSheet.Models
 {
+    public class CostCenters : UserBase
+    {
+        public List<CostCenter> list { get; set; }
+    }
+
     public partial class CostCenter
     {
+        public int UseCount { get; set; }
+        public int UserCount { get; set; }
+
         public static string Save(string cc)
         {
             return string.Format(ins_costcenter

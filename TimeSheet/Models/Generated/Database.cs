@@ -104,15 +104,45 @@ namespace TimeSheet.Models
 	}
 	
 
-	[TableName("CostCenter")]
-	[PrimaryKey("CostCenterId")]
+	[TableName("HoursByDate")]
 	[ExplicitColumns]
-    public partial class CostCenter : tsDB.Record<CostCenter>  
+    public partial class HoursByDate : tsDB.Record<HoursByDate>  
     {		
-		[Column] public int CostCenterId { get; set; } 		
-		[Column("CostCenter")] public string _CostCenter { get; set; }
-		
-		[Column] public string LegalEntity { get; set; } 	
+		[Column] public int WeekId { get; set; } 		
+		[Column] public DateTime? WorkDate { get; set; } 		
+		[Column] public bool IsOvertime { get; set; } 		
+		[Column] public decimal? Hours { get; set; } 		
+		[Column] public int WorkerId { get; set; } 		
+		[Column] public int? SiteId { get; set; } 		
+		[Column] public int? PartnerId { get; set; } 		
+		[Column] public int? WorkAreaId { get; set; } 		
+		[Column] public string AccountNumber { get; set; } 		
+		[Column] public decimal? amount { get; set; } 		
+		[Column] public string FullName { get; set; } 		
+		[Column] public string EmployeeNumber { get; set; } 		
+		[Column] public bool NewRequest { get; set; } 		
+		[Column] public int WeekNumber { get; set; } 		
+		[Column] public int Year { get; set; } 	
+	}
+
+	[TableName("WorkerCostCenter")]
+	[PrimaryKey("WorkerCostCenterId")]
+	[ExplicitColumns]
+    public partial class WorkerCostCenter : tsDB.Record<WorkerCostCenter>  
+    {		
+		[Column] public int WorkerCostCenterId { get; set; } 		
+		[Column] public int WorkerId { get; set; } 		
+		[Column] public int CostCenterId { get; set; } 	
+	}
+
+	[TableName("WorkerInternalNumber")]
+	[PrimaryKey("WorkerInternalNumberId")]
+	[ExplicitColumns]
+    public partial class WorkerInternalNumber : tsDB.Record<WorkerInternalNumber>  
+    {		
+		[Column] public int WorkerInternalNumberId { get; set; } 		
+		[Column] public int WorkerId { get; set; } 		
+		[Column] public int InternalNumberId { get; set; } 	
 	}
 
 	[TableName("Customer")]
@@ -257,28 +287,6 @@ namespace TimeSheet.Models
 		[Column] public int? ProcessId { get; set; } 	
 	}
 
-	[TableName("Worker")]
-	[PrimaryKey("WorkerId")]
-	[ExplicitColumns]
-    public partial class Worker : tsDB.Record<Worker>  
-    {		
-		[Column] public int WorkerId { get; set; } 		
-		[Column] public string EmployeeNumber { get; set; } 		
-		[Column] public int? LevelId { get; set; } 		
-		[Column] public int? WorkDeptId { get; set; } 		
-		[Column] public int? FacilityId { get; set; } 		
-		[Column] public int? RoleId { get; set; } 		
-		[Column] public string FirstName { get; set; } 		
-		[Column] public string LastName { get; set; } 		
-		[Column] public bool IsManager { get; set; } 		
-		[Column] public bool IsActive { get; set; } 		
-		[Column] public bool IsPartTime { get; set; } 		
-        [Column] public bool IsAdmin { get; set; }
- 		[Column] public bool OnDisability { get; set; } 		
-		[Column] public string IonName { get; set; } 	
-        [Column] public int? ManagerId { get; set; }
-	}
-
 	[TableName("__RefactorLog")]
 	[PrimaryKey("OperationKey", AutoIncrement=false)]
 	[ExplicitColumns]
@@ -298,14 +306,48 @@ namespace TimeSheet.Models
 		[Column] public int? SiteId { get; set; } 		
 		[Column] public int? PartnerId { get; set; } 		
 		[Column] public int? WorkAreaId { get; set; } 		
-		[Column] public int? accounttype { get; set; } 		
+		[Column] public int? AccountType { get; set; } 		
 		[Column] public bool IsOvertime { get; set; } 		
 		[Column] public decimal? WeekAmount { get; set; } 		
 		[Column] public string FullName { get; set; } 		
+		[Column] public string EmployeeNumber { get; set; } 		
 		[Column] public bool NewRequest { get; set; } 		
 		[Column] public int WeekNumber { get; set; } 		
 		[Column] public int Year { get; set; } 		
 		[Column] public int? YearWeek { get; set; } 	
+	}
+
+	[TableName("Worker")]
+	[PrimaryKey("WorkerId")]
+	[ExplicitColumns]
+    public partial class Worker : tsDB.Record<Worker>  
+    {		
+		[Column] public int WorkerId { get; set; } 		
+		[Column] public string EmployeeNumber { get; set; } 		
+		[Column] public int? LevelId { get; set; } 		
+		[Column] public int? WorkDeptId { get; set; } 		
+		[Column] public int? FacilityId { get; set; } 		
+		[Column] public int? RoleId { get; set; } 		
+		[Column] public string FirstName { get; set; } 		
+		[Column] public string LastName { get; set; } 		
+		[Column] public bool IsManager { get; set; } 		
+		[Column] public bool IsActive { get; set; } 		
+		[Column] public bool IsPartTime { get; set; } 		
+		[Column] public bool OnDisability { get; set; } 		
+		[Column] public string IonName { get; set; } 		
+		[Column] public bool IsAdmin { get; set; } 		
+		[Column] public int? ManagerId { get; set; } 	
+	}
+
+	[TableName("CostCenter")]
+	[PrimaryKey("CostCenterId")]
+	[ExplicitColumns]
+    public partial class CostCenter : tsDB.Record<CostCenter>  
+    {		
+		[Column] public int CostCenterId { get; set; } 		
+		[Column("CostCenter")] public string _CostCenter { get; set; }
+		
+		[Column] public string LegalEntity { get; set; } 	
 	}
 
 }

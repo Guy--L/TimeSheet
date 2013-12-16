@@ -195,9 +195,12 @@
       <DependentUpon>Database.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Hours.cs" />
+    <Compile Include="Models\Partner.cs" />
     <Compile Include="Models\Sheet.cs" />
+    <Compile Include="Models\Site.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Week.cs" />
+    <Compile Include="Models\WorkArea.cs" />
     <Compile Include="Models\Worker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -404,11 +407,14 @@
     <Content Include="Views\Shared\DisplayTemplates\Description.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Week.cshtml" />
     <Content Include="Views\Admin\ExportXLS.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\Worker.cshtml" />
     <Content Include="Views\Admin\Personnel.cshtml" />
     <Content Include="Views\Admin\_ViewStart.cshtml" />
     <Content Include="Views\Admin\_Layout.cshtml" />
     <Content Include="Views\Admin\Worker.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\InternalNumber.cshtml" />
+    <Content Include="Views\Admin\InternalNumbers.cshtml" />
+    <Content Include="Views\Admin\InternalNumber.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\InternalNumber.cshtml" />
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
