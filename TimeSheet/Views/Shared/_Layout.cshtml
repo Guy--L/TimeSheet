@@ -44,14 +44,14 @@
                         if (@Model.IsAdmin)
                         {
                             <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
-                            <li class="dropdown">
+                            @*<li class="dropdown">
                                 <a href="#" data-toggle="dropdown">Maintain <span class="caret"></span></a>
-                                <ul class="dropdown-menu navbar-inverse">
+                                <ul class="dropdown-menu navbar-inverse">*@
                                     <li class="navdrop">@Html.ActionLink("Employees", "Personnel", "Admin")</li>
                                     <li class="navdrop">@Html.ActionLink("Internal Numbers", "InternalNumbers", "Admin")</li>
                                     <li class="navdrop">@Html.ActionLink("Cost Centers", "CostCenters", "Admin")</li>
-                                </ul>
-                            </li>
+                                @*</ul>
+                            </li>*@
                         }
                         else if (@Model.IsManager)
                         {
