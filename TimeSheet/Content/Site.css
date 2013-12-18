@@ -851,6 +851,7 @@ table#week tr.descriptionrow td.inactivate
 {
     cursor: pointer;
 }
+
 table#week tbody.locked
 {
     cursor: text;

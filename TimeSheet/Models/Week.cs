@@ -27,6 +27,10 @@ namespace TimeSheet.Models
 
         public List<CostCenter> costCenters;
         public List<InternalNumber> internalNumbers;
+
+        public List<WorkerCostCenter> workCenters;
+        public List<WorkerInternalNumber> workNumbers;
+
         public List<Customer> customers;
         public List<Description> descriptions;
 
@@ -590,6 +594,11 @@ namespace TimeSheet.Models
                 internalNumbers.Add(new InternalNumber { InternalNumberId = 0, InternalOrder = "" });
                 costCenters = db.Fetch<CostCenter>("");
                 costCenters.Add(new CostCenter { CostCenterId = 0, _CostCenter = "" });
+
+                workNumbers = db.Fetch<WorkerInternalNumber>("where workerid = @0", worker);
+                workNumbers.Add(new WorkerInternalNumber { WorkerInternalNumberId = 0, InternalNumberId = 0, WorkerId = worker });
+                workCenters = db.Fetch<WorkerCostCenter>("where workerid = @0", worker);
+                workCenters.Add(new WorkerCostCenter { WorkerCostCenterId = 0, CostCenterId = 0, WorkerId = worker });
             }
         }
 

@@ -32,10 +32,11 @@ namespace TimeSheet.Models
         [ResultColumn] public int UseCount { get; set; }
         [ResultColumn] public int UserCount { get; set; }
 
-        public static string SaveInPassing(string internalnumber)
+        public static string SaveInPassing(string internalnumber, int workerid)
         {
             return string.Format(ins_internalnumber
                 , internalnumber
+                , workerid
                 );
         }
 
@@ -50,13 +51,11 @@ namespace TimeSheet.Models
         ";
 
         private static string ins_internalnumber = @"
-            INSERT INTO [dbo].[InternalNumber]
-                       ([InternalOrder])
-                 VALUES
-                       ('{0}')
-            select scope_identity()
+            declare @newid int
+            INSERT INTO InternalNumber ([InternalOrder]) VALUES ('{0}')
+            select @newid = scope_identity()
+            insert into workerinternalnumber (workerid, internalnumberid) values ({1}, @newid)
+            select @newid
             ";
-
-
     }
 }

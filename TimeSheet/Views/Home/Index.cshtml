@@ -302,36 +302,55 @@
 
             var $intern = $('input.interno', '#weeksheet');
 
-            if ($intn.val() == 0 && !$intern.prop('disabled')) {
-                e.preventDefault();
-
-                var answer = confirm("Use this new Internal Number: " + $intern.val());
-
-                if (!answer)
+            if (!$intern.prop('disabled')) {
+                var nlx = nL[$intern.val()];
+                if (nlx != 'undefined') {
+                    $('input[name="InternalNumberId"]', '#weeksheet').val(-nlx);
+                    $('#weeksheet').submit();
+                    $('#weekline').modal('hide');
                     return;
+                }
+                if ($intn.val() == 0) {
+                    e.preventDefault();
+
+                    var answer = confirm("Use this new Internal Number: " + $intern.val());
+
+                    if (!answer)
+                        return;
                 
-                $('input[name="InternalNumberId"]', '#weeksheet').val(0);
-                $('#weeksheet').submit();
-                $('#weekline').modal('hide');
-                return;
+                    $('input[name="InternalNumberId"]', '#weeksheet').val(0);
+                    $('#weeksheet').submit();
+                    $('#weekline').modal('hide');
+                    return;
+                }
             }
 
             var $ctr = $('input.costc', '#weeksheet');
 
-            if ($cost.val() == 0 && !$ctr.prop('disabled')) {
-                e.preventDefault();
-
-                var answer = confirm("Use this new Cost Center: " + $ctr.val());
-
-                if (!answer) {
-                    $ctr.focus();
+            if (!$ctr.prop('disabled')) {
+                var clx = cL[$ctr.val()];
+                if (clx != 'undefined') {
+                    $('input[name="CostCenterId"]', '#weeksheet').val(-clx);
+                    $('#weeksheet').submit();
+                    $('#weekline').modal('hide');
                     return;
                 }
 
-                $('input[name="CostCenterId"]', '#weeksheet').val(0);
-                $('#weeksheet').submit();
-                $('#weekline').modal('hide');
-                return;
+                if ($cost.val() == 0) {
+                    e.preventDefault();
+
+                    var answer = confirm("Use this new Cost Center: " + $ctr.val());
+
+                    if (!answer) {
+                        $ctr.focus();
+                        return;
+                    }
+
+                    $('input[name="CostCenterId"]', '#weeksheet').val(0);
+                    $('#weeksheet').submit();
+                    $('#weekline').modal('hide');
+                    return;
+                }
             }
             var $cn = $('input[name="CapitalNumber"]', '#weeksheet');
             $cn.val(encodeURIComponent($cn.val()));
@@ -396,75 +415,75 @@
         $('#periodEnding').val('@Model.sunday');
 
         @if (!Model.Submitted || Model.Impersonating) {
-                <text>
-                $('#addline').on('click', function () {
-                    $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
-                        $('#weekline').replaceWith(data);
-                        popuploaded();
-                    });
+            <text>
+            $('#addline').on('click', function () {
+                $.get('@Url.Action("Create","Home",null,Request.Url.Scheme)/0', function (data) {
+                    $('#weekline').replaceWith(data);
+                    popuploaded();
                 });
+            });
 
-                $('#submitsheet').on('click', function (e) {
-                    var total = getMins('@Model.Stats[0]') + getMins('@Model.Stats[1]');
-                    if (total > 40 * 60) {
-                        $('#confirmhours').text(getHours(0, total));
-                        $('#dialog-confirm-hours').show();
-                        e.preventDefault();
-                        $("#dialog-confirm-hours").dialog({
-                            resizable: false,
-                            height: 170,
-                            width: 350,
-                            modal: true,
-                            buttons: {
-                                "Submit hours as is": function () {
-                                    $(this).dialog("close");
-                                    $('#dialog-confirm-hours').hide();
-                                    $('#submitsheet').submit();
-                                },
-                                Cancel: function () {
-                                    $(this).dialog("close");
-                                    $('#dialog-confirm-hours').hide();
+            $('#submitsheet').on('click', function (e) {
+                var total = getMins('@Model.Stats[0]') + getMins('@Model.Stats[1]');
+                if (total > 40 * 60) {
+                    $('#confirmhours').text(getHours(0, total));
+                    $('#dialog-confirm-hours').show();
+                    e.preventDefault();
+                    $("#dialog-confirm-hours").dialog({
+                        resizable: false,
+                        height: 170,
+                        width: 350,
+                        modal: true,
+                        buttons: {
+                            "Submit hours as is": function () {
+                                $(this).dialog("close");
+                                $('#dialog-confirm-hours').hide();
+                                $('#submitsheet').submit();
+                            },
+                            Cancel: function () {
+                                $(this).dialog("close");
+                                $('#dialog-confirm-hours').hide();
 
-                                    return;
-                                }
+                                return;
                             }
-                        });
-                    } else if (total < 40 * 60) {
-                        $('#denyhours').text(getHours(0, total));
-                        $('#dialog-deny-hours').show();
-                        e.preventDefault();
-                        $("#dialog-deny-hours").dialog({
-                            resizable: false,
-                            height: 170,
-                            width: 420,
-                            modal: true,
-                            buttons: {
-                                OK: function () {
-                                    $(this).dialog("close");
-                                    $('#dialog-deny-hours').hide();
-
-                                    return;
-                                }
-                            }
-                        });
-
-                    }
-                });
-
-                $('#week tbody').on('click', 'tr.hoursrow', function () {
-                    var id = $(this).data('id');
-                    id = (id != '') ? id : 0;
-
-                    var pairid = $(this).data('pairid');
-                    pairid = (pairid != '') ? pairid : 0;
-
-                    $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
-                        $('#weekline').replaceWith(data);
-                        popuploaded();
+                        }
                     });
+                } else if (total < 40 * 60) {
+                    $('#denyhours').text(getHours(0, total));
+                    $('#dialog-deny-hours').show();
+                    e.preventDefault();
+                    $("#dialog-deny-hours").dialog({
+                        resizable: false,
+                        height: 170,
+                        width: 420,
+                        modal: true,
+                        buttons: {
+                            OK: function () {
+                                $(this).dialog("close");
+                                $('#dialog-deny-hours').hide();
+
+                                return;
+                            }
+                        }
+                    });
+
+                }
+            });
+
+            $('#week tbody').on('click', 'tr.hoursrow', function () {
+                var id = $(this).data('id');
+                id = (id != '') ? id : 0;
+
+                var pairid = $(this).data('pairid');
+                pairid = (pairid != '') ? pairid : 0;
+
+                $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
+                    $('#weekline').replaceWith(data);
+                    popuploaded();
                 });
-                </text>
-            }
+            });
+            </text>
+        }
 
         $('#week tbody').on('click', 'tr.descriptionrow', function (e) {
             var id = $(this).data('id');
@@ -478,5 +497,9 @@
             });
         });
     });
+    var nL = {};
+    var cL = {};
+    @foreach (var n in Model.numbers) {<text>nL['@(n.InternalOrder)']=@(n.InternalNumberId);</text>}
+    @foreach (var c in Model.centers) {<text>cL['@(c._CostCenter)']=@(c.CostCenterId);</text>}
 </script>
 }

@@ -33,10 +33,11 @@ namespace TimeSheet.Models
         [ResultColumn] public int UseCount { get; set; }
         [ResultColumn] public int UserCount { get; set; }
 
-        public static string Save(string cc)
+        public static string SaveInPassing(string cc, int workerid)
         {
             return string.Format(ins_costcenter
                 , cc
+                , workerid
                 );
         }
 
@@ -51,11 +52,11 @@ namespace TimeSheet.Models
         ";
 
         private static string ins_costcenter = @"
-            INSERT INTO [dbo].[CostCenter]
-                       ([CostCenter],[LegalEntity])
-                 VALUES
-                       ('{0}',0)
-            select scope_identity()
+            declare @newid int;
+            INSERT INTO [dbo].[CostCenter] ([CostCenter],[LegalEntity]) VALUES ('{0}',0)
+            select @newid = scope_identity()
+            insert into workercostcenter (costcenterid, workerid) values (@newid, {1})
+            select @newid
             ";
 
     }

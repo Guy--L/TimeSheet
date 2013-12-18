@@ -8,12 +8,14 @@ namespace TimeSheet.Models
 {
     public class Sheet : UserBase
     {
+        public List<InternalNumber> numbers { get; set; }
+        public List<CostCenter> centers { get; set; }
+
         public Worker employee { get; set; }
         public List<Week> hours { get; set; }
         public string[] Stats { get; set; }
 
-        public static List<DateTime> headers;
-        public List<DateTime> Headers { get { return headers; } set { headers = value; } }
+        public List<DateTime> Headers { get; set; }
 
         public int year { get; set; }
         public int weekNumber { get; set; }

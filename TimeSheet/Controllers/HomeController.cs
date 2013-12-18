@@ -55,30 +55,6 @@ namespace TimeSheet.Controllers
             Week.NonDemand = Week.partners.Where(p => p._Partner == "RDSS").Select(q => q.PartnerId).Single();
         }
 
-        /// <summary>
-        /// Find the first week (a cultural dependency) then first date of week
-        /// </summary>
-        /// <param name="year"></param>
-        /// <param name="weekOfYear"></param>
-        /// <returns></returns>
-        private static DateTime FirstDateOfWeek(int year, int weekOfYear)
-        {
-            DateTime jan1 = new DateTime(year, 1, 1);
-            int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
-
-            DateTime firstThursday = jan1.AddDays(daysOffset);
-            var cal = CultureInfo.CurrentCulture.Calendar;
-            int firstWeek = cal.GetWeekOfYear(firstThursday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-
-            var weekNum = weekOfYear;
-            if (firstWeek <= 1)
-            {
-                weekNum -= 1;
-            }
-            var result = firstThursday.AddDays(weekNum * 7);
-            return result.AddDays(-3);
-        }
-        
 
         /// <summary>
         /// Touchup '0:00' to '00:00' and '' to '00:00'
@@ -175,7 +151,7 @@ namespace TimeSheet.Controllers
                     ts.year--;
                     id = -id;
                 }
-                init = FirstDateOfWeek(ts.year, id.Value);
+                init = Hrs.FirstDateOfWeek(ts.year, id.Value);
                 ts.weekNumber = id.Value;
             }
             else
@@ -185,6 +161,10 @@ namespace TimeSheet.Controllers
 
             ts.hours = Week.Get(emp.WorkerId, ts.weekNumber, ts.year);
             ts.Stats = Week.Stats(ts.hours);
+
+            ts.numbers = ts.hours[0].internalNumbers;
+            ts.centers = ts.hours[0].costCenters;
+
             ts.Submitted = ts.hours.Any(d => d.Submitted.HasValue);
 
             var idsEntered = ts.hours.Select(d => d.DescriptionId);
@@ -202,7 +182,7 @@ namespace TimeSheet.Controllers
             int nextSunday = init.DayOfWeek == DayOfWeek.Sunday ? 0 : (7 - (int) init.DayOfWeek);
             init = init.AddDays(nextSunday);
             ts.sunday = init.ToString("MM/dd/yyyy");
-            Sheet.headers = Enumerable.Range(-6, 7).Select(n => init.AddDays(n)).ToList();
+            ts.Headers = Enumerable.Range(-6, 7).Select(n => init.AddDays(n)).ToList();
 
             Session["CurrentWeek"] = ts.weekNumber;
             Session["CurrentYear"] = init.Year;

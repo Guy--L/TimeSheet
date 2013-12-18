@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -15,8 +16,6 @@ namespace TimeSheet.Models
             partners = new SelectList(Week.partners, "PartnerId", "_Partner", 0);
             sites = new SelectList(Week.sites, "SiteId", "_Site");
             workAreas = new SelectList(Week.workAreas, "WorkAreaId", "_WorkArea");
-
-            headers = Sheet.headers;
         }
 
         public Hrs()
@@ -28,11 +27,15 @@ namespace TimeSheet.Models
             if (w.internalNumbers == null)
                 w.GetLists(w.WorkerId);
 
-            internalNumbers = new SelectList(w.internalNumbers, "InternalNumberId", "InternalOrder", 0);
+            internalNumbers = new SelectList(w.internalNumbers
+                                .Where(i=>w.workNumbers.Exists(n=>n.InternalNumberId == i.InternalNumberId)), "InternalNumberId", "InternalOrder", 0);
+
             times = new SelectList(w.customers.Where(c => c.WorkerId == 0), "CustomerId", "CustomerName");
             customers = new SelectList(w.customers.Where(c => c.WorkerId != 0), "CustomerId", "CustomerName");
             descriptions = new SelectList(w.descriptions, "DescriptionId", "_Description", 0);
-            costCenters = new SelectList(w.costCenters, "CostCenterId", "_CostCenter", 0);
+            
+            costCenters = new SelectList(w.costCenters
+                            .Where(i => w.workCenters.Exists(n => n.CostCenterId == i.CostCenterId)), "CostCenterId", "_CostCenter", 0);
 
             WorkerId = w.WorkerId;
             WeekNumber = w.WeekNumber;
@@ -44,6 +47,9 @@ namespace TimeSheet.Models
             CustomerId = 0;
             CapitalNumber = "";
             ChargeAccount = ChargeTo.Cost_Center;
+
+            var monday = FirstDateOfWeek(Year, WeekNumber);
+            Columns = Enumerable.Range(0, 7).Select(n => monday.AddDays(n)).ToList();
         }
 
         private static List<DateTime> headers;
@@ -178,6 +184,30 @@ namespace TimeSheet.Models
             NewRequest = b.NewRequest;
         }
 
+        /// <summary>
+        /// Find the first week (a cultural dependency) then first date of week
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="weekOfYear"></param>
+        /// <returns></returns>
+        public static DateTime FirstDateOfWeek(int year, int weekOfYear)
+        {
+            DateTime jan1 = new DateTime(year, 1, 1);
+            int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
+
+            DateTime firstThursday = jan1.AddDays(daysOffset);
+            var cal = CultureInfo.CurrentCulture.Calendar;
+            int firstWeek = cal.GetWeekOfYear(firstThursday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+            var weekNum = weekOfYear;
+            if (firstWeek <= 1)
+            {
+                weekNum -= 1;
+            }
+            var result = firstThursday.AddDays(weekNum * 7);
+            return result.AddDays(-3);
+        }
+        
         public void AddIfNew()
         {
             using (tsDB _db = new tsDB())
@@ -193,10 +223,29 @@ namespace TimeSheet.Models
                     CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(WorkerId, CustomerAdd));
 
                 if ((InternalNumberId == null || InternalNumberId == 0) && !string.IsNullOrWhiteSpace(InternalNumberAdd))
-                    InternalNumberId = _db.ExecuteScalar<int>(Models.InternalNumber.SaveInPassing(InternalNumberAdd));
-
+                    InternalNumberId = _db.ExecuteScalar<int>(Models.InternalNumber.SaveInPassing(InternalNumberAdd, WorkerId));
+                else if (InternalNumberId < 0)
+                {
+                    InternalNumberId = -InternalNumberId;
+                    WorkerInternalNumber win = new WorkerInternalNumber() {
+                        InternalNumberId = InternalNumberId.Value,
+                        WorkerId = WorkerId
+                    };
+                    _db.Save<WorkerInternalNumber>(win);
+                }
+                    
                 if ((CostCenterId == null || CostCenterId == 0) && !string.IsNullOrWhiteSpace(CostCenterAdd))
-                    CostCenterId = _db.ExecuteScalar<int>(Models.CostCenter.Save(CostCenterAdd));
+                    CostCenterId = _db.ExecuteScalar<int>(Models.CostCenter.SaveInPassing(CostCenterAdd, WorkerId));
+                else if (CostCenterId < 0)
+                {
+                    CostCenterId = -CostCenterId;
+                    WorkerCostCenter wcc = new WorkerCostCenter()
+                    {
+                        CostCenterId = CostCenterId.Value,
+                        WorkerId = WorkerId
+                    };
+                    _db.Save<WorkerCostCenter>(wcc);
+                }
             }
         }
     }
