@@ -22,7 +22,7 @@
 </head>
 <body>
     <div class="page-container">
-        <nav class="navbar navbar-fixed-top @(Model.Impersonating?"navbar-custom":"navbar-inverse")" role="navigation">
+        <nav class="navbar navbar-fixed-top @(Model.Impersonating?"navbar-default":"navbar-inverse")" role="navigation">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -44,14 +44,14 @@
                         if (@Model.IsAdmin)
                         {
                             <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
-                            @*<li class="dropdown">
+                            <li class="dropdown">
                                 <a href="#" data-toggle="dropdown">Maintain <span class="caret"></span></a>
-                                <ul class="dropdown-menu navbar-inverse">*@
-                                    <li class="navdrop">@Html.ActionLink("Employees", "Personnel", "Admin")</li>
-                                    <li class="navdrop">@Html.ActionLink("Internal Numbers", "InternalNumbers", "Admin")</li>
-                                    <li class="navdrop">@Html.ActionLink("Cost Centers", "CostCenters", "Admin")</li>
-                                @*</ul>
-                            </li>*@
+                                <ul class="dropdown-menu navbar-inverse">
+                                    <li>@Html.ActionLink("Employees", "Personnel", "Admin")</li>
+                                    <li>@Html.ActionLink("Internal Numbers", "InternalNumbers", "Admin")</li>
+                                    <li>@Html.ActionLink("Cost Centers", "CostCenters", "Admin")</li>
+                                </ul>
+                            </li>
                         }
                         else if (@Model.IsManager)
                         {
