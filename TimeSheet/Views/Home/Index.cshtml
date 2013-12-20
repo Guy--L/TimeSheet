@@ -305,6 +305,7 @@
             if (!$intern.prop('disabled')) {
                 var nlx = nL[$intern.val()];
                 if (nlx != 'undefined') {
+                    e.preventDefault();
                     $('input[name="InternalNumberId"]', '#weeksheet').val(-nlx);
                     $('#weeksheet').submit();
                     $('#weekline').modal('hide');
@@ -330,6 +331,7 @@
             if (!$ctr.prop('disabled')) {
                 var clx = cL[$ctr.val()];
                 if (clx != 'undefined') {
+                    e.preventDefault();
                     $('input[name="CostCenterId"]', '#weeksheet').val(-clx);
                     $('#weeksheet').submit();
                     $('#weekline').modal('hide');

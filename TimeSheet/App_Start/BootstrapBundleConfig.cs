@@ -25,7 +25,8 @@ namespace TimeSheet.App_Start
                 ,"~/Content/datepicker.css"
                 ,"~/Content/bootstrap/font-awesome.css"
                 ));
-			BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/theme").Include("~/Content/bootstrap/bootstrap-theme.css"));
+			BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/theme").Include(
+                "~/Content/bootstrap/bootstrap-theme.css"));
 		}
 	}
 }

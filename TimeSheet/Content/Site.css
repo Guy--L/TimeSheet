@@ -928,12 +928,12 @@ div.submitchecks
     display: none;
 }
 
-.navbar-inverse.dropdown-menu > li.navdrop > a {
+.navbar-inverse.dropdown-menu > li > a {
     color: #999999;
 }
 
-.navbar-inverse.dropdown-menu > li.navdrop > a:hover,
-.navbar-inverse.dropdown-menu > li.navdrop > a:focus {
+.navbar-inverse.dropdown-menu > li > a:hover,
+.navbar-inverse.dropdown-menu > li > a:focus {
   color: #ffffff;
   text-decoration: none;
   background-color: #080808;

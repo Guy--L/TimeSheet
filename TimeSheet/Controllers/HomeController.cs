@@ -225,7 +225,6 @@ namespace TimeSheet.Controllers
         public ActionResult Save(Hrs hours)
         {
             hours.AddIfNew();           // add new records for Customer, Description, Cost Center or Internal Number
-
             dbExec(hours.Save());
             return RedirectToAction("Index", new { id = hours.WeekNumber });
         }
