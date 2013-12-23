@@ -41,6 +41,7 @@
                     }
                     else
                     {
+                        <li>@Html.ActionLink("Report", "Report", "Home")</li>
                         if (@Model.IsAdmin)
                         {
                             <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
@@ -83,5 +84,30 @@
     @Scripts.Render("~/bundles/dataTables")
 
     @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+        function elog(msg) {
+            var form = $('<form></form>');
+
+            form.attr("method", "post");
+            form.attr("action", '@Url.Action("Error", "Home", null, Request.Url.Scheme)');
+
+            var field = $('<input></input>');
+
+            field.attr("type", "hidden");
+            field.attr("name", "errmsg");
+            field.attr("value", msg);
+
+            form.append(field);
+
+            $(document.body).append(form);
+            form.submit();
+        }
+
+        window.onerror = function (msg, url, line) {
+            var errmsg = '(' + url + ': ' + line + ') ' + msg;
+            elog(errmsg);
+            return true;
+        }
+    </script>
 </body>
 </html>

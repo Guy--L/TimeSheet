@@ -40,6 +40,24 @@ namespace TimeSheet.Models
 
         public static int NonDemand;
 
+        public static void GetLists()
+        {
+            if (partners != null && sites != null && workAreas != null)
+                return;
+
+            using (tsDB db = new tsDB())
+            {
+                sites = db.Fetch<Site>("");
+                partners = db.Fetch<Partner>("");
+                workAreas = db.Fetch<WorkArea>("");
+
+                if (!sites.Any(s => s.SiteId == 0)) sites.Add(new Site { SiteId = 0, _Site = "" });
+                if (!partners.Any(p => p.PartnerId == 0)) partners.Add(new Partner { PartnerId = 0, _Partner = "" });
+                if (!workAreas.Any(w => w.WorkAreaId == 0)) workAreas.Add(new WorkArea { WorkAreaId = 0, _WorkArea = "" });
+            }
+            NonDemand = partners.Where(p => p._Partner == "RDSS").Select(q => q.PartnerId).Single();
+        }
+
         public Week()
         { }
 

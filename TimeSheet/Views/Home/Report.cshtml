@@ -1,0 +1,13 @@
+﻿@using MvcReportViewer
+@model TimeSheet.Models.UserBase
+
+@{
+    ViewBag.Title = "Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Report</h2>
+@Html.MvcReportViewer("/Summaries/Demand", 
+        new { Start = DateTime.Now.AddMonths(-2), End = DateTime.Now },
+        new { Height = 900, Width = 900, style = "border: none" }
+)

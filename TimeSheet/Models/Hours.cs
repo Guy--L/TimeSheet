@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TimeSheet.Controllers;
 
 namespace TimeSheet.Models
 {
@@ -13,6 +14,7 @@ namespace TimeSheet.Models
     {
         static Hrs()
         {
+            Week.GetLists();
             partners = new SelectList(Week.partners, "PartnerId", "_Partner", 0);
             sites = new SelectList(Week.sites, "SiteId", "_Site");
             workAreas = new SelectList(Week.workAreas, "WorkAreaId", "_WorkArea");

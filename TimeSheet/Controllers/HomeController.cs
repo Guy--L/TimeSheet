@@ -37,22 +37,9 @@ namespace TimeSheet.Controllers
         /// <summary>
         /// Static constructor to get static lists and set constants
         /// </summary>
-        public HomeController()
+        static HomeController()
         {
-            if (Week.partners != null)
-                return;
-
-            using (tsDB db = new tsDB())
-            {
-                Week.sites = db.Fetch<Site>("");
-                Week.partners = db.Fetch<Partner>("");
-                Week.workAreas = db.Fetch<WorkArea>("");
-
-                if (!Week.sites.Any(s => s.SiteId == 0)) Week.sites.Add(new Site { SiteId = 0, _Site = "" });
-                if (!Week.partners.Any(p => p.PartnerId == 0)) Week.partners.Add(new Partner { PartnerId = 0, _Partner = "" });
-                if (!Week.workAreas.Any(w => w.WorkAreaId == 0)) Week.workAreas.Add(new WorkArea { WorkAreaId = 0, _WorkArea = "" });
-            }
-            Week.NonDemand = Week.partners.Where(p => p._Partner == "RDSS").Select(q => q.PartnerId).Single();
+            Week.GetLists();
         }
 
 
@@ -342,6 +329,28 @@ namespace TimeSheet.Controllers
         public ActionResult Contact(string id)
         {
             return View(id);
+        }
+
+        public ActionResult Report()
+        {
+            UserBase ub = new UserBase();
+            ub.User = Session["user"].ToString();
+            ub.IsAdmin = false;
+            ub.IsManager = false;
+            ub.Impersonating = false;
+            return View(ub);
+        }
+
+        [HttpPost]
+        public ActionResult Error(string errmsg)
+        {
+            Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+
+            Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception(string.Format("Client side error--{0}", errmsg)));
+            var week = Session["CurrentWeek"] as int?;
+            if (!week.HasValue)
+                week = calendar.GetWeekOfYear(DateTime.Today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            return RedirectToAction("Index", new { id = week });
         }
     }
 }
