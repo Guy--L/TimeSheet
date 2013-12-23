@@ -110,6 +110,99 @@ namespace TimeSheet.Controllers
             return RedirectToAction("InternalNumbers");
         }
 
+        public ActionResult DeleteInternalNumber(InternalNumber ino)
+        {
+            ino.Delete();
+            return RedirectToAction("InternalNumbers");
+        }
+
+        public ActionResult WorkAreas()
+        {
+            WorkAreas i = new WorkAreas();
+            i.User = Session["user"].ToString();
+            using (tsDB db = new tsDB())
+            {
+                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                i.IsAdmin = user.IsAdmin;
+                i.IsManager = user.IsManager;
+                i.list = db.Fetch<WorkArea>(string.Format(Models.WorkArea.all));
+            }
+            return View(i);
+        }
+
+        public ActionResult WorkArea(int id)
+        {
+            AreaView w = new AreaView(id);
+            w.User = Session["user"].ToString();
+            w.IsAdmin = true;
+            return View(w);
+        }
+
+        [HttpPost]
+        public ActionResult SaveWorkArea(AreaView nv)
+        {
+            nv.wa.Save();
+            return RedirectToAction("WorkAreas");
+        }
+
+        public ActionResult Sites()
+        {
+            Sites i = new Sites();
+            i.User = Session["user"].ToString();
+            using (tsDB db = new tsDB())
+            {
+                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                i.IsAdmin = user.IsAdmin;
+                i.IsManager = user.IsManager;
+                i.list = db.Fetch<Site>(string.Format(Models.Site.all));
+            }
+            return View(i);
+        }
+
+        public ActionResult Site(int id)
+        {
+            SiteView w = new SiteView(id);
+            w.User = Session["user"].ToString();
+            w.IsAdmin = true;
+            return View(w);
+        }
+
+        [HttpPost]
+        public ActionResult SaveSite(SiteView nv)
+        {
+            nv.wa.Save();
+            return RedirectToAction("Sites");
+        }
+
+        public ActionResult Partners()
+        {
+            Partners i = new Partners();
+            i.User = Session["user"].ToString();
+            using (tsDB db = new tsDB())
+            {
+                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                i.IsAdmin = user.IsAdmin;
+                i.IsManager = user.IsManager;
+                i.list = db.Fetch<Partner>(string.Format(Models.Partner.all));
+            }
+            return View(i);
+        }
+
+        public ActionResult Partner(int id)
+        {
+            PartnerView w = new PartnerView(id);
+            w.User = Session["user"].ToString();
+            w.IsAdmin = true;
+            return View(w);
+        }
+
+        [HttpPost]
+        public ActionResult SavePartner(PartnerView nv)
+        {
+            nv.wa.Save();
+            return RedirectToAction("Partners");
+        }
+
         public ActionResult CostCenters()
         {
             CostCenters i = new CostCenters();
@@ -136,6 +229,12 @@ namespace TimeSheet.Controllers
         public ActionResult SaveCostCenter(CenterView nv)
         {
             nv.cc.Save();
+            return RedirectToAction("CostCenters");
+        }
+
+        public ActionResult DeleteCostCenter(CostCenter cc)
+        {
+            cc.Delete();
             return RedirectToAction("CostCenters");
         }
 

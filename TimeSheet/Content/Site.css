@@ -939,3 +939,14 @@ div.submitchecks
   background-color: #080808;
   background-image: none;
 }
+
+.navbar-default .navbar-nav > ul.nav > li > a:hover,
+.navbar-default .navbar-nav > ul.nav > li > a:focus {
+  color: #f0ad4e;
+  background-color: transparent;
+}
+
+a.dellink
+{
+    color: #e80c4d;
+}

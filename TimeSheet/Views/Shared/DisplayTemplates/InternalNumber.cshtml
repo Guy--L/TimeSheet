@@ -5,4 +5,10 @@
     <td>@Model.LegalEntity</td>
     <td>@Model.UseCount</td>
     <td>@Model.UserCount</td>
+    <td>
+        @if (Model.UseCount == 0)
+        {
+                @Html.ActionLink("Delete", "DeleteInternalNumber", "Admin", new { InternalNumberId = Model.InternalNumberId }, new { @class = "dellink" })
+        }
+</td>
 </tr>

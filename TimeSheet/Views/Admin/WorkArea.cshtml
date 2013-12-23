@@ -1,0 +1,38 @@
+﻿@model TimeSheet.Models.AreaView
+
+@{
+    ViewBag.Title = "Work Area";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("savenumber").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
+    };
+}
+
+<div class="container">
+@using (var form = Html.Bootstrap().Begin(new Form("SaveWorkArea", "Admin").Id("areaform").Type(FormType.Horizontal).LabelWidthXs(5)))
+{
+    @Html.HiddenFor(m => m.wa.WorkAreaId)
+    <div class="row">
+        <div class="col-xs-12 text-primary"><h3>@(Model.wa.WorkAreaId == 0 ? "Add " : "Edit ")Work Area</h3></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            @form.FormGroup().TextBoxFor(m => m.wa._WorkArea).Size(InputSize.Small).WidthXs(4)
+        </div>
+    </div>
+    <div class="row">
+        @(form.FormGroup().CustomControls(buttons.ToArray()))
+    </div>
+}
+</div>
+@section scripts{
+    <script type="text/javascript">    
+
+        $(function () {
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("WorkAreas", "Admin",null,Request.Url.Scheme)';
+            });
+        });
+    </script>
+}

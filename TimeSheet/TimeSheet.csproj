@@ -367,6 +367,7 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\timesheet.js" />
+    <Content Include="Views\Admin\InternalNumbers.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -412,12 +413,20 @@
     <Content Include="Views\Admin\_Layout.cshtml" />
     <Content Include="Views\Admin\Worker.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\InternalNumber.cshtml" />
-    <Content Include="Views\Admin\InternalNumbers.cshtml" />
     <Content Include="Views\Admin\InternalNumber.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\InternalNumber.cshtml" />
     <Content Include="Views\Admin\CostCenters.cshtml" />
     <Content Include="Views\Admin\CostCenter.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CostCenter.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\WorkArea.cshtml" />
+    <Content Include="Views\Admin\WorkAreas.cshtml" />
+    <Content Include="Views\Admin\WorkArea.cshtml" />
+    <Content Include="Views\Admin\Sites.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Site.cshtml" />
+    <Content Include="Views\Admin\Site.cshtml" />
+    <Content Include="Views\Admin\Partner.cshtml" />
+    <Content Include="Views\Admin\Partners.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Partner.cshtml" />
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
