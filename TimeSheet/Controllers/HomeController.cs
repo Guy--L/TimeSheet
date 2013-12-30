@@ -68,7 +68,8 @@ namespace TimeSheet.Controllers
             try
             {
                 var newday = DateTime.Parse(id);
-                var newmon = calendar.GetWeekOfYear(newday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                var wk = new ISO_8601(newday);
+                var newmon = wk.week;
                 return RedirectToAction("Index", new { id = newmon });
             }
             catch(Exception e)
@@ -76,7 +77,10 @@ namespace TimeSheet.Controllers
                 Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("PickDate threw up", e));
                 var week = Session["CurrentWeek"] as int?;
                 if (!week.HasValue)
-                    week = calendar.GetWeekOfYear(DateTime.Today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                {
+                    var wk = new ISO_8601(DateTime.Today);
+                    week = wk.week;
+                }
                 return RedirectToAction("Index", new { id = week });
             }
         }
@@ -116,7 +120,21 @@ namespace TimeSheet.Controllers
                 IsManager = emp.IsManager,
                 Impersonating = (Session["admin"] != null)
             };
-
+/*
+        function newWeek(next) {
+            var days = next ? 7 : -7;
+            var newSunday = new Date(sunday);
+            var thisSunday = new Date(sunday);
+            newSunday.setDate(newSunday.getDate() + days);
+            week = $.datepicker.iso8601Week(newSunday);
+            if (newSunday.getFullYear() > thisSunday.getFullYear())
+                week += 100;
+            if (newSunday.getFullYear() < thisSunday.getFullYear())
+                week = -week;
+            var url = '@Url.Action("Index", "Home", new { id = -1 })';
+            location.href = url.replace('-1', week);
+        }
+*/
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
             DateTime init = DateTime.Today;
 
@@ -143,7 +161,8 @@ namespace TimeSheet.Controllers
             }
             else
             {
-                ts.weekNumber = calendar.GetWeekOfYear(init, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                var week = new ISO_8601(DateTime.Today);
+                ts.weekNumber = week.week;
             }
 
             ts.hours = Week.Get(emp.WorkerId, ts.weekNumber, ts.year);
@@ -349,7 +368,10 @@ namespace TimeSheet.Controllers
             Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception(string.Format("Client side error--{0}", errmsg)));
             var week = Session["CurrentWeek"] as int?;
             if (!week.HasValue)
-                week = calendar.GetWeekOfYear(DateTime.Today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            {
+                var wk = new ISO_8601(DateTime.Today);
+                week = wk.week;
+            }
             return RedirectToAction("Index", new { id = week });
         }
     }

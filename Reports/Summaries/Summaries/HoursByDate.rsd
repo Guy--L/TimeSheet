@@ -17,11 +17,18 @@
           <rd:DbType>DateTime</rd:DbType>
         </DataSetParameter>
       </DataSetParameters>
-      <CommandText>SELECT     AccountNumber, FullName, EmployeeNumber, SUM(amount) AS SubTotal
-FROM         (SELECT     AccountNumber, FullName, EmployeeNumber, amount
-                       FROM          HoursByDate
-                       WHERE      (WorkDate BETWEEN @Start AND @End)) AS derivedtbl_1
-GROUP BY AccountNumber, FullName, EmployeeNumber</CommandText>
+      <CommandText>select t.AccountNumber
+	, coalesce(w.LastName + ', ' + w.FirstName, '') AS FullName
+	, coalesce(t.EmployeeNumber, '') as Number
+	, cast (SubTotal * 100 / (select sum(amount) from hoursbydate where workdate between @Start and @End) as numeric(5,2)) as PercentOfTotal
+	, SubTotal
+from (SELECT     AccountNumber, EmployeeNumber, SUM(amount) AS SubTotal
+	FROM       HoursByDate
+	WHERE      WorkDate 
+	BETWEEN @Start 
+	AND @End
+	GROUP BY rollup(accountnumber, employeenumber)) as t
+left join worker w on t.EmployeeNumber = w.EmployeeNumber</CommandText>
     </Query>
     <Fields>
       <Field Name="AccountNumber">
@@ -32,13 +39,17 @@ GROUP BY AccountNumber, FullName, EmployeeNumber</CommandText>
         <DataField>SubTotal</DataField>
         <rd:TypeName>System.Decimal</rd:TypeName>
       </Field>
+      <Field Name="Number">
+        <DataField>Number</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
       <Field Name="FullName">
         <DataField>FullName</DataField>
         <rd:TypeName>System.String</rd:TypeName>
       </Field>
-      <Field Name="EmployeeNumber">
-        <DataField>EmployeeNumber</DataField>
-        <rd:TypeName>System.String</rd:TypeName>
+      <Field Name="PercentOfTotal">
+        <DataField>PercentOfTotal</DataField>
+        <rd:TypeName>System.Decimal</rd:TypeName>
       </Field>
     </Fields>
   </DataSet>

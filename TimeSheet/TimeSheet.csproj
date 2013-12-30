@@ -195,6 +195,7 @@
       <DependentUpon>Database.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Hours.cs" />
+    <Compile Include="Models\ISO_8601.cs" />
     <Compile Include="Models\Partner.cs" />
     <Compile Include="Models\Sheet.cs" />
     <Compile Include="Models\Site.cs" />

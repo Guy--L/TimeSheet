@@ -569,8 +569,8 @@ namespace TimeSheet.Models
 
         internal static int YearWeek(DateTime d)
         {
-            var cal = CultureInfo.CurrentCulture.Calendar;
-            int week = cal.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            var wk = new ISO_8601(d);
+            int week = wk.week;
             return d.Year * 100 + week;
         }
 

@@ -46,8 +46,8 @@ namespace TimeSheet.Models
 
             DateTime firstMonday = jan1.AddDays(daysOffset);
 
-            var cal = CultureInfo.CurrentCulture.Calendar;
-            int firstWeek = cal.GetWeekOfYear(jan1, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            var wk = new ISO_8601(jan1);
+            int firstWeek = wk.week;
             var weekNum = weekNumber;
             if (firstWeek <= 1)
             {
