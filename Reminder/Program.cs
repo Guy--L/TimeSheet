@@ -12,6 +12,7 @@ using Postal;
 using Reminder.Models;
 using System.Diagnostics;
 using System.Threading;
+using PetaPoco;
 
 namespace Reminder
 {
@@ -42,8 +43,9 @@ namespace Reminder
         }
 
         private static string notsubmitted = @"
-            select distinct ionname from worker w
+            select distinct w.ionname, m.ionname manager from worker w
                 left join week k on w.workerid = k.workerid
+                left join worker m on w.managerid = m.workerid
                 where w.ondisability = 0 and w.isactive = 1 and
                     (k.weekid is null or 
                     (k.year * 100 + k.weeknumber = @0 and k.submitted is null))                                   
@@ -57,28 +59,44 @@ namespace Reminder
             DateTime d = sunday ? DateTime.Today : DateTime.Today.AddDays(-(double)dow);
             yearwk = YearWeek(d);
 
-            List<string> behind;
+            List<Worker> behind;
             using (tsDB db = new tsDB())
             {
-                behind = db.Fetch<string>(notsubmitted, yearwk);
+                behind = db.Fetch<Worker>(notsubmitted, yearwk);
             }
+
+            if (behind == null || !behind.Any())
+                return;
+
             var viewsPath = Path.GetFullPath(ConfigurationManager.AppSettings["templates"]);
             var engines = new ViewEngineCollection();
             engines.Add(new FileSystemRazorViewEngine(viewsPath));
             var service = new EmailService(engines);
 
             dynamic email = new Email(sunday ? "FirstReminder" : "SecondReminder");
-            var to = string.Join("@pg.com, ", behind.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray()) + "@pg.com";
-            email.To = to;
-            var from = ConfigurationManager.AppSettings["sentfrom"];
-            email.From = from;
+            email.From = ConfigurationManager.AppSettings["sentfrom"];
             email.Ending = d.ToShortDateString();
 
-            if (!sunday)
+            if (sunday)
             {
-                email.Cc = ConfigurationManager.AppSettings["copiesto"];
+                var ions = behind.Where(s=>!string.IsNullOrWhiteSpace(s.IonName)).Select(i => i.IonName).ToArray();
+                email.To = string.Join("@pg.com, ", ions) + "@pg.com";
+
+                service.Send(email);
             }
-            service.Send(email);
+            else
+            {
+                var managers = behind.Select(m => m.manager).Distinct();
+
+                foreach (var mgr in managers)
+                {
+                    var ions = behind.Where(s => s.manager == mgr && !string.IsNullOrWhiteSpace(s.IonName)).Select(i => i.IonName).ToArray();
+                    email.To = string.Join("@pg.com, ", ions) + "@pg.com";
+
+                    email.Cc = ConfigurationManager.AppSettings["copiesto"] + (string.IsNullOrWhiteSpace(mgr) ? "" : (", " + mgr + "@pg.com"));
+                    service.Send(email);
+                }
+            }
         }
     }
 }
