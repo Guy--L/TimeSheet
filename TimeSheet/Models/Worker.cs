@@ -55,9 +55,9 @@ namespace TimeSheet.Models
                   ,w.[IonName]
                   ,w.[IsAdmin]
                   ,w.[ManagerId]
-                  ,coalesce(m.[IonName],'') ManagerIon
+                  ,coalesce(m.[IonName],'') as ManagerIon
               FROM [dbo].[Worker] w
-              join [dbo].[Worker] m on w.ManagerId = m.WorkerId
+              left join [dbo].[Worker] m on w.ManagerId = m.WorkerId
         ";
 
         [ResultColumn] public string level { get; set; }

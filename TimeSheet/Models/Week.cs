@@ -156,6 +156,32 @@ namespace TimeSheet.Models
             }
         }
 
+        public string ChargNumber
+        {
+            get
+            {
+                if (!AccountType.HasValue)
+                    return null;
+                switch ((ChargeTo)AccountType.Value)
+                {
+                    case ChargeTo.Cost_Center:
+                        if (CostCenterId == 0) return "";
+                        var cc = costCenters.FirstOrDefault(i => i.CostCenterId == CostCenterId);
+                        return (cc == null) ? "" : cc._CostCenter;
+
+                    case ChargeTo.Internal_Number:
+                        if (InternalNumberId == 0) return "";
+                        var inn = internalNumbers.FirstOrDefault(i => i.InternalNumberId == InternalNumberId);
+                        return (inn == null) ? "" : inn.InternalOrder;
+
+                    case ChargeTo.Capital_Number:
+                        if (string.IsNullOrWhiteSpace(CapitalNumber)) return "";
+                        return CapitalNumber;
+                }
+                return null;
+            }
+        }
+
         public HtmlString ChargeNumber
         {
             get

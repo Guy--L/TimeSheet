@@ -10,6 +10,7 @@ using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
 using Postal;
 using TimeSheet.Models;
 
@@ -96,9 +97,49 @@ namespace TimeSheet.Controllers
                 return;
 
             FileStream fs = new FileStream(Server.MapPath(@"~/Content/TimeSheet.xls"), FileMode.Open, FileAccess.Read);  // Getting the complete workbook... 
-            HSSFWorkbook wb = new HSSFWorkbook(fs, true);                
-            
+            HSSFWorkbook wb = new HSSFWorkbook(fs, true);
 
+            ISheet sheet = wb.GetSheet("Sheet1");
+            IRow row = sheet.GetRow(1);
+            row.GetCell(2).SetCellValue(w.LastName + ", " + w.FirstName);
+            row = sheet.GetRow(2);
+            row.GetCell(2).SetCellValue(w.EmployeeNumber);
+            row = sheet.GetRow(3);
+            row.GetCell(2).SetCellValue(s.sunday);
+            row = sheet.GetRow(4);
+            row.GetCell(2).SetCellValue(s.weekNumber);
+
+            row = sheet.GetRow(6);
+            for (int i = 0; i < 7; i++)
+                row.GetCell(4 + i).SetCellValue(s.Headers[i].ToString("ddd<br />M/d"));
+
+            row = sheet.GetRow(7);
+            for (int i = 0; i < 7; i++)
+                row.GetCell(4 + i).SetCellValue(s.Stats[4+i]);
+            row.GetCell(11).SetCellValue(s.Stats[3]);
+
+            int rowy = 8;
+            foreach (var hr in s.hours)
+            {
+                row = sheet.GetRow(rowy);
+                row.GetCell(1).SetCellValue(hr.IsOvertime ? "Y" : "");
+                row.GetCell(2).SetCellValue(hr.Description);
+                row.GetCell(3).SetCellValue(hr.ChargNumber);
+                row.GetCell(4).SetCellValue(hr.Mon);
+                row.GetCell(5).SetCellValue(hr.Tue);
+                row.GetCell(6).SetCellValue(hr.Wed);
+                row.GetCell(7).SetCellValue(hr.Thu);
+                row.GetCell(8).SetCellValue(hr.Fri);
+                row.GetCell(9).SetCellValue(hr.Sat);
+                row.GetCell(10).SetCellValue(hr.Sun);
+                row.GetCell(11).SetCellValue(hr.SubTotal);
+                row.GetCell(12).SetCellValue(hr.NewRequest ? "Y" : "");
+                row.GetCell(13).SetCellValue(hr.Customer);
+                row.GetCell(14).SetCellValue(hr.WorkArea);
+                row.GetCell(15).SetCellValue(hr.Partner);
+                row.GetCell(16).SetCellValue(hr.Site);
+                rowy++;
+            }
 
             MemoryStream ms = new MemoryStream();
             wb.Write(ms);
@@ -106,7 +147,7 @@ namespace TimeSheet.Controllers
             dynamic email = new Email("TimeSheet");
             email.Attach(new Attachment(ms, "ts" + w.LastName + ".xls", "application/vnd.ms-excel"));
             email.From = ConfigurationManager.AppSettings["sentfrom"];
-            email.To = w.ManagerIon;
+            email.To = w.ManagerIon + "@pg.com";
             email.Employee = w.FirstName + " " + w.LastName;
             email.Ending = s.sunday;
             email.Demand = s.Stats[0];
@@ -126,12 +167,12 @@ namespace TimeSheet.Controllers
             tsDB db = new tsDB();
 
             string usr = Session["user"] as string;
-            string who = "where ionname = @0";
+            string who = "where w.ionname = @0";
             if (string.IsNullOrWhiteSpace(usr))
                 return RedirectToAction("Contact", "User was not found");
 
             if (char.IsDigit(usr[0]))
-                who = "where workerid = @0";
+                who = "where w.workerid = @0";
             else
             {
                 string[] worker = usr.ToString().Split('\\');
