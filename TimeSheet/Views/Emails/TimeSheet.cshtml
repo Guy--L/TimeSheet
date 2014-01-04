@@ -1,0 +1,22 @@
+﻿To: @Model.To
+From: @Model.From
+Subject: TimeSheet submitted by @Model.Employee ending @Model.Ending
+
+<p>
+Summary
+<br />
+<table>
+    <tr>
+        <td>Demand</td><td>@Model.Demand</td>
+    </tr>
+    <tr>
+        <td>NonDemand</td><td>@Model.NonDemand</td>
+    </tr>
+    <tr>
+        <td>OverTime</td><td>@Model.OverTime</td>
+    </tr>
+    <tr>
+        <td>Total</td><td>@Model.Total</td>
+    </tr>
+</table>
+</p>

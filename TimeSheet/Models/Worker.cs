@@ -15,7 +15,22 @@ namespace TimeSheet.Models
     public partial class Worker
     {
         public static string all = @"
-            select w.*, l.level, s.site, d.WorkDeptDesc, r.Role
+            select w.[WorkerId]
+                  ,w.[EmployeeNumber]
+                  ,w.[LevelId]
+                  ,w.[WorkDeptId]
+                  ,w.[FacilityId]
+                  ,w.[RoleId]
+                  ,w.[FirstName]
+                  ,w.[LastName]
+                  ,w.[IsManager]
+                  ,w.[IsActive]
+                  ,w.[IsPartTime]
+                  ,w.[OnDisability]
+                  ,w.[IonName]
+                  ,w.[IsAdmin]
+                  ,w.[ManagerId]
+                  , l.level, s.site, d.WorkDeptDesc, r.Role
             from worker w
             left join [level] l on w.LevelId = l.LevelId
             left join site s on w.FacilityId = s.SiteId
@@ -24,10 +39,33 @@ namespace TimeSheet.Models
         ";
         public static string delegates = all + @" where w.ManagerId = {0}";
 
+        public static string worker = @"
+            SELECT w.[WorkerId]
+                  ,w.[EmployeeNumber]
+                  ,w.[LevelId]
+                  ,w.[WorkDeptId]
+                  ,w.[FacilityId]
+                  ,w.[RoleId]
+                  ,w.[FirstName]
+                  ,w.[LastName]
+                  ,w.[IsManager]
+                  ,w.[IsActive]
+                  ,w.[IsPartTime]
+                  ,w.[OnDisability]
+                  ,w.[IonName]
+                  ,w.[IsAdmin]
+                  ,w.[ManagerId]
+                  ,coalesce(m.[IonName],'') ManagerIon
+              FROM [dbo].[Worker] w
+              join [dbo].[Worker] m on w.ManagerId = m.WorkerId
+        ";
+
         [ResultColumn] public string level { get; set; }
         [ResultColumn] public string site { get; set; }
         [ResultColumn] public string WorkDeptDesc { get; set; }
         [ResultColumn] public string role { get; set; }
+
+        [ResultColumn] public string ManagerIon { get; set; }
     }
 
     public class WorkerView : UserBase

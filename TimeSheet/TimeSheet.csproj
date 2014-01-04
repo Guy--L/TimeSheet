@@ -67,6 +67,9 @@
     <Reference Include="Portable.Licensing">
       <HintPath>..\packages\Portable.Licensing.1.1.0\lib\portable-net40+sl4+wp7+win8\Portable.Licensing.dll</HintPath>
     </Reference>
+    <Reference Include="Postal">
+      <HintPath>..\packages\Postal.0.9.0\lib\net40\Postal.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
@@ -339,6 +342,7 @@
     <Content Include="Content\Cross_Charge.xls" />
     <Content Include="Content\Dash_Board.xlsx" />
     <Content Include="Content\Dash_Board.xls" />
+    <Content Include="Content\TimeSheet.xls" />
     <None Include="Properties\PublishProfiles\Test.pubxml" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="MvcReportViewer.aspx" />
@@ -428,6 +432,11 @@
     <Content Include="Views\Admin\Partners.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Partner.cshtml" />
     <Content Include="Views\Home\Report.cshtml" />
+    <Content Include="Views\Emails\Web.config" />
+    <Content Include="Views\Emails\_ViewStart.cshtml" />
+    <Content Include="Views\Emails\TimeSheet.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

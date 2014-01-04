@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
+using NPOI.HSSF.UserModel;
+using Postal;
 using TimeSheet.Models;
 
 namespace TimeSheet.Controllers
@@ -85,6 +90,31 @@ namespace TimeSheet.Controllers
             }
         }
 
+        public void SubmitEmail(Worker w, Sheet s)
+        {
+            if (string.IsNullOrWhiteSpace(w.ManagerIon))
+                return;
+
+            FileStream fs = new FileStream(Server.MapPath(@"~/Content/TimeSheet.xls"), FileMode.Open, FileAccess.Read);  // Getting the complete workbook... 
+            HSSFWorkbook wb = new HSSFWorkbook(fs, true);                
+            
+
+
+            MemoryStream ms = new MemoryStream();
+            wb.Write(ms);
+
+            dynamic email = new Email("TimeSheet");
+            email.Attach(new Attachment(ms, "ts" + w.LastName + ".xls", "application/vnd.ms-excel"));
+            email.From = ConfigurationManager.AppSettings["sentfrom"];
+            email.To = w.ManagerIon;
+            email.Employee = w.FirstName + " " + w.LastName;
+            email.Ending = s.sunday;
+            email.Demand = s.Stats[0];
+            email.NonDemand = s.Stats[1];
+            email.OverTime = s.Stats[2];
+            email.Total = s.Stats[3];
+            email.Send();
+        }
 
         /// <summary>
         /// "Landing" page for timesheet
@@ -107,7 +137,7 @@ namespace TimeSheet.Controllers
                 string[] worker = usr.ToString().Split('\\');
                 usr = worker[worker.Length - 1];
             }
-            Worker emp = db.FirstOrDefault<Worker>(who, usr);
+            Worker emp = db.FirstOrDefault<Worker>(Worker.worker + who, usr);
             if (emp == null)
                 return RedirectToAction("Contact", "User was not found");
 
@@ -120,21 +150,7 @@ namespace TimeSheet.Controllers
                 IsManager = emp.IsManager,
                 Impersonating = (Session["admin"] != null)
             };
-/*
-        function newWeek(next) {
-            var days = next ? 7 : -7;
-            var newSunday = new Date(sunday);
-            var thisSunday = new Date(sunday);
-            newSunday.setDate(newSunday.getDate() + days);
-            week = $.datepicker.iso8601Week(newSunday);
-            if (newSunday.getFullYear() > thisSunday.getFullYear())
-                week += 100;
-            if (newSunday.getFullYear() < thisSunday.getFullYear())
-                week = -week;
-            var url = '@Url.Action("Index", "Home", new { id = -1 })';
-            location.href = url.replace('-1', week);
-        }
-*/
+
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
             DateTime init = DateTime.Today;
 
@@ -193,10 +209,14 @@ namespace TimeSheet.Controllers
             Session["CurrentWeek"] = ts.weekNumber;
             Session["CurrentYear"] = init.Year;
 
+            var submitted = TempData["submit"] as bool?;
+            if (submitted.HasValue && submitted.Value)
+                SubmitEmail(emp, ts);                
+            
             return View(ts);
         }
 
-
+            
         /// <summary>
         /// Mark this description as inactive (to hide it from empty timesheet rows)
         /// </summary>
@@ -342,6 +362,7 @@ namespace TimeSheet.Controllers
         public ActionResult Submit(int WorkerId, int weekNumber)
         {
             dbExec(Week.Submit(WorkerId, weekNumber));
+            TempData["submit"] = true;
             return RedirectToAction("Index", new { id = weekNumber });
         }
 
