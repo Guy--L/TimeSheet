@@ -46,10 +46,10 @@
                                 <input type="radio" name="AccountType" id="costc" value="@((int)ChargeTo.Cost_Center)"
                                         @(Model.ChargeAccount == ChargeTo.Cost_Center ? "checked" : "")> Cost Center
                             </label>
-                            <label class="btn btn-primary @(Model.ChargeAccount == ChargeTo.Internal_Number ? "active" : "")">
-                                <i class="icon-check@(Model.ChargeAccount == ChargeTo.Internal_Number ? "" : "-empty")"></i>
-                                <input type="radio" name="AccountType" id="interno" value="@((int)ChargeTo.Internal_Number)"
-                                        @(Model.ChargeAccount == ChargeTo.Internal_Number ? "checked" : "")> Internal
+                            <label class="btn btn-primary @(Model.ChargeAccount == ChargeTo.Internal_Order ? "active" : "")">
+                                <i class="icon-check@(Model.ChargeAccount == ChargeTo.Internal_Order ? "" : "-empty")"></i>
+                                <input type="radio" name="AccountType" id="interno" value="@((int)ChargeTo.Internal_Order)"
+                                        @(Model.ChargeAccount == ChargeTo.Internal_Order ? "checked" : "")> Internal
                             </label>
                             <label class="btn btn-primary @(Model.ChargeAccount == ChargeTo.Capital_Number ? "active" : "")">
                                 <i class="icon-check@(Model.ChargeAccount == ChargeTo.Capital_Number ? "" : "-empty")"></i>

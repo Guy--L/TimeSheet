@@ -10,7 +10,7 @@ namespace TimeSheet.Models
 {
     public enum ChargeTo
     {
-        Internal_Number,
+        Internal_Order,
         Cost_Center,
         Capital_Number
     };
@@ -169,7 +169,7 @@ namespace TimeSheet.Models
                         var cc = costCenters.FirstOrDefault(i => i.CostCenterId == CostCenterId);
                         return (cc == null) ? "" : cc._CostCenter;
 
-                    case ChargeTo.Internal_Number:
+                    case ChargeTo.Internal_Order:
                         if (InternalNumberId == 0) return "";
                         var inn = internalNumbers.FirstOrDefault(i => i.InternalNumberId == InternalNumberId);
                         return (inn == null) ? "" : inn.InternalOrder;
@@ -195,7 +195,7 @@ namespace TimeSheet.Models
                         var cc = costCenters.FirstOrDefault(i => i.CostCenterId == CostCenterId);
                         return new HtmlString((cc == null) ? "" : ("<i class='icon-bullseye'></i> " + cc._CostCenter));
 
-                    case ChargeTo.Internal_Number:
+                    case ChargeTo.Internal_Order:
                         if (InternalNumberId == 0) return new HtmlString("");
                         var inn = internalNumbers.FirstOrDefault(i => i.InternalNumberId == InternalNumberId);
                         return new HtmlString((inn == null) ? "" : ("<i class='icon-building'></i> " + inn.InternalOrder));

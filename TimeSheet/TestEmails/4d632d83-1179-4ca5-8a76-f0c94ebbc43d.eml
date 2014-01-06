@@ -1,0 +1,28 @@
+X-Sender: rdss.pg.com@pg.com
+X-Receiver: teegarden.ks@pg.com
+MIME-Version: 1.0
+From: rdss.pg.com@pg.com
+To: teegarden.ks@pg.com
+Date: 5 Jan 2014 23:35:44 -0500
+Subject: TimeSheet submitted by Guy Lister ending 11/17/2013
+Content-Type: multipart/mixed;
+ boundary=--boundary_0_8e98d443-c659-41c8-9c39-7670f3190a98
+
+
+----boundary_0_8e98d443-c659-41c8-9c39-7670f3190a98
+Content-Type: text/html; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+
+<p>=0ASummary=0A<br />=0A<table>=0A    <tr>=0A        <td>Demand<=
+/td><td>40:00</td>=0A    </tr>=0A    <tr>=0A        <td>NonDemand=
+</td><td></td>=0A    </tr>=0A    <tr>=0A        <td>OverTime</td>=
+<td></td>=0A    </tr>=0A    <tr>=0A        <td>Total</td><td>40:0=
+0</td>=0A    </tr>=0A</table>=0A</p>
+----boundary_0_8e98d443-c659-41c8-9c39-7670f3190a98
+Content-Type: application/vnd.ms-excel; name=tsLister.xls
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment
+
+
+----boundary_0_8e98d443-c659-41c8-9c39-7670f3190a98--
+

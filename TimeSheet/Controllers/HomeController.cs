@@ -100,47 +100,49 @@ namespace TimeSheet.Controllers
             HSSFWorkbook wb = new HSSFWorkbook(fs, true);
 
             ISheet sheet = wb.GetSheet("Sheet1");
-            IRow row = sheet.GetRow(1);
-            row.GetCell(2).SetCellValue(w.LastName + ", " + w.FirstName);
+            IRow row = sheet.GetRow(0);
+            
+            row.GetCell(1).SetCellValue(w.LastName + ", " + w.FirstName);
+            row = sheet.GetRow(1);
+            row.GetCell(1).SetCellValue(w.EmployeeNumber);
             row = sheet.GetRow(2);
-            row.GetCell(2).SetCellValue(w.EmployeeNumber);
+            row.GetCell(1).SetCellValue(s.sunday);
             row = sheet.GetRow(3);
-            row.GetCell(2).SetCellValue(s.sunday);
-            row = sheet.GetRow(4);
-            row.GetCell(2).SetCellValue(s.weekNumber);
+            row.GetCell(1).SetCellValue(s.weekNumber);
+            
+            row = sheet.GetRow(5);
+            for (int i = 0; i < 7; i++)
+                row.CreateCell(3 + i).SetCellValue(s.Headers[i].ToString("M/d"));
 
             row = sheet.GetRow(6);
             for (int i = 0; i < 7; i++)
-                row.GetCell(4 + i).SetCellValue(s.Headers[i].ToString("ddd<br />M/d"));
+                row.CreateCell(3 + i).SetCellValue(s.Stats[4+i]);
 
-            row = sheet.GetRow(7);
-            for (int i = 0; i < 7; i++)
-                row.GetCell(4 + i).SetCellValue(s.Stats[4+i]);
-            row.GetCell(11).SetCellValue(s.Stats[3]);
+            row.CreateCell(10).SetCellValue(s.Stats[3]);
 
-            int rowy = 8;
+            int rowy = 7;
             foreach (var hr in s.hours)
             {
-                row = sheet.GetRow(rowy);
-                row.GetCell(1).SetCellValue(hr.IsOvertime ? "Y" : "");
-                row.GetCell(2).SetCellValue(hr.Description);
-                row.GetCell(3).SetCellValue(hr.ChargNumber);
-                row.GetCell(4).SetCellValue(hr.Mon);
-                row.GetCell(5).SetCellValue(hr.Tue);
-                row.GetCell(6).SetCellValue(hr.Wed);
-                row.GetCell(7).SetCellValue(hr.Thu);
-                row.GetCell(8).SetCellValue(hr.Fri);
-                row.GetCell(9).SetCellValue(hr.Sat);
-                row.GetCell(10).SetCellValue(hr.Sun);
-                row.GetCell(11).SetCellValue(hr.SubTotal);
-                row.GetCell(12).SetCellValue(hr.NewRequest ? "Y" : "");
-                row.GetCell(13).SetCellValue(hr.Customer);
-                row.GetCell(14).SetCellValue(hr.WorkArea);
-                row.GetCell(15).SetCellValue(hr.Partner);
-                row.GetCell(16).SetCellValue(hr.Site);
+                row = sheet.CreateRow(rowy);
+                row.CreateCell(0).SetCellValue(hr.IsOvertime ? "Y" : "");
+                row.CreateCell(1).SetCellValue(hr.Description);
+                row.CreateCell(2).SetCellValue(hr.ChargNumber);
+                row.CreateCell(3).SetCellValue(hr.Mon);
+                row.CreateCell(4).SetCellValue(hr.Tue);
+                row.CreateCell(5).SetCellValue(hr.Wed);
+                row.CreateCell(6).SetCellValue(hr.Thu);
+                row.CreateCell(7).SetCellValue(hr.Fri);
+                row.CreateCell(8).SetCellValue(hr.Sat);
+                row.CreateCell(9).SetCellValue(hr.Sun);
+                row.CreateCell(10).SetCellValue(hr.SubTotal);
+                row.CreateCell(11).SetCellValue(hr.NewRequest ? "Y" : "");
+                row.CreateCell(12).SetCellValue(hr.Customer);
+                row.CreateCell(13).SetCellValue(hr.WorkArea);
+                row.CreateCell(14).SetCellValue(hr.Partner);
+                row.CreateCell(15).SetCellValue(hr.Site);
                 rowy++;
             }
-
+            
             MemoryStream ms = new MemoryStream();
             wb.Write(ms);
 
@@ -252,7 +254,10 @@ namespace TimeSheet.Controllers
 
             var submitted = TempData["submit"] as bool?;
             if (submitted.HasValue && submitted.Value)
-                SubmitEmail(emp, ts);                
+            {
+                SubmitEmail(emp, ts);
+                //return File(ms.ToArray(), "application/vnd.ms-excel", "test.xls");
+            }
             
             return View(ts);
         }

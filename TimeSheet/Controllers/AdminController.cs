@@ -90,7 +90,7 @@ namespace TimeSheet.Controllers
                 var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
                 i.IsAdmin = user.IsAdmin;
                 i.IsManager = user.IsManager;
-                i.list = db.Fetch<InternalNumber>(string.Format(Models.InternalNumber.all, (int)ChargeTo.Internal_Number));
+                i.list = db.Fetch<InternalNumber>(string.Format(Models.InternalNumber.all, (int)ChargeTo.Internal_Order));
             }
             return View(i);
         }
