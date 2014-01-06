@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Mail;
+using System.Net.Mime;
 using System.Web;
 using System.Web.Mvc;
 using NPOI.HSSF.UserModel;
@@ -145,9 +146,11 @@ namespace TimeSheet.Controllers
             
             MemoryStream ms = new MemoryStream();
             wb.Write(ms);
+            ms.Seek(0, System.IO.SeekOrigin.Begin);
+            var timesheet = AttachmentHelper.CreateAttachment(ms, "ts" + w.LastName + ".xls", TransferEncoding.Base64); 
 
             dynamic email = new Email("TimeSheet");
-            email.Attach(new Attachment(ms, "ts" + w.LastName + ".xls", "application/vnd.ms-excel"));
+            email.Attach(timesheet);
             email.From = ConfigurationManager.AppSettings["sentfrom"];
             email.To = w.ManagerIon + "@pg.com";
             email.Employee = w.FirstName + " " + w.LastName;

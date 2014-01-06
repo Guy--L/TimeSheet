@@ -55,9 +55,6 @@
       <HintPath>..\packages\NPOI.1.2.5\lib\net40\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="MvcReportViewer">
-      <HintPath>..\packages\MvcReportViewer.0.2.1\lib\net40\MvcReportViewer.dll</HintPath>
-    </Reference>
     <Reference Include="NPoco">
       <HintPath>..\packages\NPoco.2.2.42\lib\net40\NPoco.dll</HintPath>
     </Reference>
@@ -187,6 +184,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AttachmentHelper.cs" />
     <Compile Include="Models\CostCenter.cs" />
     <Compile Include="Models\Export.cs" />
     <Compile Include="Models\InternalNumber.cs" />
@@ -345,7 +343,6 @@
     <Content Include="Content\TimeSheet.xls" />
     <None Include="Properties\PublishProfiles\Test.pubxml" />
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
-    <Content Include="MvcReportViewer.aspx" />
     <Content Include="Scripts\bootstrap-combobox.js" />
     <Content Include="Scripts\bootstrap-inputmask.js" />
     <Content Include="Scripts\bootstrap-inputmask.min.js" />

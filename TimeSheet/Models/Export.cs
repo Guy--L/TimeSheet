@@ -133,7 +133,7 @@ namespace TimeSheet.Models
                 {
                     var level = db.Fetch<Level>();
                     var ex = db.Fetch<Week, Description>(capital_period, startyw, endyw, ChargeTo.Capital_Number);
-                    var caps = ex.Where(n => n.NewRequest).Select(c => c.CapitalNumber).Distinct();
+                    var caps = ex.Select(c => c.CapitalNumber).Distinct();
 
                     foreach (var c in caps)
                     {

@@ -242,12 +242,12 @@
         $cost.combobox({ freeform: '#CostCenterAdd', selected: true });
 
         if ($('#WeekId', '#weeksheet').val() == '0' && $('#oWeekId', '#weeksheet').val() == '0') {
-            $('#modaltitle').html('Add Hours');
+            $('#modaltitle').html('Add Hours to week ' + $('#WeekNumber').val());
             //$('input[name="InternalNumberId"]', '#weeksheet').val(0);
             //$('input[name="CostCenterId"]', '#weeksheet').val(0);
         }
         else
-            $('#modaltitle').html('Edit Hours');
+            $('#modaltitle').html('Edit Hours in week ' + $('#WeekNumber').val());
 
         $('input[name="InternalNumberAdd"]', '#weeksheet').keydown(acctnumber);
         $('input[name="CostCenterAdd"]', '#weeksheet').keydown(acctnumber);
