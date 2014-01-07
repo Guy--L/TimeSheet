@@ -26,6 +26,9 @@ namespace TimeSheet.Models
 
         public Hrs(Week w)
         {
+            if (w == null)
+                return;
+
             if (w.internalNumbers == null)
                 w.GetLists(w.WorkerId);
 

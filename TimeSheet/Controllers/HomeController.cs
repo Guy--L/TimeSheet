@@ -318,7 +318,7 @@ namespace TimeSheet.Controllers
                 Week normal = sheet.Where(a => !a.IsOvertime).SingleOrDefault();
                 Week overtime = sheet.Where(a => a.IsOvertime).SingleOrDefault();
 
-                Hrs hrs = new Hrs(normal);
+                Hrs hrs = new Hrs(normal??overtime);
 
                 hrs.WorkerId = workerid.Value;
                 hrs.CopyHeader(normal??overtime);
