@@ -29,7 +29,7 @@ namespace Reminder
             year = NearestThu.Year;
             DateTime Jan1 = new DateTime(year, 1, 1);
             TimeSpan ts = NearestThu.Subtract(Jan1);
-            week = 1 + ts.Days / 7; // Count of Thursdays 
+            week = 1 + ts.Days / 7;                         // Count of Thursdays 
         }
     }
 

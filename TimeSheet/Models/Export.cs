@@ -36,7 +36,7 @@ namespace TimeSheet.Models
                     100*w.[Year] + w.[WeekNumber] < @1 ";
 
         private static string capital_period = @"
-            select w.*, r.LevelId, u.*, d.* from [Week] w
+            select w.*, r.LevelId, r.LastName, u.CustomerName, d.* from [Week] w
                 join [Worker] r on r.WorkerId = w.WorkerId
                 join [Partner] p on p.PartnerId = w.PartnerId
                 join [Customer] u on u.CustomerId = w.CustomerId
@@ -150,7 +150,10 @@ namespace TimeSheet.Models
                             capcharge += charge;
                         }
                         if (capcharge == 0) continue;
-                        var y = samecaps.First();                               // dicey
+                        var custr = samecaps.Where(s => !string.IsNullOrWhiteSpace(s.CustomerName)).Select(s => s.CustomerName).FirstOrDefault();
+                        var lastn = samecaps.Where(s => !string.IsNullOrWhiteSpace(s.LastName)).Select(s => s.LastName).FirstOrDefault();
+                        var descr = samecaps.Where(s => !string.IsNullOrWhiteSpace(s.desc._Description)).Select(s => s.desc._Description).FirstOrDefault();
+                       
                         IRow row = sheet.GetRow(rowy);
                         row.GetCell(1).SetCellValue(rowy - 22);
                         row.GetCell(2).SetCellValue(40);
@@ -158,7 +161,7 @@ namespace TimeSheet.Models
                         row.GetCell(4).SetCellValue("52970002");
                         row.GetCell(6).SetCellValue(capcharge.ToString("0.00"));
                         row.GetCell(9).SetCellValue(c);
-                        row.GetCell(10).SetCellValue(y.CustomerName + " / " + y.LastName + " / " + y.desc._Description);
+                        row.GetCell(10).SetCellValue(((custr==null)?"":custr) + " / " + ((lastn==null)?"":lastn) + " / " + descr);
                         rowy++;
                     }
                 }
@@ -225,6 +228,11 @@ namespace TimeSheet.Models
                         row = sheet.GetRow(j);
                         rowc = sheet.GetRow(j + 10);
                         rowe = sheet.GetRow(j + 21);
+
+                        int tot = 0;
+                        decimal totc = 0;
+                        decimal tote = 0;
+
                         var partner = site.Where(e => e.PartnerId == roworder[j-14]);
                         for (int k = 3; k < 12; k++)
                         {
@@ -232,6 +240,7 @@ namespace TimeSheet.Models
                             var capitals = partner.Where(p => p.AccountType == (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]);
                             var expenses = partner.Where(p => p.AccountType != (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]);
                             row.GetCell(k).SetCellValue(count==0?"":count.ToString());
+                            tot += count;
 
                             decimal capital = 0;
                             foreach (var x in capitals)
@@ -246,6 +255,7 @@ namespace TimeSheet.Models
                             }
 
                             rowc.GetCell(k).SetCellValue(capital == 0 ? "" : capital.ToString("0.00"));
+                            totc += capital;
 
                             decimal expense = 0;
                             foreach (var x in expenses)
@@ -260,7 +270,11 @@ namespace TimeSheet.Models
                             }
 
                             rowe.GetCell(k).SetCellValue(expense == 0 ? "" : expense.ToString("0.00"));
+                            tote += expense;
                         }
+                        row.GetCell(2).SetCellValue(tot == 0 ? "" : tot.ToString());
+                        rowc.GetCell(2).SetCellValue(totc == 0 ? "" : totc.ToString("0.00"));
+                        rowe.GetCell(2).SetCellValue(tote == 0 ? "" : tote.ToString("0.00"));
                     }
                 }
             }
