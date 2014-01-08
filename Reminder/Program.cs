@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Reminder.Models;
 using System.Diagnostics;
 using System.Threading;
 using PetaPoco;
+using Elmah;
 
 namespace Reminder
 {
@@ -53,49 +55,57 @@ namespace Reminder
 
         static void Main(string[] args)
         {
-            int yearwk = 0;
-            DayOfWeek dow = DateTime.Today.DayOfWeek;
-            bool sunday = (dow == DayOfWeek.Sunday);
-            DateTime d = sunday ? DateTime.Today : DateTime.Today.AddDays(-(double)dow);
-            yearwk = YearWeek(d);
-
-            List<Worker> behind;
-            using (tsDB db = new tsDB())
+            try
             {
-                behind = db.Fetch<Worker>(notsubmitted, yearwk);
-            }
+                int yearwk = 0;
+                DayOfWeek dow = DateTime.Today.DayOfWeek;
+                bool sunday = (dow == DayOfWeek.Sunday);
+                DateTime d = sunday ? DateTime.Today : DateTime.Today.AddDays(-(double)dow);
+                yearwk = YearWeek(d);
 
-            if (behind == null || !behind.Any())
-                return;
-
-            var viewsPath = Path.GetFullPath(ConfigurationManager.AppSettings["templates"]);
-            var engines = new ViewEngineCollection();
-            engines.Add(new FileSystemRazorViewEngine(viewsPath));
-            var service = new EmailService(engines);
-
-            dynamic email = new Email(sunday ? "FirstReminder" : "SecondReminder");
-            email.From = ConfigurationManager.AppSettings["sentfrom"];
-            email.Ending = d.ToShortDateString();
-
-            if (sunday)
-            {
-                var ions = behind.Where(s=>!string.IsNullOrWhiteSpace(s.IonName)).Select(i => i.IonName).ToArray();
-                email.To = string.Join("@pg.com, ", ions) + "@pg.com";
-
-                service.Send(email);
-            }
-            else
-            {
-                var managers = behind.Select(m => m.manager).Distinct();
-
-                foreach (var mgr in managers)
+                List<Worker> behind;
+                using (tsDB db = new tsDB())
                 {
-                    var ions = behind.Where(s => s.manager == mgr && !string.IsNullOrWhiteSpace(s.IonName)).Select(i => i.IonName).ToArray();
+                    behind = db.Fetch<Worker>(notsubmitted, yearwk);
+                }
+
+                if (behind == null || !behind.Any())
+                    return;
+
+                var viewsPath = Path.GetFullPath(ConfigurationManager.AppSettings["templates"]);
+                var engines = new ViewEngineCollection();
+                engines.Add(new FileSystemRazorViewEngine(viewsPath));
+                var service = new EmailService(engines);
+
+                dynamic email = new Email(sunday ? "FirstReminder" : "SecondReminder");
+                email.From = ConfigurationManager.AppSettings["sentfrom"];
+                email.Ending = d.ToShortDateString();
+
+                if (sunday)
+                {
+                    var ions = behind.Where(s => !string.IsNullOrWhiteSpace(s.IonName)).Select(i => i.IonName).ToArray();
                     email.To = string.Join("@pg.com, ", ions) + "@pg.com";
 
-                    email.Cc = ConfigurationManager.AppSettings["copiesto"] + (string.IsNullOrWhiteSpace(mgr) ? "" : (", " + mgr + "@pg.com"));
                     service.Send(email);
                 }
+                else
+                {
+                    var managers = behind.Select(m => m.manager).Distinct();
+
+                    foreach (var mgr in managers)
+                    {
+                        var ions = behind.Where(s => s.manager == mgr && !string.IsNullOrWhiteSpace(s.IonName)).Select(i => i.IonName).ToArray();
+                        email.To = string.Join("@pg.com, ", ions) + "@pg.com";
+
+                        email.Cc = ConfigurationManager.AppSettings["copiesto"] + (string.IsNullOrWhiteSpace(mgr) ? "" : (", " + mgr + "@pg.com"));
+                        service.Send(email);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                ErrorLog errorLog = ErrorLog.GetDefault(null);
+                errorLog.Log(new Error(ex));
             }
         }
     }
