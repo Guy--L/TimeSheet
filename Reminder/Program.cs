@@ -44,14 +44,25 @@ namespace Reminder
             return d.Year * 100 + week;
         }
 
+//        private static string notsubmitted = @"
+//            select distinct w.ionname, m.ionname manager from worker w
+//                left join week k on w.workerid = k.workerid
+//                left join worker m on w.managerid = m.workerid
+//                where w.ondisability = 0 and w.isactive = 1 and
+//                    (k.weekid is null or 
+//                    (k.year * 100 + k.weeknumber = @0 and k.submitted is null))                                   
+//        ";
+
         private static string notsubmitted = @"
-            select distinct w.ionname, m.ionname manager from worker w
-                left join week k on w.workerid = k.workerid
+            select distinct (k.[year] * 100 + k.weeknumber) yrwk, w.ionname, m.ionname manager from worker w
+                left join 
+					(select [year], workerid, weeknumber, submitted from week 
+						where [year] * 100 + weeknumber = @0) k on w.workerid = k.workerid
                 left join worker m on w.managerid = m.workerid
-                where w.ondisability = 0 and w.isactive = 1 and
-                    (k.weekid is null or 
-                    (k.year * 100 + k.weeknumber = @0 and k.submitted is null))                                   
-        ";
+                where w.ondisability = 0 and w.isactive = 1 and k.submitted is null
+				order by manager
+                ";
+
 
         static void Main(string[] args)
         {
@@ -75,7 +86,7 @@ namespace Reminder
                 var viewsPath = Path.GetFullPath(ConfigurationManager.AppSettings["templates"]);
                 var engines = new ViewEngineCollection();
                 engines.Add(new FileSystemRazorViewEngine(viewsPath));
-                var service = new EmailService(engines);
+                EmailService service = new EmailService(engines);
 
                 dynamic email = new Email(sunday ? "FirstReminder" : "SecondReminder");
                 email.From = ConfigurationManager.AppSettings["sentfrom"];
@@ -94,11 +105,19 @@ namespace Reminder
 
                     foreach (var mgr in managers)
                     {
-                        var ions = behind.Where(s => s.manager == mgr && !string.IsNullOrWhiteSpace(s.IonName)).Select(i => i.IonName).ToArray();
-                        email.To = string.Join("@pg.com, ", ions) + "@pg.com";
+                        try
+                        {
+                            var ions = behind.Where(s => s.manager == mgr && !string.IsNullOrWhiteSpace(s.IonName)).Select(i => i.IonName).ToArray();
+                            email.To = string.Join("@pg.com, ", ions) + "@pg.com";
 
-                        email.Cc = ConfigurationManager.AppSettings["copiesto"] + (string.IsNullOrWhiteSpace(mgr) ? "" : (", " + mgr + "@pg.com"));
-                        service.Send(email);
+                            email.Cc = ConfigurationManager.AppSettings["copiesto"] + (string.IsNullOrWhiteSpace(mgr) ? "" : (", " + mgr + "@pg.com"));
+                            service.Send(email);
+                        }
+                        catch(Exception ee)
+                        {
+                            ErrorLog errorLog = ErrorLog.GetDefault(null);
+                            errorLog.Log(new Error(ee));
+                        }
                     }
                 }
             }

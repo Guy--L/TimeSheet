@@ -390,6 +390,7 @@ namespace TimeSheet.Controllers
                 
                 hrs.CopyHeader(prior);
                 hrs.WeekNumber = weekno.Value;                  // stay on currently viewed week not the prior
+                hrs.Year = year.Value;
                 if (prior == null) hrs.DescriptionId = id;
                 return PartialView("_Hours", hrs);
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Web;
@@ -290,7 +291,7 @@ namespace TimeSheet.Models
                     and a.workerid = b.workerid
                     and a.weeknumber = b.weeknumber
                     and a.year = b.year
-                 where a.workerid = {0} and a.weeknumber = {1} ";
+                 where a.workerid = {0} and a.weeknumber = {1} and a.year = {2} ";
 
         private static string del_week = @" delete from week where weekid = {0} ";
 
@@ -610,14 +611,11 @@ namespace TimeSheet.Models
             decimal hours = 0;
 
             if (now == start + 1 && now == end - 1)
-                hours = array.Skip(((int)sdate.DayOfWeek - 1) % 7).Take(((int)edate.DayOfWeek - 1) % 7 + 1).Sum();
-
-            if (now == start + 1)
-                hours = array.Skip(((int)sdate.DayOfWeek - 1) % 7).Sum();
-
+                hours = array.Skip(((int)sdate.DayOfWeek + 6) % 7).Take(((int)edate.DayOfWeek + 6) % 7 + 1).Sum();
+            else if (now == start + 1) 
+                hours = array.Skip(((int)sdate.DayOfWeek + 6) % 7).Sum();
             else if (now == end - 1)
-                hours = array.Take(((int)edate.DayOfWeek - 1) % 7 + 1).Sum();
-
+                hours = array.Take(((int)edate.DayOfWeek + 6) % 7 + 1).Sum();
             else
                 hours = array.Sum();
 
@@ -651,7 +649,7 @@ namespace TimeSheet.Models
             List<Week> list;
             using (tsDB db = new tsDB())
             {
-                list = db.Fetch<Week>(string.Format(Week.lst_week, worker, week));
+                list = db.Fetch<Week>(string.Format(Week.lst_week, worker, week, year));
                 if (list == null || list.Count == 0)
                 {
                     list = new List<Week>();
