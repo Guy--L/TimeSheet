@@ -1,0 +1,40 @@
+﻿@model TimeSheet.Models.LevelView
+
+@{
+    ViewBag.Title = "Level";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("savenumber").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
+    };
+}
+
+<div class="container">
+@using (var form = Html.Bootstrap().Begin(new Form("SaveLevel", "Admin").Id("centerform").Type(FormType.Horizontal).LabelWidthXs(5)))
+{
+    @Html.HiddenFor(m => m.lv.LevelId)
+    <div class="row">
+        <div class="col-xs-12 text-primary"><h3>@(Model.lv.LevelId == 0 ? "Add " : "Edit ")Level</h3></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            @form.FormGroup().TextBoxFor(m => m.lv._Level).Size(InputSize.Small).WidthXs(4)
+            @form.FormGroup().TextBoxFor(m => m.lv.RegularRate).Size(InputSize.Small).WidthXs(4)
+            @form.FormGroup().TextBoxFor(m => m.lv.OvertimeRate).Size(InputSize.Small).WidthXs(4)
+        </div>
+    </div>
+    <div class="row">
+        @(form.FormGroup().CustomControls(buttons.ToArray()))
+    </div>
+}
+</div>
+@section scripts{
+    <script type="text/javascript">    
+
+        $(function () {
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Levels", "Admin",null,Request.Url.Scheme)';
+            });
+        });
+    </script>
+}

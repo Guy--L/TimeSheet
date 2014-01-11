@@ -197,6 +197,7 @@
     </Compile>
     <Compile Include="Models\Hours.cs" />
     <Compile Include="Models\ISO_8601.cs" />
+    <Compile Include="Models\Level.cs" />
     <Compile Include="Models\Partner.cs" />
     <Compile Include="Models\Sheet.cs" />
     <Compile Include="Models\Site.cs" />
@@ -434,6 +435,9 @@
     <Content Include="Views\Emails\TimeSheet.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\Admin\Levels.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Level.cshtml" />
+    <Content Include="Views\Admin\Level.cshtml" />
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

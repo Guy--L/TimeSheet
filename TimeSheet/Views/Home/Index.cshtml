@@ -482,6 +482,7 @@
                 pairid = (pairid != '') ? pairid : 0;
 
                 $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
+                    console.log(data);
                     $('#weekline').replaceWith(data);
                     popuploaded();
                 });

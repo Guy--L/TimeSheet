@@ -1,0 +1,70 @@
+﻿@model TimeSheet.Models.Levels
+
+<div class="container">
+<br />
+    <table id="ccs" class="table table-striped table-hover table-condensed table-bordered">
+        <thead>
+            <tr>
+                <th></th>
+                <th>
+                    <button class="btn btn-success btn-mini" id="addcenter">
+                        <i class="icon-plus icon-white"></i> Add
+                    </button>
+                </th>
+                <th>
+                    <b class="center">Levels</b>
+                </th>
+                <th colspan="3">
+                    <div class="text-muted"><i><small>click to edit</small></i></div>
+                </th>
+            </tr>
+            <tr>
+                <th>ID</th>
+                <th>Level</th>
+                <th>Regular Rate</th>
+                <th>Overtime Rate</th>
+                <th>Use Count</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.DisplayFor(m => m.list)
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+<script type="text/javascript">
+    function attachDT() {
+        q = $('#ccs').dataTable({
+            "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
+            "bPaginate": false,
+            "oLanguage": {
+                "sInfo": "_TOTAL_ level(s)",
+                "sInfoFiltered": "(of _MAX_ unfiltered)",
+                "sProcessing": "<i class='icon-spinner icon-spin'></i>"
+            },
+            "aoColumnDefs": [
+                { "bVisible": false, "aTargets": [0] },
+                { "asSorting": ["asc"], "aTargets": [2] }
+            ]
+        });
+    }
+    $(function () {
+        attachDT();
+        $('#ccs tbody').on('click', 'tr', function () {
+            var id = $(this).data('id');
+            id = (id != '') ? id : 0;
+            location.href = '@Url.Action("Level","Admin",null,Request.Url.Scheme)/' + id;
+        });
+        $('#addcenter').on('click', function () {
+            location.href = '@Url.Action("Level", "Admin", null, Request.Url.Scheme)/0';
+        });
+        $('.delcenter').on('click', function () {
+            var id = $(this).data('id');
+            id = (id != '') ? id : 0;
+            location.href = '@Url.Action("DeleteLevel","Admin",null,Request.Url.Scheme)/' + id;
+        })
+    });
+</script>
+}

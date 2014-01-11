@@ -11,7 +11,7 @@ namespace TimeSheet.Models
         public List<CostCenter> list { get; set; }
     }
 
-    public partial class CenterView : UserBase
+    public class CenterView : UserBase
     {
         public CostCenter cc { get; set; }
         public CenterView()

@@ -54,6 +54,7 @@
                                     <li>@Html.ActionLink("Work Areas", "WorkAreas", "Admin")</li>
                                     <li>@Html.ActionLink("Sites", "Sites", "Admin")</li>
                                     <li>@Html.ActionLink("Partners", "Partners", "Admin")</li>
+                                    <li>@Html.ActionLink("Levels", "Levels", "Admin")</li>
                                 </ul>
                             </li>
                         }
@@ -85,6 +86,9 @@
 
     @RenderSection("scripts", required: false)
     <script type="text/javascript">
+        $.ajaxSetup({
+            cache: false
+        });
         function elog(msg) {
             var form = $('<form></form>');
 

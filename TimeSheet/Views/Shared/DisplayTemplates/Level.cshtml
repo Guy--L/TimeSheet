@@ -1,0 +1,14 @@
+﻿@model TimeSheet.Models.Level
+<tr data-id="@Model.LevelId">
+    <td>@Model.LevelId</td>
+    <td>@Model._Level</td>
+    <td>@Model.RegularRate</td>
+    <td>@Model.OvertimeRate</td>
+    <td>@Model.UseCount</td>
+    <td>
+    @if (Model.UseCount == 0)
+{
+        @Html.ActionLink("Delete", "DeleteLevel", "Admin", new { LevelId = Model.LevelId }, new { @class = "dellink" })
+
+}</td>
+</tr>

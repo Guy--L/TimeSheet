@@ -238,6 +238,41 @@ namespace TimeSheet.Controllers
             return RedirectToAction("CostCenters");
         }
 
+        public ActionResult Levels()
+        {
+            Levels i = new Levels();
+            i.User = Session["user"].ToString();
+            using (tsDB db = new tsDB())
+            {
+                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                i.IsAdmin = user.IsAdmin;
+                i.IsManager = user.IsManager;
+                i.list = db.Fetch<Level>(string.Format(Models.Level.all));
+            }
+            return View(i);
+        }
+
+        public ActionResult Level(int id)
+        {
+            LevelView w = new LevelView(id);
+            w.User = Session["user"].ToString();
+            w.IsAdmin = true;
+            return View(w);
+        }
+
+        [HttpPost]
+        public ActionResult SaveLevel(LevelView nv)
+        {
+            nv.lv.Save();
+            return RedirectToAction("Levels");
+        }
+
+        public ActionResult DeleteLevel(Level cc)
+        {
+            cc.Delete();
+            return RedirectToAction("Levels");
+        }
+
         public ActionResult ExportXLS()
         {
             Export xp = new Export();

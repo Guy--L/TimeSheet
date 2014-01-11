@@ -239,6 +239,8 @@ namespace TimeSheet.Models
                         {
                             int count = partner.Count(f => f.WorkAreaId == colorder[k - 3]);
                             var capitals = partner.Where(p => p.AccountType == (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]);
+                            // need to adjust capitals to only include new projects
+
                             var expenses = partner.Where(p => p.AccountType != (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]);
                             row.GetCell(k).SetCellValue(count==0?"":count.ToString());
                             tot += count;
