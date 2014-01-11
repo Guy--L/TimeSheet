@@ -134,7 +134,7 @@ namespace TimeSheet.Models
                 {
                     var level = db.Fetch<Level>();
                     var ex = db.Fetch<Week, Description>(capital_period, startyw, endyw, ChargeTo.Capital_Number);
-                    var caps = ex.Select(c => c.CapitalNumber).Distinct();
+                    var caps = ex.Select(cp => cp.CapitalNumber).Distinct();
 
                     foreach (var c in caps)
                     {
@@ -238,10 +238,12 @@ namespace TimeSheet.Models
                         for (int k = 3; k < 12; k++)
                         {
                             int count = partner.Count(f => f.WorkAreaId == colorder[k - 3]);
-                            var capitals = partner.Where(p => p.AccountType == (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]);
-                            // need to adjust capitals to only include new projects
+                            var capitals = partner.Where(
+                                p => p.NewRequest &&
+                                p.AccountType == (int?)ChargeTo.Capital_Number && 
+                                p.WorkAreaId == colorder[k - 3]).ToList();
 
-                            var expenses = partner.Where(p => p.AccountType != (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]);
+                            var expenses = partner.Where(p => p.AccountType != (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]).ToList();
                             row.GetCell(k).SetCellValue(count==0?"":count.ToString());
                             tot += count;
 
