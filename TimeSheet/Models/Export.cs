@@ -248,7 +248,7 @@ namespace TimeSheet.Models
                             tot += count;
 
                             decimal capital = 0;
-                            foreach (var x in capitals)
+                            foreach (var x in capitals.Where(xc => xc != null))
                             {
                                 decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
                                 decimal charge = 0;
@@ -263,7 +263,7 @@ namespace TimeSheet.Models
                             totc += capital;
 
                             decimal expense = 0;
-                            foreach (var x in expenses)
+                            foreach (var x in expenses.Where(xd => xd != null))
                             {
                                 decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
                                 decimal charge = 0;
