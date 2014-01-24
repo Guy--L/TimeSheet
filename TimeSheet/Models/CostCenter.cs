@@ -52,11 +52,11 @@ namespace TimeSheet.Models
         ";
 
         private static string ins_costcenter = @"
-            declare @newid int;
+            declare @@newid int
             INSERT INTO [dbo].[CostCenter] ([CostCenter],[LegalEntity]) VALUES ('{0}',0)
-            select @newid = scope_identity()
-            insert into workercostcenter (costcenterid, workerid) values (@newid, {1})
-            select @newid
+            select @@newid = scope_identity()
+            insert into workercostcenter (costcenterid, workerid) values (@@newid, {1})
+            select @@newid
             ";
 
     }

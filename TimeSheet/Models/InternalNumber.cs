@@ -51,11 +51,11 @@ namespace TimeSheet.Models
         ";
 
         private static string ins_internalnumber = @"
-            declare @newid int
+            declare @@newid int
             INSERT INTO InternalNumber ([InternalOrder]) VALUES ('{0}')
-            select @newid = scope_identity()
-            insert into workerinternalnumber (workerid, internalnumberid) values ({1}, @newid)
-            select @newid
+            select @@newid = scope_identity()
+            insert into workerinternalnumber (workerid, internalnumberid) values ({1}, @@newid)
+            select @@newid
             ";
     }
 }
