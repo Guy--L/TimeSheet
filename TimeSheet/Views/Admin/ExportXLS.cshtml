@@ -12,8 +12,9 @@
     @f.FormGroup().TextBoxFor(m => m.end).Class("datepicker").Size(InputSize.Small).WidthXs(1).Label().LabelText("End")
     @f.FormGroup().RadioButtonsFromEnumFor(m => m.type).Label().LabelText("Type")
     
-                    @(f.FormGroup().CustomControls(
-                    Html.Bootstrap().SubmitButton().Text("Download 'Export'.xls").Id("submit").Style(ButtonStyle.Success)))
+    @(f.FormGroup().CustomControls(
+        Html.Bootstrap().SubmitButton().Text("Download 'Export'.xls").Id("submit").Style(ButtonStyle.Success))
+    )
 }
     </div>
 @section scripts {

@@ -120,8 +120,10 @@ namespace TimeSheet.Models
         public string oSat { get; set; }
         public string oSun { get; set; } 		
 
-		public DateTime? Submitted { get; set; } 		
-		public bool NewRequest { get; set; }
+		public DateTime? Submitted { get; set; } 
+		
+        [Required(ErrorMessage = "Select New or Existing Request")]
+		public bool? NewRequest { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Select a Site")]
         public int? SiteId { get; set; }

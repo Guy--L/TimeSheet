@@ -26,15 +26,7 @@
                     @form.FormGroup().DropDownListFor(m => m.SiteId, Model.Sites).Size(InputSize.Small).WidthXs(6).Label().LabelText("Site")
                     @form.FormGroup().DropDownListFor(m => m.TimeTypeId, Model.Times).Size(InputSize.Small).Class("nondemand").Label().LabelText("Type")
                     @form.FormGroup().DropDownListFor(m => m.CustomerId, Model.Customers).Size(InputSize.Small).Class("demand").Label().LabelText("Customer")
-                    <div class="form-group">
-                        <label class="control-label col-xs-3">Request<span class="required" style="visibility:hidden;">*</span> </label>
-                        <div class="btn-group col-xs-9" data-toggle="buttons">
-                            <label class="btn btn-primary demand @(Model.NewRequest?"active":"")" id="newreq">
-                                <input type='hidden' name='NewRequest' value='@(Model.NewRequest?"true":"false")' />
-                                <span> is @(Model.NewRequest ? "" : "not ")New @Html.Raw(Model.NewRequest ? "<i class='icon-asterisk'></i>" : "")</span>
-                            </label>
-                        </div>
-                    </div>
+                    @form.FormGroup().RadioButtonTrueFalseFor(m => m.NewRequest).InputLabelsText("is New", "is not New").Label().LabelText("Request")
                 </div>
                 <div class="col-xs-7">
                     @form.FormGroup().DropDownListFor(m => m.WorkAreaId, Model.WorkAreas).Size(InputSize.Small).Label().LabelText("Work Area")

@@ -82,7 +82,7 @@ namespace TimeSheet.Models
             PartnerId = b.PartnerId;
             InternalNumberId = b.InternalNumberId??0;
             WorkAreaId = b.WorkAreaId;
-            NewRequest = b.NewRequest;
+            NewRequest = b.NewRequest.Value;
             CostCenterId = b.CostCenterId??0;
             CapitalNumber = b.CapitalNumber;
             AccountType = b.AccountType;
