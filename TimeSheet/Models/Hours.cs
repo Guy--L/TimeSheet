@@ -122,7 +122,7 @@ namespace TimeSheet.Models
 
 		public DateTime? Submitted { get; set; } 
 		
-        [Required(ErrorMessage = "Select New or Existing Request")]
+        [Required(ErrorMessage = "<br />Select New or Existing Request")]
 		public bool? NewRequest { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Select a Site")]

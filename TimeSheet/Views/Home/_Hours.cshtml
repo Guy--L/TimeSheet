@@ -26,7 +26,7 @@
                     @form.FormGroup().DropDownListFor(m => m.SiteId, Model.Sites).Size(InputSize.Small).WidthXs(6).Label().LabelText("Site")
                     @form.FormGroup().DropDownListFor(m => m.TimeTypeId, Model.Times).Size(InputSize.Small).Class("nondemand").Label().LabelText("Type")
                     @form.FormGroup().DropDownListFor(m => m.CustomerId, Model.Customers).Size(InputSize.Small).Class("demand").Label().LabelText("Customer")
-                    @form.FormGroup().RadioButtonTrueFalseFor(m => m.NewRequest).InputLabelsText("is New", "is not New").Label().LabelText("Request")
+                    @form.FormGroup().Class("newrequest").RadioButtonTrueFalseFor(m => m.NewRequest).InputLabelsText("is New", "is not New").Label().LabelText("Request")
                 </div>
                 <div class="col-xs-7">
                     @form.FormGroup().DropDownListFor(m => m.WorkAreaId, Model.WorkAreas).Size(InputSize.Small).Label().LabelText("Work Area")

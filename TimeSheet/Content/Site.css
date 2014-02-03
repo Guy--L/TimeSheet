@@ -950,3 +950,8 @@ a.dellink
 {
     color: #e80c4d;
 }
+
+.newrequest .radio
+{
+    display: inline-block;
+}
