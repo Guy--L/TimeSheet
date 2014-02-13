@@ -222,9 +222,10 @@
             return;
         }
         else {                                                           // Ensure that it is a number and stop the keypress
-            if (event.shiftKey || (x < 48 || x > 57) && (x < 96 || x > 105 )) {
+            var ln = $(this).val().length;
+            if (event.shiftKey || (x < 48 || x > 57) && (x < 96 || x > 105 ) || ln > 9) {
                 event.preventDefault();
-                $(this).attr('placeholder', 'numbers only');
+                $(this).attr('placeholder', '          10 digits only');
             }   
         }
     }
