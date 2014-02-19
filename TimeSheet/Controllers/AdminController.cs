@@ -4,9 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
 using TimeSheet.Models;
+using Microsoft.Office.Interop.Excel;
 
 namespace TimeSheet.Controllers
 {
@@ -287,31 +286,45 @@ namespace TimeSheet.Controllers
         public ActionResult GetXLS(Export xp)
         {
             var template = Enum.GetName(typeof(Template), xp.type);
-            var tst = xp;
-            try { // Opening the Excel template... 
-                FileStream fs = new FileStream(Server.MapPath(@"~/Content/"+template+".xls"), FileMode.Open, FileAccess.Read);  // Getting the complete workbook... 
-                HSSFWorkbook templateWorkbook = new HSSFWorkbook(fs, true);                                                     // Getting the worksheet by its name... 
+            var xl = new Application();
+            Workbook wb = xl.Workbooks.Open(Server.MapPath(@"~/Content/"+template+".xls"));
 
+            try { // Opening the Excel template
                 switch (xp.type)
                 {
                     case Template.Capital_Cost:
-                        xp.capital(templateWorkbook);
+                        xp.capital(wb);
                         break;
                     case Template.Cross_Charge:
-                        xp.expense(templateWorkbook);
+                        xp.expense(wb);
                         break;
                     case Template.Dash_Board:
-                        xp.dashboard(templateWorkbook);
+                        xp.dashboard(wb);
                         break;
                 }
-                //HSSFSheet sheet = templateWorkbook.GetSheet("Sheet1"); // Getting the row... 0 is the first row. 
+                //templateWorkbook.ForceFormulaRecalculation = true;               
+                //HSSFFormulaEvaluator.EvaluateAllFormulaCells(wb);
+
+                //IFormulaEvaluator evaluator = templateWorkbook.GetCreationHelper().CreateFormulaEvaluator();
+                //evaluator.EvaluateFormulaCell(templateWorkbook.GetSheet("Journal Entry Form").GetRow(32).GetCell(1));
+
+
+
+                //HSSFSheet sheet = (HSSFSheet) wb.GetSheet("Journal Entry Form"); // Getting the row... 0 is the first row. 
                 //HSSFRow dataRow = sheet.GetRow(4); // Setting the value 77 at row 5 column 1 
                 //dataRow.GetCell(0).SetCellValue(77); // Forcing formula recalculation... 
                 //sheet.ForceFormulaRecalculation = true; 
-                MemoryStream ms = new MemoryStream(); // Writing the workbook content to the FileStream... 
-                templateWorkbook.Write(ms); 
+
+//                var named = Server.MapPath(@"~/Temp/" + template + ".xls");
+                var named = Path.GetTempFileName();
+                wb.SaveAs(named);
+                wb.Close();
+
+                //MemoryStream ms = new MemoryStream(); // Writing the workbook content to the FileStream... 
+                
                 TempData["Message"] = "Excel report created successfully!"; // Sending the server processed data back to the user computer... 
-                return File(ms.ToArray(), "application/vnd.ms-excel", template+".xls"); 
+                //return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", template + ".xlsx");
+                return File(named, "application/vnd.ms-excel");
             } 
             catch(Exception ex) {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Export threw up", ex));

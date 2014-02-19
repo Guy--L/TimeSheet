@@ -98,7 +98,7 @@ namespace TimeSheet.Controllers
                 return;
 
             FileStream fs = new FileStream(Server.MapPath(@"~/Content/TimeSheet.xls"), FileMode.Open, FileAccess.Read);  // Getting the complete workbook... 
-            HSSFWorkbook wb = new HSSFWorkbook(fs, true);
+            HSSFWorkbook wb = new HSSFWorkbook(fs);
 
             ISheet sheet = wb.GetSheet("Sheet1");
             IRow row = sheet.GetRow(0);

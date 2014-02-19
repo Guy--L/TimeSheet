@@ -51,15 +51,28 @@
     <Reference Include="Elmah.Mvc">
       <HintPath>..\packages\Elmah.MVC.2.1.1\lib\net40\Elmah.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="Ionic.Zip">
-      <HintPath>..\packages\NPOI.1.2.5\lib\net40\Ionic.Zip.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="NPoco">
       <HintPath>..\packages\NPoco.2.2.42\lib\net40\NPoco.dll</HintPath>
     </Reference>
-    <Reference Include="NPOI">
-      <HintPath>..\packages\NPOI.1.2.5\lib\net40\NPOI.dll</HintPath>
+    <Reference Include="NPOI, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\NPOI.OpenXmlFormats.dll</HintPath>
     </Reference>
     <Reference Include="Portable.Licensing">
       <HintPath>..\packages\Portable.Licensing.1.1.0\lib\portable-net40+sl4+wp7+win8\Portable.Licensing.dll</HintPath>
@@ -440,12 +453,16 @@
     <Content Include="Views\Admin\Levels.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Level.cshtml" />
     <Content Include="Views\Admin\Level.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Worker.cshtml">
+      <SubType>Code</SubType>
+    </Content>
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Temp\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
