@@ -55,11 +55,15 @@
                 "sInfoFiltered": "(of _MAX_ unfiltered)",
                 "sProcessing": "<i class='icon-spinner icon-spin'></i>"
             },
-            "aoColumnDefs": [{ "bVisible": false, "aTargets": [0] }]
+            "aoColumnDefs": [
+                { "bVisible": false, "aTargets": [0] }
+            ]
         });
     }
     $(function () {
         attachDT();
+        $('#emps_filter input').val('active');      // set up default filter on active employees
+        q.fnFilter('active', 11);                   // run the filter
         @if (Model.IsAdmin) {
             <text>
                 $('#emps tbody').on('click', 'tr', function () {

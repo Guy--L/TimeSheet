@@ -11,7 +11,7 @@
     <td>@Model.site</td>
     <td>@Model.role</td>
     <td title="is a manager">@Html.Raw((Model.IsManager ? "<i class='icon-user'></i><div class='hidden'>manager</div>" : ""))</td>
-    <td title="is inactive">@Html.Raw((Model.IsActive ? "" : "<i class='icon-ban-circle'></i><div class='hidden'>inactive</div>"))</td>
+    <td title="is notworking">@Html.Raw((Model.IsActive ? "<div class='hidden'>active</div>" : "<i class='icon-ban-circle'></i><div class='hidden'>notworking</div>"))</td>
     <td title="is parttime">@Html.Raw((Model.IsPartTime ? "<i class='icon-adjust'></i><div class='hidden'>parttime</div>" : ""))</td>
     <td title="on disability">@Html.Raw((Model.OnDisability ? "<i class='icon-h-sign'></i><div class='hidden'>disabled</div>" : ""))</td>
 </tr>

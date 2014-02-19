@@ -221,13 +221,13 @@
             (x >= 35 && x <= 39)) {                                     // let it happen, don't do anything
             return;
         }
-        else {                                                           // Ensure that it is a number and stop the keypress
-            var ln = $(this).val().length;
-            if (event.shiftKey || (x < 48 || x > 57) && (x < 96 || x > 105 ) || ln > 9) {
-                event.preventDefault();
-                $(this).attr('placeholder', '          10 digits only');
-            }   
-        }
+        //else {                                                           // Ensure that it is a number and stop the keypress
+        //    var ln = $(this).val().length;
+        //    if (event.shiftKey || (x < 48 || x > 57) && (x < 96 || x > 105 ) || ln > 9) {
+        //        event.preventDefault();
+        //        $(this).attr('placeholder', '10 digits only');
+        //    }   
+        //}
     }
     function popuploaded() {
         $cust = $('#CustomerId', '#weeksheet');
@@ -307,21 +307,34 @@
 
             if (!$intern.prop('disabled')) {
                 var nlx = nL[$intern.val()];
-                if (nlx != 'undefined') {
+                if (typeof nlx != 'undefined') {
                     e.preventDefault();
                     $('input[name="InternalNumberId"]', '#weeksheet').val(-nlx);
                     $('#weeksheet').submit();
                     $('#weekline').modal('hide');
                     return;
                 }
+
                 if ($intn.val() == 0) {
                     e.preventDefault();
-
-                    var answer = confirm("Use this new Internal Order: " + $intern.val());
-
-                    if (!answer)
-                        return;
-                
+                    
+                    var answer;
+                    if ($intern.val().length != 10)
+                    {
+                        var ln = $intern.val().length;
+                        answer = confirm("This new Internal Order number is "+ln+" digits long (should normally be 10). Use it anyway?");
+                        if (!answer) {$intern.focus(); return;}
+                    }
+                    else {
+                        numbertest = $intern.val().substring(0,4);
+                        if (numbertest < '7100' && numbertest != '4700' && numbertest != '4001') {
+                            answer = confirm("This number looks like a Cost Center.  Still use as an Internal Order number?");
+                            if (!answer)  {$intern.focus(); return;}
+                        } else {
+                            answer = confirm("Use this new Internal Order number: " + $intern.val());
+                            if (!answer) {$intern.focus(); return;}
+                        }
+                    }
                     $('input[name="InternalNumberId"]', '#weeksheet').val(0);
                     $('#weeksheet').submit();
                     $('#weekline').modal('hide');
@@ -333,7 +346,7 @@
 
             if (!$ctr.prop('disabled')) {
                 var clx = cL[$ctr.val()];
-                if (clx != 'undefined') {
+                if (typeof clx != 'undefined') {
                     e.preventDefault();
                     $('input[name="CostCenterId"]', '#weeksheet').val(-clx);
                     $('#weeksheet').submit();
@@ -343,14 +356,25 @@
 
                 if ($cost.val() == 0) {
                     e.preventDefault();
-
-                    var answer = confirm("Use this new Cost Center: " + $ctr.val());
-
-                    if (!answer) {
-                        $ctr.focus();
-                        return;
+                    
+                    var answer;
+                    if ($ctr.val().length != 10)
+                    {
+                        var ln = $ctr.val().length;
+                        answer = confirm("This new Cost Center number is "+ln+" digits long (should normally be 10). Use it anyway?");
+                        if (!answer) {$ctr.focus(); return;}
                     }
-
+                    else {
+                        numbertest = $ctr.val().substring(0,4);
+                        if (numbertest >= '7100' || numbertest == '4700' || numbertest == '4001') {
+                            answer = confirm("This number looks like an Internal Order number.  Still use as Cost Center?");
+                            if (!answer)  {$ctr.focus(); return;}
+                        }   
+                        else {
+                            answer = confirm("Use this new Cost Center: " + $ctr.val());
+                            if (!answer) {$ctr.focus(); return;}
+                        }
+                    }
                     $('input[name="CostCenterId"]', '#weeksheet').val(0);
                     $('#weeksheet').submit();
                     $('#weekline').modal('hide');
