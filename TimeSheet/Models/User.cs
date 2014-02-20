@@ -12,5 +12,6 @@ namespace TimeSheet.Models
         public bool Impersonating { get; set; }
         public string User;
         public string Admin;
+        public string Reports { get; set; }
     }
 }

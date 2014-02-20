@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using TimeSheet.Models;
 using Microsoft.Office.Interop.Excel;
+using System.Runtime.InteropServices;
 
 namespace TimeSheet.Controllers
 {
@@ -287,6 +288,7 @@ namespace TimeSheet.Controllers
         {
             var template = Enum.GetName(typeof(Template), xp.type);
             var xl = new Application();
+            xl.DisplayAlerts = false;
             Workbook wb = xl.Workbooks.Open(Server.MapPath(@"~/Content/"+template+".xls"));
 
             try { // Opening the Excel template
@@ -302,29 +304,21 @@ namespace TimeSheet.Controllers
                         xp.dashboard(wb);
                         break;
                 }
-                //templateWorkbook.ForceFormulaRecalculation = true;               
-                //HSSFFormulaEvaluator.EvaluateAllFormulaCells(wb);
 
-                //IFormulaEvaluator evaluator = templateWorkbook.GetCreationHelper().CreateFormulaEvaluator();
-                //evaluator.EvaluateFormulaCell(templateWorkbook.GetSheet("Journal Entry Form").GetRow(32).GetCell(1));
-
-
-
-                //HSSFSheet sheet = (HSSFSheet) wb.GetSheet("Journal Entry Form"); // Getting the row... 0 is the first row. 
-                //HSSFRow dataRow = sheet.GetRow(4); // Setting the value 77 at row 5 column 1 
-                //dataRow.GetCell(0).SetCellValue(77); // Forcing formula recalculation... 
-                //sheet.ForceFormulaRecalculation = true; 
-
-//                var named = Server.MapPath(@"~/Temp/" + template + ".xls");
                 var named = Path.GetTempFileName();
-                wb.SaveAs(named);
+                wb.SaveAs(Filename: named, 
+                            AccessMode: XlSaveAsAccessMode.xlNoChange, 
+                            ConflictResolution: XlSaveConflictResolution.xlLocalSessionChanges,
+                            FileFormat: XlFileFormat.xlWorkbookDefault);
                 wb.Close();
+                xl.Quit();
+                Marshal.ReleaseComObject(xl);
 
                 //MemoryStream ms = new MemoryStream(); // Writing the workbook content to the FileStream... 
                 
                 TempData["Message"] = "Excel report created successfully!"; // Sending the server processed data back to the user computer... 
                 //return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", template + ".xlsx");
-                return File(named, "application/vnd.ms-excel");
+                return File(named, "application/vnd.ms-excel", template + ".xls");
             } 
             catch(Exception ex) {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Export threw up", ex));

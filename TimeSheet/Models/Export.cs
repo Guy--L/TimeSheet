@@ -66,18 +66,9 @@ namespace TimeSheet.Models
             int endyw = Week.YearWeek(end) + 1;
 
             Worksheet sheet = wb.Sheets["Journal Entry Form"];
-            int rowy = 35;
+            int rowy = 36;
 
-            //ICellStyle old = sheet.GetRow(36).GetCell(1).CellStyle;
-            //ICellStyle style = wb.CreateCellStyle();
 
-            //Range destinationRange = sheet.get_Range("A1", last);
-
-            //destinationRange.PasteSpecial(XlPasteType.xlPasteFormats);
-            //style.CloneStyleFrom(old);
-            //style.FillPattern = FillPatternType.LEAST_DOTS;
-            //style.FillBackgroundColor = HSSFColor.ROSE.index;
-        
             using (tsDB db = new tsDB())
             {
                 try
@@ -101,16 +92,18 @@ namespace TimeSheet.Models
 
                         bool cc = x.AccountType.Value == (int)ChargeTo.Cost_Center;
 
-                        if (cc?(x.cc.LegalEntity == "0"):string.IsNullOrWhiteSpace(x.ino.LegalEntity))
-                            sheet.Cells[rowy, 0].Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Pink);
+                        if (cc?(x.cc.LegalEntity == "0"):string.IsNullOrWhiteSpace(x.ino.LegalEntity)) {
+                            Range row = sheet.get_Range("B"+rowy, "L"+rowy);
+                            //row.Interior.ColorIndex = 3;
+                        }
                         else
-                            sheet.Cells[rowy, 0] = (cc ? x.cc.LegalEntity : x.ino.LegalEntity);
+                            sheet.Cells[rowy, 2] = (cc ? x.cc.LegalEntity : x.ino.LegalEntity);
 
-                        sheet.Cells[rowy, 1] = 40;          
-                        sheet.Cells[rowy, 2] = num;
-                        sheet.Cells[rowy, (cc ? 4 : 3)] = (cc ? x.cc._CostCenter : x.ino.InternalOrder);
-                        sheet.Cells[rowy, 5] = charge.ToString("0.00");
-                        sheet.Cells[rowy, 12] = x.CustomerName + " / " + x.LastName + " / " + x.desc._Description;
+                        sheet.Cells[rowy, 3] = 40;          
+                        sheet.Cells[rowy, 4] = num;
+                        sheet.Cells[rowy, (cc ? 6 : 5)] = (cc ? x.cc._CostCenter : x.ino.InternalOrder);
+                        sheet.Cells[rowy, 7] = charge.ToString("0.00");
+                        sheet.Cells[rowy, 11] = x.CustomerName + " / " + x.LastName + " / " + x.desc._Description;
 
                         rowy++;
                     }
@@ -120,7 +113,6 @@ namespace TimeSheet.Models
                     Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("expense export: " + db.LastCommand, e));
                 }
             }
-            
             return rowy - 34;
         }
 

@@ -8,10 +8,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Mail;
 using System.Net.Mime;
+using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
+using Microsoft.Office.Interop.Excel;
 using Postal;
 using TimeSheet.Models;
 
@@ -97,58 +97,51 @@ namespace TimeSheet.Controllers
             if (string.IsNullOrWhiteSpace(w.ManagerIon))
                 return;
 
-            FileStream fs = new FileStream(Server.MapPath(@"~/Content/TimeSheet.xls"), FileMode.Open, FileAccess.Read);  // Getting the complete workbook... 
-            HSSFWorkbook wb = new HSSFWorkbook(fs);
+            Application xl = new Application();
+            Workbook wb = xl.Workbooks.Open(Server.MapPath(@"~/Content/TimeSheet.xls"));
 
-            ISheet sheet = wb.GetSheet("Sheet1");
-            IRow row = sheet.GetRow(0);
-            
-            row.GetCell(1).SetCellValue(w.LastName + ", " + w.FirstName);
-            row = sheet.GetRow(1);
-            row.GetCell(1).SetCellValue(w.EmployeeNumber);
-            row = sheet.GetRow(2);
-            row.GetCell(1).SetCellValue(s.sunday);
-            row = sheet.GetRow(3);
-            row.GetCell(1).SetCellValue(s.weekNumber);
-            
-            row = sheet.GetRow(5);
-            for (int i = 0; i < 7; i++)
-                row.CreateCell(3 + i).SetCellValue(s.Headers[i].ToString("M/d"));
+            var sheet = wb.Sheets["Sheet1"];
 
-            row = sheet.GetRow(6);
-            for (int i = 0; i < 7; i++)
-                row.CreateCell(3 + i).SetCellValue(s.Stats[4+i]);
+            sheet.Cells[0, 1] = w.LastName + ", " + w.FirstName;
+            sheet.Cells[1, 1] = w.EmployeeNumber;
+            sheet.Cells[2, 1] = s.sunday;
+            sheet.Cells[3, 1] = s.weekNumber;
 
-            row.CreateCell(10).SetCellValue(s.Stats[3]);
+            for (int i = 0; i < 7; i++) { 
+                sheet.Cells[5, 3 + i] = s.Headers[i].ToString("M/d");
+                sheet.Cells[6, 3 + i] = s.Stats[4+i];
+            }
+            sheet.Cells[6, 10] = s.Stats[3];
 
             int rowy = 7;
             foreach (var hr in s.hours)
             {
-                row = sheet.CreateRow(rowy);
-                row.CreateCell(0).SetCellValue(hr.IsOvertime ? "Y" : "");
-                row.CreateCell(1).SetCellValue(hr.Description);
-                row.CreateCell(2).SetCellValue(hr.ChargNumber);
-                row.CreateCell(3).SetCellValue(hr.Mon);
-                row.CreateCell(4).SetCellValue(hr.Tue);
-                row.CreateCell(5).SetCellValue(hr.Wed);
-                row.CreateCell(6).SetCellValue(hr.Thu);
-                row.CreateCell(7).SetCellValue(hr.Fri);
-                row.CreateCell(8).SetCellValue(hr.Sat);
-                row.CreateCell(9).SetCellValue(hr.Sun);
-                row.CreateCell(10).SetCellValue(hr.SubTotal);
-                row.CreateCell(11).SetCellValue(hr.NewRequest ? "Y" : "");
-                row.CreateCell(12).SetCellValue(hr.Customer);
-                row.CreateCell(13).SetCellValue(hr.WorkArea);
-                row.CreateCell(14).SetCellValue(hr.Partner);
-                row.CreateCell(15).SetCellValue(hr.Site);
+                sheet.Cells[rowy, 0] = hr.IsOvertime ? "Y" : "";
+                sheet.Cells[rowy, 1] = hr.Description;
+                sheet.Cells[rowy, 2] = hr.ChargNumber;
+                sheet.Cells[rowy, 3] = hr.Mon;
+                sheet.Cells[rowy, 4] = hr.Tue;
+                sheet.Cells[rowy, 5] = hr.Wed;
+                sheet.Cells[rowy, 6] = hr.Thu;
+                sheet.Cells[rowy, 7] = hr.Fri;
+                sheet.Cells[rowy, 8] = hr.Sat;
+                sheet.Cells[rowy, 9] = hr.Sun;
+                sheet.Cells[rowy, 10] = hr.SubTotal;
+                sheet.Cells[rowy, 11] = hr.NewRequest ? "Y" : "";
+                sheet.Cells[rowy, 12] = hr.Customer;
+                sheet.Cells[rowy, 13] = hr.WorkArea;
+                sheet.Cells[rowy, 14] = hr.Partner;
+                sheet.Cells[rowy, 15] = hr.Site;
                 rowy++;
             }
             
-            MemoryStream ms = new MemoryStream();
-            wb.Write(ms);
-            ms.Seek(0, System.IO.SeekOrigin.Begin);
-            var timesheet = AttachmentHelper.CreateAttachment(ms, "ts" + w.LastName + ".xls", TransferEncoding.Base64); 
+            var named = Path.Combine(Path.GetTempPath(), "ts"+w.LastName+".xls");
+            wb.SaveAs(Filename: named, AccessMode: XlSaveAsAccessMode.xlNoChange); 
+            wb.Close();
+            xl.Quit();
+            Marshal.ReleaseComObject(xl);
 
+            var timesheet = new Attachment(named);
             dynamic email = new Email("TimeSheet");
             email.Attach(timesheet);
             email.From = ConfigurationManager.AppSettings["sentfrom"];
@@ -160,6 +153,8 @@ namespace TimeSheet.Controllers
             email.OverTime = s.Stats[2];
             email.Total = s.Stats[3];
             email.Send();
+
+            System.IO.File.Delete(named);
         }
 
         /// <summary>
@@ -194,7 +189,8 @@ namespace TimeSheet.Controllers
                 User = Session["user"].ToString(), 
                 IsAdmin = emp.IsAdmin,
                 IsManager = emp.IsManager,
-                Impersonating = (Session["admin"] != null)
+                Impersonating = (Session["admin"] != null),
+                Reports = ConfigurationManager.AppSettings["ReportServerURL"]
             };
 
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;

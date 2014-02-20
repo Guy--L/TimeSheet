@@ -41,7 +41,7 @@
                     }
                     else
                     {
-                        @*<li>@Html.ActionLink("Report", "Report", "Home")</li>*@
+                        <li><a href="@Model.Reports" target="_blank">Reports</a></li>
                         if (@Model.IsAdmin)
                         {
                             <li>@Html.ActionLink("Export", "ExportXLS", "Admin")</li>
