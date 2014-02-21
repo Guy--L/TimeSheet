@@ -67,7 +67,7 @@ namespace TimeSheet.Models
 
             Worksheet sheet = wb.Sheets["Journal Entry Form"];
             int rowy = 36;
-
+            Application xl = wb.Application;
 
             using (tsDB db = new tsDB())
             {
@@ -93,8 +93,10 @@ namespace TimeSheet.Models
                         bool cc = x.AccountType.Value == (int)ChargeTo.Cost_Center;
 
                         if (cc?(x.cc.LegalEntity == "0"):string.IsNullOrWhiteSpace(x.ino.LegalEntity)) {
-                            Range row = sheet.get_Range("B"+rowy, "L"+rowy);
-                            //row.Interior.ColorIndex = 3;
+                            Range a = sheet.Cells[rowy, 2];
+                            Range b = sheet.Cells[rowy, 11];
+                            Range row = sheet.get_Range(a, b);
+                            //row.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Pink);
                         }
                         else
                             sheet.Cells[rowy, 2] = (cc ? x.cc.LegalEntity : x.ino.LegalEntity);
@@ -189,18 +191,18 @@ namespace TimeSheet.Models
             int startyw = Week.YearWeek(start) - 1;
             int endyw = Week.YearWeek(end) + 1;
 
-            Worksheet sheet = wb.Sheets[0];
+            Worksheet sheet = wb.Sheets[2];
             
             List<string> areaV = new List<string>(9);
-            for (int i = 2; i < 11; i++)
-                areaV.Add(sheet.Cells[12,i].ToLower());
+            for (int i = 4; i < 13; i++)
+                areaV.Add((sheet.Cells[14,i].Value2??string.Empty).ToLower());
 
             List<string> partV = new List<string>(5);
-            for (int i = 13; i < 18; i++)
-                partV.Add(sheet.Cells[i,0].ToLower());
+            for (int i = 15; i < 20; i++)
+                partV.Add((sheet.Cells[i,2].Value2??string.Empty).ToLower());
 
             List<string> siteV = new List<string>(4);
-            for (int i = 1; i < 5; i++)
+            for (int i = 3; i < 7; i++)
                 siteV.Add(wb.Sheets[i].Name.ToLower());
 
             using (tsDB db = new tsDB())
@@ -213,32 +215,33 @@ namespace TimeSheet.Models
                 var colorder = areaV.Select(n => areas.Find(a => comp4(a._WorkArea.ToLower(), n)).WorkAreaId).ToList();
                 var roworder = partV.Select(n => partners.Find(a => comp4(a._Partner.ToLower(), n)).PartnerId).ToList();
                 var shtorder = siteV.Select(n => sites.Find(a => comp4(a._Site.ToLower(), n)).SiteId).ToList();
+
                 string query = string.Format(dashboard_period, join(shtorder), join(roworder), join(colorder));
 
                 var data = db.Fetch<Week>(query, startyw, endyw);
                 IEnumerable<Week> site;
 
-                for (int i = 1; i < 5; i++)
+                for (int i = 3; i < 7; i++)                                             // sheet
                 {
                     sheet = wb.Sheets[i];
-                    site = data.Where(d => d.SiteId == shtorder[i-1]);
-                    for (int j = 13; j < 18; j++)
+                    site = data.Where(d => d.SiteId == shtorder[i-3]);                  // row
+                    for (int j = 15; j < 20; j++)
                     {
                         int tot = 0;
                         decimal totc = 0;
                         decimal tote = 0;
 
-                        var partner = site.Where(e => e.PartnerId == roworder[j-13]);
-                        for (int k = 2; k < 11; k++)
+                        var partner = site.Where(e => e.PartnerId == roworder[j-15]);
+                        for (int k = 3; k < 12; k++)                                    // column 
                         {
-                            int count = partner.Count(f => f.WorkAreaId == colorder[k - 2]);
+                            int count = partner.Count(f => f.WorkAreaId == colorder[k - 3]);
                             var capitals = partner.Where(
                                 p => p.NewRequest &&
                                 p.AccountType == (int?)ChargeTo.Capital_Number && 
-                                p.WorkAreaId == colorder[k - 2]).ToList();
+                                p.WorkAreaId == colorder[k - 3]).ToList();
 
-                            var expenses = partner.Where(p => p.AccountType != (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 2]).ToList();
-                            sheet.Cells[j,k] = (count==0?"":count.ToString());
+                            var expenses = partner.Where(p => p.AccountType != (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]).ToList();
+                            sheet.Cells[j,k+1].Value2 = (count==0?"":count.ToString());
                             tot += count;
 
                             decimal capital = 0;
@@ -252,7 +255,7 @@ namespace TimeSheet.Models
                                 if (charge == 0) continue;
                                 capital += charge;
                             }
-                            sheet.Cells[j+10, k] = (capital == 0 ? "" : capital.ToString("0.00"));
+                            sheet.Cells[j+10, k+1].Value2 = (capital == 0 ? "" : capital.ToString("0.00"));
                             totc += capital;
 
                             decimal expense = 0;
@@ -266,12 +269,12 @@ namespace TimeSheet.Models
                                 if (charge == 0) continue;
                                 expense += charge;
                             }
-                            sheet.Cells[j+21, k] = (expense == 0 ? "" : expense.ToString("0.00"));
+                            sheet.Cells[j+21, k+1].Value2 = (expense == 0 ? "" : expense.ToString("0.00"));
                             tote += expense;
                         }
-                        sheet.Cells[j,2] = (tot == 0 ? "" : tot.ToString());
-                        sheet.Cells[j+10, 2] = (totc == 0 ? "" : totc.ToString("0.00"));
-                        sheet.Cells[j+21, 2] = (tote == 0 ? "" : tote.ToString("0.00"));
+                        sheet.Cells[j, 3].Value2 = (tot == 0 ? "" : tot.ToString());
+                        sheet.Cells[j+10, 3].Value2 = (totc == 0 ? "" : totc.ToString("0.00"));
+                        sheet.Cells[j+21, 3].Value2 = (tote == 0 ? "" : tote.ToString("0.00"));
                     }
                 }
             }
