@@ -76,6 +76,7 @@ namespace TimeSheet.Models
                     var level = db.Fetch<Level>("");
                     var ex = db.Fetch<Week, CostCenter, InternalNumber, Description>(expenses_period, startyw, endyw, ChargeTo.Capital_Number);
                     var num = ConfigurationManager.AppSettings["ExpenseNumber"];
+                    var password = ConfigurationManager.AppSettings["CrossChargeProtection"];
                     var tst = db.LastCommand;
                     var tot = db.LastSQL;
 
@@ -93,12 +94,12 @@ namespace TimeSheet.Models
                         bool cc = x.AccountType.Value == (int)ChargeTo.Cost_Center;
 
                         if (cc?(x.cc.LegalEntity == "0"):string.IsNullOrWhiteSpace(x.ino.LegalEntity)) {
-                            sheet.Unprotect("AAABBABBABB1");
+                            sheet.Unprotect(password);
                             Range a = sheet.Cells[rowy, 2];
                             Range b = sheet.Cells[rowy, 12];
                             Range row = sheet.get_Range(a, b);
                             row.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Pink);
-                            sheet.Protect("AAABBABBABB1");
+                            sheet.Protect(password);
                         }
                         else
                             sheet.Cells[rowy, 2] = (cc ? x.cc.LegalEntity : x.ino.LegalEntity);
