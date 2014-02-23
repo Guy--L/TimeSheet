@@ -305,7 +305,7 @@ namespace TimeSheet.Controllers
                         break;
                 }
 
-                var named = Path.GetTempFileName();
+                var named = Path.Combine(Server.MapPath(@"~/App_Data"), template + ".xls");
                 wb.SaveAs(Filename: named, 
                             AccessMode: XlSaveAsAccessMode.xlNoChange, 
                             ConflictResolution: XlSaveConflictResolution.xlLocalSessionChanges,

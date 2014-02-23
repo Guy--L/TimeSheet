@@ -102,40 +102,40 @@ namespace TimeSheet.Controllers
 
             var sheet = wb.Sheets["Sheet1"];
 
-            sheet.Cells[0, 1] = w.LastName + ", " + w.FirstName;
-            sheet.Cells[1, 1] = w.EmployeeNumber;
-            sheet.Cells[2, 1] = s.sunday;
-            sheet.Cells[3, 1] = s.weekNumber;
+            sheet.Cells[1, 1] = w.LastName + ", " + w.FirstName;
+            sheet.Cells[2, 1] = w.EmployeeNumber;
+            sheet.Cells[3, 1] = s.sunday;
+            sheet.Cells[4, 1] = s.weekNumber;
 
             for (int i = 0; i < 7; i++) { 
-                sheet.Cells[5, 3 + i] = s.Headers[i].ToString("M/d");
-                sheet.Cells[6, 3 + i] = s.Stats[4+i];
+                sheet.Cells[6, 4 + i] = s.Headers[i].ToString("M/d");
+                sheet.Cells[7, 4 + i] = s.Stats[4+i];
             }
-            sheet.Cells[6, 10] = s.Stats[3];
+            sheet.Cells[7, 11] = s.Stats[3];
 
-            int rowy = 7;
+            int rowy = 8;
             foreach (var hr in s.hours)
             {
-                sheet.Cells[rowy, 0] = hr.IsOvertime ? "Y" : "";
-                sheet.Cells[rowy, 1] = hr.Description;
-                sheet.Cells[rowy, 2] = hr.ChargNumber;
-                sheet.Cells[rowy, 3] = hr.Mon;
-                sheet.Cells[rowy, 4] = hr.Tue;
-                sheet.Cells[rowy, 5] = hr.Wed;
-                sheet.Cells[rowy, 6] = hr.Thu;
-                sheet.Cells[rowy, 7] = hr.Fri;
-                sheet.Cells[rowy, 8] = hr.Sat;
-                sheet.Cells[rowy, 9] = hr.Sun;
-                sheet.Cells[rowy, 10] = hr.SubTotal;
-                sheet.Cells[rowy, 11] = hr.NewRequest ? "Y" : "";
-                sheet.Cells[rowy, 12] = hr.Customer;
-                sheet.Cells[rowy, 13] = hr.WorkArea;
-                sheet.Cells[rowy, 14] = hr.Partner;
-                sheet.Cells[rowy, 15] = hr.Site;
+                sheet.Cells[rowy, 1] = hr.IsOvertime ? "Y" : "";
+                sheet.Cells[rowy, 2] = hr.Description;
+                sheet.Cells[rowy, 3] = hr.ChargNumber;
+                sheet.Cells[rowy, 4] = hr.Mon;
+                sheet.Cells[rowy, 5] = hr.Tue;
+                sheet.Cells[rowy, 6] = hr.Wed;
+                sheet.Cells[rowy, 7] = hr.Thu;
+                sheet.Cells[rowy, 8] = hr.Fri;
+                sheet.Cells[rowy, 9] = hr.Sat;
+                sheet.Cells[rowy, 10] = hr.Sun;
+                sheet.Cells[rowy, 11] = hr.SubTotal;
+                sheet.Cells[rowy, 12] = hr.NewRequest ? "Y" : "";
+                sheet.Cells[rowy, 13] = hr.Customer;
+                sheet.Cells[rowy, 14] = hr.WorkArea;
+                sheet.Cells[rowy, 15] = hr.Partner;
+                sheet.Cells[rowy, 16] = hr.Site;
                 rowy++;
             }
-            
-            var named = Path.Combine(Path.GetTempPath(), "ts"+w.LastName+".xls");
+
+            var named = Path.Combine(Server.MapPath(@"~/App_Data"), "ts" + w.LastName + ".xls");
             wb.SaveAs(Filename: named, AccessMode: XlSaveAsAccessMode.xlNoChange); 
             wb.Close();
             xl.Quit();
