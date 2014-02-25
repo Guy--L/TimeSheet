@@ -131,7 +131,7 @@
         function switchUI() {
             var selector = 'input[type="text"],input[type="hidden"],input[type="radio"],select';
             var $nondmd = $('.nondemand').parent().parent();
-            var $dmd = $('.demand').parent().parent();
+            var $dmd = $('.demand').parent().parent().add($('.newrequest'));
 
             if ($('#PartnerId').find('option:selected').html() == 'RDSS') {
                 $nondmd.css('display', 'block');

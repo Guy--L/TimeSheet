@@ -254,8 +254,14 @@ namespace TimeSheet.Controllers
             var submitted = TempData["submit"] as bool?;
             if (submitted.HasValue && submitted.Value)
             {
-                SubmitEmail(emp, ts);
-                //return File(ms.ToArray(), "application/vnd.ms-excel", "test.xls");
+                try
+                {
+                    SubmitEmail(emp, ts);
+                }
+                catch (Exception e)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("submission email failed", e));
+                }
             }
             
             return View(ts);
