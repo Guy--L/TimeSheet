@@ -287,11 +287,14 @@ namespace TimeSheet.Controllers
         public ActionResult GetXLS(Export xp)
         {
             var template = Enum.GetName(typeof(Template), xp.type);
-            var xl = new Application();
-            xl.DisplayAlerts = false;
-            Workbook wb = xl.Workbooks.Open(Server.MapPath(@"~/Content/"+template+".xls"));
+            Application xl = null;
+            Workbook wb = null;
 
             try { // Opening the Excel template
+                xl = new Application();
+                xl.DisplayAlerts = false;
+                wb = xl.Workbooks.Open(Server.MapPath(@"~/Content/"+template+".xls"), 0, true);
+
                 switch (xp.type)
                 {
                     case Template.Capital_Cost:
@@ -312,7 +315,6 @@ namespace TimeSheet.Controllers
                             FileFormat: XlFileFormat.xlWorkbookDefault);
                 wb.Close();
                 xl.Quit();
-                Marshal.ReleaseComObject(xl);
 
                 //MemoryStream ms = new MemoryStream(); // Writing the workbook content to the FileStream... 
                 
@@ -323,7 +325,16 @@ namespace TimeSheet.Controllers
             catch(Exception ex) {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Export threw up", ex));
                 return RedirectToAction("Index", "Home"); 
-            } 
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(wb);
+                Marshal.ReleaseComObject(xl);
+                wb = null;
+                xl = null;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
         }
     }
 }
