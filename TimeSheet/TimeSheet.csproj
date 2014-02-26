@@ -351,7 +351,9 @@
     <Content Include="Content\bootstrap\font\fontawesome-webfont.ttf" />
     <Content Include="Content\bootstrap\font\fontawesome-webfont.eot" />
     <Content Include="Content\bootstrap\font\FontAwesome.otf" />
-    <Content Include="Content\Capital_Cost.xls" />
+    <Content Include="Content\Capital_Cost.xls">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Cross_Charge.xls" />
     <Content Include="Content\Dash_Board.xlsx" />
     <Content Include="Content\Dash_Board.xls" />

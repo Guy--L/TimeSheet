@@ -1,5 +1,6 @@
 ﻿@{
     var assembly = ViewContext.Controller.GetType().Assembly;
+    var impersonating = @Model.Impersonating ?? false;
 }
 <!DOCTYPE html>
 <html>
@@ -22,7 +23,7 @@
 </head>
 <body>
     <div class="page-container">
-        <nav class="navbar navbar-fixed-top @(Model.Impersonating?"navbar-default":"navbar-inverse")" role="navigation">
+        <nav class="navbar navbar-fixed-top @(impersonating?" navbar-default":"navbar-inverse")" role="navigation">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -35,7 +36,7 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav">
-                    @if (@Model.Impersonating)
+                    @if (impersonating)
                     {
                         <li>@Html.ActionLink("Exit Impersonation", "Impersonate", "Admin", new { id = 0, @class = "text-warning" }, null)</li>
                     }
