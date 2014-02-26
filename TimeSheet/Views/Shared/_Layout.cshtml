@@ -1,6 +1,14 @@
 ﻿@{
     var assembly = ViewContext.Controller.GetType().Assembly;
-    var impersonating = @Model.Impersonating ?? false;
+    bool impersonating;
+    if (@Model != null && @Model.Impersonating == null) { 
+        impersonating = false;
+    }
+    else
+    {
+        impersonating = @Model.Impersonating;
+    }
+        
 }
 <!DOCTYPE html>
 <html>
@@ -110,6 +118,7 @@
 
         window.onerror = function (msg, url, line) {
             var errmsg = '(' + url + ': ' + line + ') ' + msg;
+            errmsg = errmsg + ' in ' + arguments.callee.caller + ' < ' + arguments.callee.caller.caller;
             elog(errmsg);
             return true;
         }

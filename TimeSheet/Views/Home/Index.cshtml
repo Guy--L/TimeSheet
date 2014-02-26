@@ -330,10 +330,10 @@
                     else {
                         numbertest = $intern.val().substring(0,4);
                         if (numbertest < '7100' && numbertest != '4700' && numbertest != '4001') {
-                            answer = confirm("This number looks like a Cost Center.  Still use as an Internal Order number?");
+                            answer = confirm("This number, " + $intern.val() +", looks like a Cost Center. Still use it as an Internal Order number?");
                             if (!answer)  {$intern.focus(); return;}
                         } else {
-                            answer = confirm("Use this new Internal Order number: " + $intern.val());
+                            answer = confirm("The Internal Order number, " + $intern.val() +", might be an invalid number. Use it anyway?");
                             if (!answer) {$intern.focus(); return;}
                         }
                     }
@@ -343,7 +343,6 @@
                     return;
                 }
             }
-
 
             if (choice == "costc") {
                 var clx = cL[$ctr.val()];
@@ -368,11 +367,11 @@
                     else {
                         numbertest = $ctr.val().substring(0,4);
                         if (numbertest >= '7100' || numbertest == '4700' || numbertest == '4001') {
-                            answer = confirm("This number looks like an Internal Order number.  Still use as Cost Center?");
+                            answer = confirm("This number, " + $ctr.val() + ", looks like an Internal Order number. Still use it as a Cost Center?");
                             if (!answer)  {$ctr.focus(); return;}
                         }   
                         else {
-                            answer = confirm("Use this new Cost Center: " + $ctr.val());
+                            answer = confirm("The Cost Center, " + $ctr.val() + ", might be an invalid number. Use it anyway?");
                             if (!answer) {$ctr.focus(); return;}
                         }
                     }
