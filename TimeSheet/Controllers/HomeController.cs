@@ -167,9 +167,9 @@ namespace TimeSheet.Controllers
             }
             finally
             {
-                Marshal.ReleaseComObject(sheet);
-                Marshal.ReleaseComObject(wb);
-                Marshal.ReleaseComObject(xl);
+                if (sheet != null) Marshal.ReleaseComObject(sheet);
+                if (wb != null) Marshal.ReleaseComObject(wb);
+                if (xl != null) Marshal.ReleaseComObject(xl);
                 sheet = null;
                 wb = null;
                 xl = null;

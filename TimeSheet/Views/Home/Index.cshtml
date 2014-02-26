@@ -304,8 +304,10 @@
             if (isNaN(parseInt($cost.val()))) $cost.val(0);
 
             var $intern = $('input.interno', '#weeksheet');
+            var $ctr = $('input.costc', '#weeksheet');
+            var choice = $('#charge .active input[type="radio"]').attr('id');
 
-            if (!$intern.prop('disabled')) {
+            if (choice == "interno") {
                 var nlx = nL[$intern.val()];
                 if (typeof nlx != 'undefined') {
                     e.preventDefault();
@@ -342,9 +344,8 @@
                 }
             }
 
-            var $ctr = $('input.costc', '#weeksheet');
 
-            if (!$ctr.prop('disabled')) {
+            if (choice == "costc") {
                 var clx = cL[$ctr.val()];
                 if (typeof clx != 'undefined') {
                     e.preventDefault();

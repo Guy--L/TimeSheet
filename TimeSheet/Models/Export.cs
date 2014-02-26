@@ -119,8 +119,8 @@ namespace TimeSheet.Models
                 }
                 finally
                 {
-                    Marshal.ReleaseComObject(sheet);
-                    Marshal.ReleaseComObject(xl);
+                    if (sheet != null) Marshal.ReleaseComObject(sheet);
+                    if (xl != null) Marshal.ReleaseComObject(xl);
                     sheet = null;
                     xl = null;
                 }
@@ -183,7 +183,7 @@ namespace TimeSheet.Models
                 }
                 finally
                 {
-                    Marshal.ReleaseComObject(sheet);
+                    if (sheet != null) Marshal.ReleaseComObject(sheet);
                     sheet = null;
                 }
             }
@@ -305,10 +305,9 @@ namespace TimeSheet.Models
             }
             finally
             {
-                Marshal.ReleaseComObject(sheet);
+                if (sheet != null) Marshal.ReleaseComObject(sheet);
                 sheet = null;
             }
         }
-
     }
 }
