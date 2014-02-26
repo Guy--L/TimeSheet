@@ -293,7 +293,10 @@ namespace TimeSheet.Controllers
             try { // Opening the Excel template
                 xl = new Application();
                 xl.DisplayAlerts = false;
-                wb = xl.Workbooks.Open(Server.MapPath(@"~/Content/"+template+".xls"), 0, true);
+                wb = xl.Workbooks.Open(Server.MapPath(@"~/Content/"+template+".xls"),
+                    Type.Missing, true, Type.Missing, Type.Missing, Type.Missing,
+                    Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing,
+                    Type.Missing, Type.Missing, Type.Missing, true);
 
                 switch (xp.type)
                 {

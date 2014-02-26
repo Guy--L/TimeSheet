@@ -29,3 +29,6 @@ _ReSharper*/
 *.vssscc
 $tf*/
 error*.xml
+TimeSheet/App_Data/Capital_Cost.xls
+TimeSheet/App_Data/Cross_Charge.xls
+TimeSheet/App_Data/Dash_Board.xls
