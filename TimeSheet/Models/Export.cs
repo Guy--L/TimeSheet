@@ -4,9 +4,9 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Web;
-using Microsoft.Office.Interop.Excel;
+using ClosedXML;
+using ClosedXML.Excel;
 
 namespace TimeSheet.Models
 {
@@ -61,13 +61,12 @@ namespace TimeSheet.Models
                      @0 < 100*w.[Year] + w.[WeekNumber] and 
                      100*w.[Year] + w.[WeekNumber] < @1 ";
 
-        public int expense(Workbook wb)
+
+        public int expense(XLWorkbook xl)
         {
             int startyw = Week.YearWeek(start) - 1;
             int endyw = Week.YearWeek(end) + 1;
 
-            Worksheet sheet = null;
-            Application xl = null;
             int rowy = 36;
 
             using (tsDB db = new tsDB())
@@ -79,8 +78,7 @@ namespace TimeSheet.Models
                     var num = ConfigurationManager.AppSettings["ExpenseNumber"];
                     var password = ConfigurationManager.AppSettings["CrossChargeProtection"];
 
-                    sheet = wb.Sheets["Journal Entry Form"];
-                    xl = wb.Application;
+                    var sheet = xl.Worksheet("Journal Entry Form");
 
                     foreach (var x in ex)
                     {
@@ -95,20 +93,16 @@ namespace TimeSheet.Models
 
                         bool cc = x.AccountType.Value == (int)ChargeTo.Cost_Center;
 
-                        if (cc?(x.cc.LegalEntity == "0"):string.IsNullOrWhiteSpace(x.ino.LegalEntity)) {
-                            sheet.Unprotect(password);
-                            sheet.get_Range(sheet.Cells[rowy, 2], sheet.Cells[rowy, 12])
-                                .Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Pink);
-                            sheet.Protect(password);
-                        }
+                        if (cc?(x.cc.LegalEntity == "0"):string.IsNullOrWhiteSpace(x.ino.LegalEntity)) 
+                            sheet.Range(rowy, 2, rowy, 12).Style.Fill.BackgroundColor = XLColor.Pink;
                         else
-                            sheet.Cells[rowy, 2] = (cc ? x.cc.LegalEntity : x.ino.LegalEntity);
+                            sheet.Cell(rowy, 2).Value = (cc ? x.cc.LegalEntity : x.ino.LegalEntity);
 
-                        sheet.Cells[rowy, 3] = 40;          
-                        sheet.Cells[rowy, 4] = num;
-                        sheet.Cells[rowy, (cc ? 6 : 5)] = (cc ? x.cc._CostCenter : x.ino.InternalOrder);
-                        sheet.Cells[rowy, 7] = charge.ToString("0.00");
-                        sheet.Cells[rowy, 11] = x.CustomerName + " / " + x.LastName + " / " + x.desc._Description;
+                        sheet.Cell(rowy, 3).Value = 40;          
+                        sheet.Cell(rowy, 4).Value = num;
+                        sheet.Cell(rowy, (cc ? 6 : 5)).Value = (cc ? x.cc._CostCenter : x.ino.InternalOrder);
+                        sheet.Cell(rowy, 7).Value = charge.ToString("0.00");
+                        sheet.Cell(rowy, 11).Value = x.CustomerName + " / " + x.LastName + " / " + x.desc._Description;
 
                         rowy++;
                     }
@@ -117,24 +111,16 @@ namespace TimeSheet.Models
                 {
                     Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("expense export: " + db.LastCommand, e));
                 }
-                finally
-                {
-                    if (sheet != null) Marshal.ReleaseComObject(sheet);
-                    if (xl != null) Marshal.ReleaseComObject(xl);
-                    sheet = null;
-                    xl = null;
-                }
             }
             return rowy - 34;
         }
 
-        public int capital(Workbook wb)
+        public int capital(XLWorkbook wb)
         {
             int startyw = Week.YearWeek(start) - 1;
             int endyw = Week.YearWeek(end) + 1;
             var num = ConfigurationManager.AppSettings["CapitalNumber"];
 
-            Worksheet sheet = null;
             int rowy = 24;
 
             using (tsDB db = new tsDB())
@@ -145,7 +131,7 @@ namespace TimeSheet.Models
                     var ex = db.Fetch<Week, Description>(capital_period, startyw, endyw, ChargeTo.Capital_Number);
                     var caps = ex.Select(cp => cp.CapitalNumber).Distinct();
 
-                    sheet = wb.Sheets["Journal Entry Form"];
+                    var sheet = wb.Worksheet("Journal Entry Form");
 
                     foreach (var c in caps)
                     {
@@ -166,13 +152,13 @@ namespace TimeSheet.Models
                         var lastn = samecaps.Where(s => !string.IsNullOrWhiteSpace(s.LastName)).Select(s => s.LastName).FirstOrDefault();
                         var descr = samecaps.Where(s => !string.IsNullOrWhiteSpace(s.desc._Description)).Select(s => s.desc._Description).FirstOrDefault();
 
-                        sheet.Cells[rowy, 2] = rowy - 23;
-                        sheet.Cells[rowy, 3] = 40;
-                        sheet.Cells[rowy, 4] = "001";
-                        sheet.Cells[rowy, 6] = num;
-                        sheet.Cells[rowy, 7] = capcharge.ToString("0.00");
-                        sheet.Cells[rowy, 10] = c;
-                        sheet.Cells[rowy, 11] = ((custr == null) ? "" : custr) + " / " + ((lastn == null) ? "" : lastn) + " / " + descr;
+                        sheet.Cell(rowy, 2).Value = rowy - 23;
+                        sheet.Cell(rowy, 3).Value = 40;
+                        sheet.Cell(rowy, 4).Value = "001";
+                        sheet.Cell(rowy, 6).Value = num;
+                        sheet.Cell(rowy, 7).Value = capcharge.ToString("0.00");
+                        sheet.Cell(rowy, 10).Value = c;
+                        sheet.Cell(rowy, 11).Value = ((custr == null) ? "" : custr) + " / " + ((lastn == null) ? "" : lastn) + " / " + descr;
 
                         rowy++;
                     }
@@ -180,11 +166,6 @@ namespace TimeSheet.Models
                 catch (Exception e)
                 {
                     Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("capital export: " + db.LastCommand, e));
-                }
-                finally
-                {
-                    if (sheet != null) Marshal.ReleaseComObject(sheet);
-                    sheet = null;
                 }
             }
             return rowy - 23;
@@ -202,28 +183,26 @@ namespace TimeSheet.Models
             return string.Join(",", ids.Select(c => c.ToString()).ToArray());
         }
 
-        public void dashboard(Workbook wb)
+        public void dashboard(XLWorkbook wb)
         {
             int startyw = Week.YearWeek(start) - 1;
             int endyw = Week.YearWeek(end) + 1;
 
-            Worksheet sheet = null;
-
             try
             {
-                sheet = wb.Sheets[2];
+                var sheet = wb.Worksheet(2);
 
                 List<string> areaV = new List<string>(9);
                 for (int i = 4; i < 13; i++)
-                    areaV.Add((sheet.Cells[14, i].Value2 ?? string.Empty).ToLower());
+                    areaV.Add((sheet.Cell(14, i).Value.ToString() ?? string.Empty).ToLower());
 
                 List<string> partV = new List<string>(5);
                 for (int i = 15; i < 20; i++)
-                    partV.Add((sheet.Cells[i, 2].Value2 ?? string.Empty).ToLower());
+                    partV.Add((sheet.Cell(i, 2).Value.ToString() ?? string.Empty).ToLower());
 
                 List<string> siteV = new List<string>(4);
                 for (int i = 3; i < 7; i++)
-                    siteV.Add(wb.Sheets[i].Name.ToLower());
+                    siteV.Add(wb.Worksheet(i).Name.ToLower());
 
                 using (tsDB db = new tsDB())
                 {
@@ -243,7 +222,7 @@ namespace TimeSheet.Models
 
                     for (int i = 3; i < 7; i++)                                             // sheet
                     {
-                        sheet = wb.Sheets[i];
+                        sheet = wb.Worksheet(i);
                         site = data.Where(d => d.SiteId == shtorder[i - 3]);                  // row
                         for (int j = 15; j < 20; j++)
                         {
@@ -261,7 +240,7 @@ namespace TimeSheet.Models
                                     p.WorkAreaId == colorder[k - 3]).ToList();
 
                                 var expenses = partner.Where(p => p.AccountType != (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]).ToList();
-                                sheet.Cells[j, k + 1].Value2 = (count == 0 ? "" : count.ToString());
+                                sheet.Cell(j, k + 1).Value = (count == 0 ? "" : count.ToString());
                                 tot += count;
 
                                 decimal capital = 0;
@@ -275,7 +254,7 @@ namespace TimeSheet.Models
                                     if (charge == 0) continue;
                                     capital += charge;
                                 }
-                                sheet.Cells[j + 10, k + 1].Value2 = (capital == 0 ? "" : capital.ToString("0.00"));
+                                sheet.Cell(j + 10, k + 1).Value = (capital == 0 ? "" : capital.ToString("0.00"));
                                 totc += capital;
 
                                 decimal expense = 0;
@@ -289,12 +268,12 @@ namespace TimeSheet.Models
                                     if (charge == 0) continue;
                                     expense += charge;
                                 }
-                                sheet.Cells[j + 21, k + 1].Value2 = (expense == 0 ? "" : expense.ToString("0.00"));
+                                sheet.Cell(j + 21, k + 1).Value = (expense == 0 ? "" : expense.ToString("0.00"));
                                 tote += expense;
                             }
-                            sheet.Cells[j, 3].Value2 = (tot == 0 ? "" : tot.ToString());
-                            sheet.Cells[j + 10, 3].Value2 = (totc == 0 ? "" : totc.ToString("0.00"));
-                            sheet.Cells[j + 21, 3].Value2 = (tote == 0 ? "" : tote.ToString("0.00"));
+                            sheet.Cell(j, 3).Value = (tot == 0 ? "" : tot.ToString());
+                            sheet.Cell(j + 10, 3).Value = (totc == 0 ? "" : totc.ToString("0.00"));
+                            sheet.Cell(j + 21, 3).Value = (tote == 0 ? "" : tote.ToString("0.00"));
                         }
                     }
                 }
@@ -302,11 +281,6 @@ namespace TimeSheet.Models
             catch(Exception e)
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("dashboard export: ", e));
-            }
-            finally
-            {
-                if (sheet != null) Marshal.ReleaseComObject(sheet);
-                sheet = null;
             }
         }
     }

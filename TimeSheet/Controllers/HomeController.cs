@@ -11,9 +11,10 @@ using System.Net.Mime;
 using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.Office.Interop.Excel;
 using Postal;
 using TimeSheet.Models;
+using ClosedXML;
+using ClosedXML.Excel;
 
 namespace TimeSheet.Controllers
 {
@@ -97,54 +98,47 @@ namespace TimeSheet.Controllers
             if (string.IsNullOrWhiteSpace(w.ManagerIon))
                 return;
 
-            Application xl = null;
-            Workbook wb = null;
-            Worksheet sheet = null;
-
             try
             {
-                xl = new Application();
-                wb = xl.Workbooks.Open(Server.MapPath(@"~/Content/TimeSheet.xls"));
-                sheet = wb.Sheets["Sheet1"];
+                XLWorkbook wb = new XLWorkbook(Server.MapPath(@"~/Content/TimeSheet.xlsx"));
+                var sheet = wb.Worksheet("Sheet1");
 
-                sheet.Cells[1, 1] = w.LastName + ", " + w.FirstName;
-                sheet.Cells[2, 1] = w.EmployeeNumber;
-                sheet.Cells[3, 1] = s.sunday;
-                sheet.Cells[4, 1] = s.weekNumber;
+                sheet.Cell(1, 1).Value = w.LastName + ", " + w.FirstName;
+                sheet.Cell(2, 1).Value = w.EmployeeNumber;
+                sheet.Cell(3, 1).Value = s.sunday;
+                sheet.Cell(4, 1).Value = s.weekNumber;
 
                 for (int i = 0; i < 7; i++)
                 {
-                    sheet.Cells[6, 4 + i] = s.Headers[i].ToString("M/d");
-                    sheet.Cells[7, 4 + i] = s.Stats[4 + i];
+                    sheet.Cell(6, 4 + i).Value = s.Headers[i].ToString("M/d");
+                    sheet.Cell(7, 4 + i).Value = s.Stats[4 + i];
                 }
-                sheet.Cells[7, 11] = s.Stats[3];
+                sheet.Cell(7, 11).Value = s.Stats[3];
 
                 int rowy = 8;
                 foreach (var hr in s.hours)
                 {
-                    sheet.Cells[rowy, 1] = hr.IsOvertime ? "Y" : "";
-                    sheet.Cells[rowy, 2] = hr.Description;
-                    sheet.Cells[rowy, 3] = hr.ChargNumber;
-                    sheet.Cells[rowy, 4] = hr.Mon;
-                    sheet.Cells[rowy, 5] = hr.Tue;
-                    sheet.Cells[rowy, 6] = hr.Wed;
-                    sheet.Cells[rowy, 7] = hr.Thu;
-                    sheet.Cells[rowy, 8] = hr.Fri;
-                    sheet.Cells[rowy, 9] = hr.Sat;
-                    sheet.Cells[rowy, 10] = hr.Sun;
-                    sheet.Cells[rowy, 11] = hr.SubTotal;
-                    sheet.Cells[rowy, 12] = hr.NewRequest ? "Y" : "";
-                    sheet.Cells[rowy, 13] = hr.Customer;
-                    sheet.Cells[rowy, 14] = hr.WorkArea;
-                    sheet.Cells[rowy, 15] = hr.Partner;
-                    sheet.Cells[rowy, 16] = hr.Site;
+                    sheet.Cell(rowy,  1).Value = hr.IsOvertime ? "Y" : "";
+                    sheet.Cell(rowy,  2).Value = hr.Description;
+                    sheet.Cell(rowy,  3).Value = hr.ChargNumber;
+                    sheet.Cell(rowy,  4).Value = hr.Mon;
+                    sheet.Cell(rowy,  5).Value = hr.Tue;
+                    sheet.Cell(rowy,  6).Value = hr.Wed;
+                    sheet.Cell(rowy,  7).Value = hr.Thu;
+                    sheet.Cell(rowy,  8).Value = hr.Fri;
+                    sheet.Cell(rowy,  9).Value = hr.Sat;
+                    sheet.Cell(rowy, 10).Value = hr.Sun;
+                    sheet.Cell(rowy, 11).Value = hr.SubTotal;
+                    sheet.Cell(rowy, 12).Value = hr.NewRequest ? "Y" : "";
+                    sheet.Cell(rowy, 13).Value = hr.Customer;
+                    sheet.Cell(rowy, 14).Value = hr.WorkArea;
+                    sheet.Cell(rowy, 15).Value = hr.Partner;
+                    sheet.Cell(rowy, 16).Value = hr.Site;
                     rowy++;
                 }
 
                 var named = Path.Combine(Server.MapPath(@"~/App_Data"), "ts" + w.LastName + ".xls");
-                wb.SaveAs(Filename: named, AccessMode: XlSaveAsAccessMode.xlNoChange);
-                wb.Close();
-                xl.Quit();
+                wb.SaveAs(named);
 
                 var timesheet = new Attachment(named);
                 dynamic email = new Email("TimeSheet");
@@ -164,17 +158,6 @@ namespace TimeSheet.Controllers
             catch(Exception e)
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Submission email: ", e));
-            }
-            finally
-            {
-                if (sheet != null) Marshal.ReleaseComObject(sheet);
-                if (wb != null) Marshal.ReleaseComObject(wb);
-                if (xl != null) Marshal.ReleaseComObject(xl);
-                sheet = null;
-                wb = null;
-                xl = null;
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
             }
         }
 

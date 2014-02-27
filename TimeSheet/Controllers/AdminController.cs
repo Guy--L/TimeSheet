@@ -5,8 +5,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using TimeSheet.Models;
-using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
+using ClosedXML;
+using ClosedXML.Excel;
 
 namespace TimeSheet.Controllers
 {
@@ -287,56 +288,37 @@ namespace TimeSheet.Controllers
         public ActionResult GetXLS(Export xp)
         {
             var template = Enum.GetName(typeof(Template), xp.type);
-            Application xl = null;
-            Workbook wb = null;
 
             try { // Opening the Excel template
-                xl = new Application();
-                //xl.DisplayAlerts = false;
-                wb = xl.Workbooks.Open(Server.MapPath(@"~/Content/"+template+".xls"),
-                    Type.Missing, true, Type.Missing, Type.Missing, Type.Missing,
-                    Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing,
-                    Type.Missing, Type.Missing, Type.Missing, true);
+                XLWorkbook xl = new XLWorkbook(Server.MapPath(@"~/Content/" + template + ".xlsx"));
 
                 switch (xp.type)
                 {
                     case Template.Capital_Cost:
-                        xp.capital(wb);
+                        xp.capital(xl);
                         break;
                     case Template.Cross_Charge:
-                        xp.expense(wb);
+                        xp.expense(xl);
                         break;
                     case Template.Dash_Board:
-                        xp.dashboard(wb);
+                        xp.dashboard(xl);
                         break;
                 }
 
-                var named = Path.Combine(Server.MapPath(@"~/App_Data"), template + ".xls");
-                wb.SaveAs(Filename: named, 
-                            AccessMode: XlSaveAsAccessMode.xlNoChange, 
-                            ConflictResolution: XlSaveConflictResolution.xlLocalSessionChanges,
-                            FileFormat: XlFileFormat.xlWorkbookDefault);
-                wb.Close();
-                xl.Quit();
+                var ms =  new MemoryStream();
+                xl.SaveAs(ms);
+                //xl.Dispose();
 
+                ms.Seek(0, SeekOrigin.Begin);
                 //MemoryStream ms = new MemoryStream(); // Writing the workbook content to the FileStream... 
                 
                 TempData["Message"] = "Excel report created successfully!"; // Sending the server processed data back to the user computer... 
-                //return File(ms.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", template + ".xlsx");
-                return File(named, "application/vnd.ms-excel", template + ".xls");
+                //return File(ms, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", template + ".xlsx");
+                return File(ms, "application/vnd.ms-excel", template + ".xlsx");
             } 
             catch(Exception ex) {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Export threw up", ex));
                 return RedirectToAction("Index", "Home"); 
-            }
-            finally
-            {
-                if (wb != null) Marshal.ReleaseComObject(wb);
-                if (xl != null) Marshal.ReleaseComObject(xl);
-                wb = null;
-                xl = null;
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
             }
         }
     }
