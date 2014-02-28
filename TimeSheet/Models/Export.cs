@@ -173,8 +173,8 @@ namespace TimeSheet.Models
 
         private bool comp4(string a, string b)
         {
-            int al = a.Length < 4 ? a.Length : 4;
-            int bl = b.Length < 4 ? b.Length : 4;
+            int al = string.IsNullOrWhiteSpace(a)? 0 :(a.Length < 4 ? a.Length : 4);
+            int bl = string.IsNullOrWhiteSpace(b)? 0 :(b.Length < 4 ? b.Length : 4);
             return a.Substring(0, al) == b.Substring(0, bl);
         }
 
@@ -211,9 +211,41 @@ namespace TimeSheet.Models
                     var partners = db.Fetch<Partner>("");
                     var level = db.Fetch<Level>();
 
-                    var colorder = areaV.Select(n => areas.Find(a => comp4(a._WorkArea.ToLower(), n)).WorkAreaId).ToList();
-                    var roworder = partV.Select(n => partners.Find(a => comp4(a._Partner.ToLower(), n)).PartnerId).ToList();
-                    var shtorder = siteV.Select(n => sites.Find(a => comp4(a._Site.ToLower(), n)).SiteId).ToList();
+                    List<int> colorder = new List<int>();
+                    foreach (var s in areaV)
+                    {
+                        var f = areas.Find(a => comp4(a._WorkArea.ToLower(), s));
+                        if (f == null)
+                        {
+                            Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("dashboard export: cannot find " + s));
+                            return;
+                        }
+                        colorder.Add(f.WorkAreaId);
+                    }
+
+                    List<int> roworder = new List<int>();
+                    foreach (var s in partV)
+                    {
+                        var f = partners.Find(a => comp4(a._Partner.ToLower(), s));
+                        if (f == null)
+                        {
+                            Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("dashboard export: cannot find " + s));
+                            return;
+                        }
+                        roworder.Add(f.PartnerId);
+                    }
+                    
+                    List<int> shtorder = new List<int>();
+                    foreach (var s in siteV)
+                    {
+                        var f = sites.Find(a => comp4(a._Site.ToLower(), s));
+                        if (f == null) {
+                            Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("dashboard export: cannot find "+ s));
+                            return;
+                        }
+                        shtorder.Add(f.SiteId);
+                    }
+                    //var shtorder = siteV.Select(n => sites.Find(a => comp4(a._Site.ToLower(), n)).SiteId).ToList();
 
                     string query = string.Format(dashboard_period, join(shtorder), join(roworder), join(colorder));
 
