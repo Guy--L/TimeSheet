@@ -139,7 +139,7 @@ namespace TimeSheet.Models
                         var samecaps = ex.Where(d => d.CapitalNumber == c);
                         foreach (var x in samecaps)
                         {
-                            decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
+                            decimal? rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
                             decimal charge = 0;
                             int nowyw = x.Year * 100 + x.WeekNumber;
 
@@ -244,6 +244,7 @@ namespace TimeSheet.Models
                             return;
                         }
                         shtorder.Add(f.SiteId);
+                        Debug.WriteLine(f.SiteId + " " +f._Site);
                     }
                     //var shtorder = siteV.Select(n => sites.Find(a => comp4(a._Site.ToLower(), n)).SiteId).ToList();
 
@@ -255,7 +256,12 @@ namespace TimeSheet.Models
                     for (int i = 3; i < 7; i++)                                             // sheet
                     {
                         sheet = wb.Worksheet(i);
-                        site = data.Where(d => d.FacilityId == shtorder[i - 3]);                  // row
+                        site = data.Where(d => d.FacilityId == shtorder[i - 3]);            // row
+
+                        //var sitecurrent = site.FirstOrDefault(d => d.FacilityId == shtorder[i-3]);
+                        //var sitename = sitecurrent==null?"None":sites.Find(a => sitecurrent.FacilityId == a.SiteId)._Site;
+                        //Debug.WriteLine("Facility: " + sitename);
+                        //Debug.Indent();
                         for (int j = 15; j < 20; j++)
                         {
                             int tot = 0;
@@ -263,22 +269,35 @@ namespace TimeSheet.Models
                             decimal tote = 0;
 
                             var partner = site.Where(e => e.PartnerId == roworder[j - 15]);
+
+                            //var partnercurrent = partner.FirstOrDefault(e => e.PartnerId == roworder[j - 15]);
+                            //var partnername = partnercurrent == null ? "None" : partners.Find(e => partnercurrent.PartnerId == e.PartnerId)._Partner;
+
+                            //Debug.WriteLine("Partner: " + partnername);
+                            //Debug.Indent();
                             for (int k = 3; k < 12; k++)                                    // column 
                             {
-                                int count = partner.Count(f => f.WorkAreaId == colorder[k - 3]);
-                                var capitals = partner.Where(
-                                    p => p.NewRequest &&
+                                int count = partner.Count(f => f.NewRequest && f.WorkAreaId == colorder[k - 3]);
+                                    //p => p.NewRequest &&                                
+                                var capitals = partner.Where(p =>
                                     p.AccountType == (int?)ChargeTo.Capital_Number &&
                                     p.WorkAreaId == colorder[k - 3]).ToList();
 
-                                var expenses = partner.Where(p => p.AccountType != (int?)ChargeTo.Capital_Number && p.WorkAreaId == colorder[k - 3]).ToList();
+                                //var areacurrent = areas.FirstOrDefault(a => a.WorkAreaId == colorder[k - 3]);
+                                //var areaname = areacurrent == null ? "None" : areas.Find(a => a.WorkAreaId == areacurrent.WorkAreaId)._WorkArea;
+
+                                //Debug.WriteLine(areaname);
+                                var expenses = partner.Where(
+                                    p => p.AccountType != (int?)ChargeTo.Capital_Number && 
+                                    p.WorkAreaId == colorder[k - 3]).ToList();
+
                                 sheet.Cell(j, k + 1).Value = (count == 0 ? "" : count.ToString());
                                 tot += count;
 
                                 decimal capital = 0;
                                 foreach (var x in capitals.Where(xc => xc != null))
                                 {
-                                    decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
+                                    decimal? rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).SingleOrDefault();
                                     decimal charge = 0;
                                     int nowyw = x.Year * 100 + x.WeekNumber;
 
@@ -292,7 +311,7 @@ namespace TimeSheet.Models
                                 decimal expense = 0;
                                 foreach (var x in expenses.Where(xd => xd != null))
                                 {
-                                    decimal rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).Single();
+                                    decimal? rate = level.Where(s => s.LevelId == x.LevelId).Select(r => x.IsOvertime ? r.OvertimeRate : r.RegularRate).SingleOrDefault();
                                     decimal charge = 0;
                                     int nowyw = x.Year * 100 + x.WeekNumber;
 
@@ -303,10 +322,12 @@ namespace TimeSheet.Models
                                 sheet.Cell(j + 21, k + 1).Value = (expense == 0 ? "" : expense.ToString("0.00"));
                                 tote += expense;
                             }
+                            //Debug.Unindent();
                             sheet.Cell(j, 3).Value = (tot == 0 ? "" : tot.ToString());
                             sheet.Cell(j + 10, 3).Value = (totc == 0 ? "" : totc.ToString("0.00"));
                             sheet.Cell(j + 21, 3).Value = (tote == 0 ? "" : tote.ToString("0.00"));
                         }
+                        //Debug.Unindent();
                     }
                 }
             }
