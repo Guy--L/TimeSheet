@@ -54,10 +54,10 @@ namespace TimeSheet.Models
                     v.SiteId in ({0}) and v.PartnerId in ({1}) and v.WorkAreaId in ({2}) ";
 
         private static string dashboard_period = @"
-            select w.*, r.LevelId from [Week] w 
+            select w.*, r.LevelId, r.FacilityId from [Week] w 
                 join [Worker] r on r.WorkerId =  w.WorkerId
                 where w.Submitted is not null and
-                     w.SiteId in ({0}) and w.PartnerId in ({1}) and w.WorkAreaId in ({2}) and
+                     r.FacilityId in ({0}) and w.PartnerId in ({1}) and w.WorkAreaId in ({2}) and
                      @0 < 100*w.[Year] + w.[WeekNumber] and 
                      100*w.[Year] + w.[WeekNumber] < @1 ";
 
@@ -255,7 +255,7 @@ namespace TimeSheet.Models
                     for (int i = 3; i < 7; i++)                                             // sheet
                     {
                         sheet = wb.Worksheet(i);
-                        site = data.Where(d => d.SiteId == shtorder[i - 3]);                  // row
+                        site = data.Where(d => d.FacilityId == shtorder[i - 3]);                  // row
                         for (int j = 15; j < 20; j++)
                         {
                             int tot = 0;

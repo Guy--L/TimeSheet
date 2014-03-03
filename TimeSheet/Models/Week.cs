@@ -20,6 +20,7 @@ namespace TimeSheet.Models
     {
         [Column] public int? PairId { get; set; }
         [Column] public int? LevelId { get; set; }
+        [Column] public int? FacilityId { get; set; }
         [Column] public string LastName { get; set; }
         [Column] public string CustomerName { get; set; }
         public CostCenter cc { get; set; }
