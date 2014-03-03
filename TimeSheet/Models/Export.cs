@@ -279,7 +279,7 @@ namespace TimeSheet.Models
                             {
                                 int count = partner
                                     .Where(f => f.NewRequest && f.WorkAreaId == colorder[k - 3])
-                                    .Select(d => d.ChargNumber)
+                                    .Select(d => d.ChargUniq)
                                     .Distinct().Count();
                                                     
                                     //p => p.NewRequest &&                                

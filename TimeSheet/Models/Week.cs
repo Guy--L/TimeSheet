@@ -167,14 +167,36 @@ namespace TimeSheet.Models
                 switch ((ChargeTo)AccountType.Value)
                 {
                     case ChargeTo.Cost_Center:
-                        if (CostCenterId == 0) return "";
+                        if (CostCenterId == null || CostCenterId == 0) return "";
                         var cc = costCenters.FirstOrDefault(i => i.CostCenterId == CostCenterId);
                         return (cc == null) ? "" : cc._CostCenter;
 
                     case ChargeTo.Internal_Order:
-                        if (InternalNumberId == 0) return "";
+                        if (InternalNumberId == null || InternalNumberId == 0) return "";
                         var inn = internalNumbers.FirstOrDefault(i => i.InternalNumberId == InternalNumberId);
                         return (inn == null) ? "" : inn.InternalOrder;
+
+                    case ChargeTo.Capital_Number:
+                        if (string.IsNullOrWhiteSpace(CapitalNumber)) return "";
+                        return CapitalNumber;
+                }
+                return null;
+            }
+        }
+
+        public string ChargUniq
+        {
+            get
+            {
+                if (!AccountType.HasValue)
+                    return null;
+                switch ((ChargeTo)AccountType.Value)
+                {
+                    case ChargeTo.Cost_Center:
+                        return "c" + CostCenterId;
+
+                    case ChargeTo.Internal_Order:
+                        return "i" + InternalNumberId;
 
                     case ChargeTo.Capital_Number:
                         if (string.IsNullOrWhiteSpace(CapitalNumber)) return "";
