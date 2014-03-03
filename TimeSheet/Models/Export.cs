@@ -277,7 +277,11 @@ namespace TimeSheet.Models
                             //Debug.Indent();
                             for (int k = 3; k < 12; k++)                                    // column 
                             {
-                                int count = partner.Count(f => f.NewRequest && f.WorkAreaId == colorder[k - 3]);
+                                int count = partner
+                                    .Where(f => f.NewRequest && f.WorkAreaId == colorder[k - 3])
+                                    .Select(d => d.ChargNumber)
+                                    .Distinct().Count();
+                                                    
                                     //p => p.NewRequest &&                                
                                 var capitals = partner.Where(p =>
                                     p.AccountType == (int?)ChargeTo.Capital_Number &&
