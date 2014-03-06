@@ -104,27 +104,6 @@ namespace TimeSheet.Models
 	}
 	
 
-	[TableName("HoursByDate")]
-	[ExplicitColumns]
-    public partial class HoursByDate : tsDB.Record<HoursByDate>  
-    {		
-		[Column] public int WeekId { get; set; } 		
-		[Column] public DateTime? WorkDate { get; set; } 		
-		[Column] public bool IsOvertime { get; set; } 		
-		[Column] public decimal? Hours { get; set; } 		
-		[Column] public int WorkerId { get; set; } 		
-		[Column] public int? SiteId { get; set; } 		
-		[Column] public int? PartnerId { get; set; } 		
-		[Column] public int? WorkAreaId { get; set; } 		
-		[Column] public string AccountNumber { get; set; } 		
-		[Column] public decimal? amount { get; set; } 		
-		[Column] public string FullName { get; set; } 		
-		[Column] public string EmployeeNumber { get; set; } 		
-		[Column] public bool NewRequest { get; set; } 		
-		[Column] public int WeekNumber { get; set; } 		
-		[Column] public int Year { get; set; } 	
-	}
-
 	[TableName("WorkerCostCenter")]
 	[PrimaryKey("WorkerCostCenterId")]
 	[ExplicitColumns]
@@ -179,6 +158,24 @@ namespace TimeSheet.Models
 		[Column("Facility")] public string _Facility { get; set; }
 		
 		[Column] public string AccountsPayableID { get; set; } 	
+	}
+
+	[TableName("ELMAH_Error")]
+	[PrimaryKey("ErrorId", AutoIncrement=false)]
+	[ExplicitColumns]
+    public partial class ELMAH_Error : tsDB.Record<ELMAH_Error>  
+    {		
+		[Column] public Guid ErrorId { get; set; } 		
+		[Column] public string Application { get; set; } 		
+		[Column] public string Host { get; set; } 		
+		[Column] public string Type { get; set; } 		
+		[Column] public string Source { get; set; } 		
+		[Column] public string Message { get; set; } 		
+		[Column] public string User { get; set; } 		
+		[Column] public int StatusCode { get; set; } 		
+		[Column] public DateTime TimeUtc { get; set; } 		
+		[Column] public int Sequence { get; set; } 		
+		[Column] public string AllXml { get; set; } 	
 	}
 
 	[TableName("InternalNumber")]
@@ -293,6 +290,37 @@ namespace TimeSheet.Models
     public partial class __RefactorLog : tsDB.Record<__RefactorLog>  
     {		
 		[Column] public Guid OperationKey { get; set; } 	
+	}
+
+	[TableName("WorkerCapitalNumber")]
+	[PrimaryKey("WorkerCapitalNumberId")]
+	[ExplicitColumns]
+    public partial class WorkerCapitalNumber : tsDB.Record<WorkerCapitalNumber>  
+    {		
+		[Column] public int WorkerCapitalNumberId { get; set; } 		
+		[Column] public int WorkerId { get; set; } 		
+		[Column] public string CapitalNumber { get; set; } 	
+	}
+
+	[TableName("HoursByDate")]
+	[ExplicitColumns]
+    public partial class HoursByDate : tsDB.Record<HoursByDate>  
+    {		
+		[Column] public int WeekId { get; set; } 		
+		[Column] public DateTime? WorkDate { get; set; } 		
+		[Column] public bool IsOvertime { get; set; } 		
+		[Column] public decimal? Hours { get; set; } 		
+		[Column] public int WorkerId { get; set; } 		
+		[Column] public int? SiteId { get; set; } 		
+		[Column] public int? PartnerId { get; set; } 		
+		[Column] public int? WorkAreaId { get; set; } 		
+		[Column] public string AccountNumber { get; set; } 		
+		[Column] public decimal? amount { get; set; } 		
+		[Column] public string FullName { get; set; } 		
+		[Column] public string EmployeeNumber { get; set; } 		
+		[Column] public bool NewRequest { get; set; } 		
+		[Column] public int WeekNumber { get; set; } 		
+		[Column] public int Year { get; set; } 	
 	}
 
 	[TableName("HoursByWeek")]

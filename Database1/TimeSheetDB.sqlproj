@@ -90,6 +90,7 @@
     <Build Include="HoursByDate.sql" />
     <Build Include="WorkerCostCenter.sql" />
     <Build Include="WorkerInternalNumber.sql" />
+    <Build Include="WorkerCapitalNumber.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="TimeSheetDB.refactorlog" />
@@ -98,5 +99,6 @@
     <None Include="Snapshots\TimeSheetDB_20131010_02-58-52.dacpac" />
     <None Include="ts.Worker.data.sql" />
     <None Include="TimeSheetDB.publish.xml" />
+    <None Include="TimeSheetDB_2.publish.xml" />
   </ItemGroup>
 </Project>
