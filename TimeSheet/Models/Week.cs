@@ -20,6 +20,7 @@ namespace TimeSheet.Models
     {
         [Column] public int? PairId { get; set; }
         [Column] public int? LevelId { get; set; }
+        [Column] public int? FacilityId { get; set; }
         [Column] public string LastName { get; set; }
         [Column] public string CustomerName { get; set; }
         public CostCenter cc { get; set; }
@@ -166,14 +167,36 @@ namespace TimeSheet.Models
                 switch ((ChargeTo)AccountType.Value)
                 {
                     case ChargeTo.Cost_Center:
-                        if (CostCenterId == 0) return "";
+                        if (CostCenterId == null || CostCenterId == 0) return "";
                         var cc = costCenters.FirstOrDefault(i => i.CostCenterId == CostCenterId);
                         return (cc == null) ? "" : cc._CostCenter;
 
                     case ChargeTo.Internal_Order:
-                        if (InternalNumberId == 0) return "";
+                        if (InternalNumberId == null || InternalNumberId == 0) return "";
                         var inn = internalNumbers.FirstOrDefault(i => i.InternalNumberId == InternalNumberId);
                         return (inn == null) ? "" : inn.InternalOrder;
+
+                    case ChargeTo.Capital_Number:
+                        if (string.IsNullOrWhiteSpace(CapitalNumber)) return "";
+                        return CapitalNumber;
+                }
+                return null;
+            }
+        }
+
+        public string ChargUniq
+        {
+            get
+            {
+                if (!AccountType.HasValue)
+                    return null;
+                switch ((ChargeTo)AccountType.Value)
+                {
+                    case ChargeTo.Cost_Center:
+                        return "c" + CostCenterId;
+
+                    case ChargeTo.Internal_Order:
+                        return "i" + InternalNumberId;
 
                     case ChargeTo.Capital_Number:
                         if (string.IsNullOrWhiteSpace(CapitalNumber)) return "";
@@ -606,9 +629,10 @@ namespace TimeSheet.Models
             get { return new decimal[] { Monday??0, Tuesday??0, Wednesday??0, Thursday??0, Friday??0, Saturday??0, Sunday??0}; }
         }
 
-        internal decimal Charge(decimal rate, int now, int start, int end, DateTime sdate, DateTime edate)
+        internal decimal Charge(decimal? inrate, int now, int start, int end, DateTime sdate, DateTime edate)
         {
             decimal hours = 0;
+            decimal rate = inrate ?? 0; 
 
             if (now == start + 1 && now == end - 1)
                 hours = array.Skip(((int)sdate.DayOfWeek + 6) % 7).Take(((int)edate.DayOfWeek + 6) % 7 + 1).Sum();

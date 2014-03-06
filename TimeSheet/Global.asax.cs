@@ -32,6 +32,8 @@ namespace TimeSheet
         {
 #if DEBUG
             var user = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            if (user == "GUYLISTER3546\\guy")
+                user = "lister.g.1";
 #else
             var user = Thread.CurrentPrincipal.Identity.Name;
 #endif
