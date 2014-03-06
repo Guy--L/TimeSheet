@@ -274,6 +274,22 @@ namespace TimeSheet.Controllers
             return RedirectToAction("Levels");
         }
 
+        public ActionResult Missing()
+        {
+            Missing ms = new Missing();
+            ms.User = Session["user"].ToString();
+            ms.IsAdmin = true;
+            ms.requestdate = DateTime.Today.AddDays(-(double)DateTime.Today.DayOfWeek - 6);
+            return View(ms);
+        }
+
+        [HttpPost]
+        public ActionResult Missing(Missing ms)
+        {
+            ms.Check();
+            return View(ms);
+        }
+
         public ActionResult ExportXLS()
         {
             Export xp = new Export();

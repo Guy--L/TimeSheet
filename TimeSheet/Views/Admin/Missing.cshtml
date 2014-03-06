@@ -1,0 +1,38 @@
+﻿@model TimeSheet.Models.Missing
+@{
+    ViewBag.Title = "Missing";
+}
+
+<div class="container">
+    <h3>Check for Missing TimeSheets</h3>
+@using (var f = Html.Bootstrap().Begin(new Form("Missing", "Admin").Id("missing").Type(FormType.Horizontal).LabelWidthXs(3)))
+{
+ 
+    @f.FormGroup().TextBoxFor(m => m.requestdate).Class("datepicker").Size(InputSize.Small).WidthXs(2).Label().LabelText("Week Containing")
+    
+    @(f.FormGroup().CustomControls(
+        Html.Bootstrap().SubmitButton().Text("Check for Missing TimeSheets").Id("submit").Style(ButtonStyle.Success))
+    )
+}
+    <hr />
+    <table id="missings" class="table table-striped table-hover table-condensed table-bordered">
+        <thead>
+            <tr>
+                <th>Ion Name</th>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Manager's Ion Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.EditorFor(m => m.workers)
+        </tbody>
+    </table>
+    </div>
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            $('.datepicker').datepicker();
+        });
+    </script>
+}

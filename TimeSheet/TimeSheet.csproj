@@ -200,6 +200,7 @@
     <Compile Include="Models\Hours.cs" />
     <Compile Include="Models\ISO_8601.cs" />
     <Compile Include="Models\Level.cs" />
+    <Compile Include="Models\Missing.cs" />
     <Compile Include="Models\Partner.cs" />
     <Compile Include="Models\Sheet.cs" />
     <Compile Include="Models\Site.cs" />
@@ -443,6 +444,8 @@
     <Content Include="Views\Shared\DisplayTemplates\Worker.cshtml">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Views\Admin\Missing.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Worker.cshtml" />
     <None Include="Web.Test.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
