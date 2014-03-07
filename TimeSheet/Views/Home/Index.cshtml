@@ -234,6 +234,7 @@
         $desc = $('#DescriptionId', '#weeksheet');
         $intn = $('#InternalNumberId', '#weeksheet');
         $cost = $('#CostCenterId', '#weeksheet');
+        $capt = $('#CapitalNumberKey', '#weeksheet');
 
         //var tst = tst32['four'];          create javascript error to test it logging to server
 
@@ -241,6 +242,7 @@
         $cust.combobox({ freeform: '#CustomerAdd', selected: true });
         $intn.combobox({ freeform: '#InternalNumberAdd', selected: true });
         $cost.combobox({ freeform: '#CostCenterAdd', selected: true });
+        $capt.combobox({ freeform: '#CapitalNumberAdd', selected: true });
 
         if ($('#WeekId', '#weeksheet').val() == '0' && $('#oWeekId', '#weeksheet').val() == '0') {
             $('#modaltitle').html('Add Hours to week ' + $('#WeekNumber').val());
@@ -305,6 +307,7 @@
 
             var $intern = $('input.interno', '#weeksheet');
             var $ctr = $('input.costc', '#weeksheet');
+            var $cap = $('input.capital', '#weeksheet');
             var choice = $('#charge .active input[type="radio"]').attr('id');
 
             if (choice == "interno") {

@@ -32,6 +32,7 @@ namespace TimeSheet.Models
 
         public List<WorkerCostCenter> workCenters;
         public List<WorkerInternalNumber> workNumbers;
+        public List<WorkerCapitalNumber> workCapitals;
 
         public List<Customer> customers;
         public List<Description> descriptions;
@@ -85,7 +86,7 @@ namespace TimeSheet.Models
             WorkAreaId = b.WorkAreaId;
             NewRequest = b.NewRequest ?? false;
             CostCenterId = b.CostCenterId??0;
-            CapitalNumber = b.CapitalNumber;
+            CapitalNumber = b.CapitalNumberKey;
             AccountType = b.AccountType;
 
             IsOvertime = !isNormal;
@@ -665,6 +666,8 @@ namespace TimeSheet.Models
                 workNumbers.Add(new WorkerInternalNumber { WorkerInternalNumberId = 0, InternalNumberId = 0, WorkerId = worker });
                 workCenters = db.Fetch<WorkerCostCenter>("where workerid = @0", worker);
                 workCenters.Add(new WorkerCostCenter { WorkerCostCenterId = 0, CostCenterId = 0, WorkerId = worker });
+                workCapitals = db.Fetch<WorkerCapitalNumber>("where workerid = @0", worker);
+                workCapitals.Add(new WorkerCapitalNumber { WorkerCapitalNumberId = 0, CapitalNumber = "", WorkerId = worker });
             }
         }
 

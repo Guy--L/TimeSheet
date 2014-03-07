@@ -52,7 +52,7 @@
                     </div>
                     @form.FormGroup().Class("acct").DropDownListFor(m => m.CostCenterId, Model.CostCenters).Class("demand costc").Size(InputSize.Small).Label().LabelText("Cost Center")
                     @form.FormGroup().Class("acct").DropDownListFor(m => m.InternalNumberId, Model.InternalNumbers).Class("demand interno").Size(InputSize.Small).Label().LabelText("Internal #")
-                    @form.FormGroup().Class("acct").TextBoxFor(m => m.CapitalNumber).Size(InputSize.Small).Class("demand capital").Label().LabelText("Capital #")
+                    @form.FormGroup().Class("acct").DropDownListFor(m => m.CapitalNumberKey, Model.CapitalNumbers).Class("demand capital").Size(InputSize.Small).Label().LabelText("Capital #")
                 </div>
             </div>
             <div class="row">

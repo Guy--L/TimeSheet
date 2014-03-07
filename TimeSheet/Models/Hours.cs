@@ -42,6 +42,9 @@ namespace TimeSheet.Models
             costCenters = new SelectList(w.costCenters
                             .Where(i => w.workCenters.Exists(n => n.CostCenterId == i.CostCenterId)), "CostCenterId", "_CostCenter", 0);
 
+            capitalNumbers = new SelectList(w.workCapitals
+                            .Where(i => w.workCapitals.Exists(n => n.CapitalNumber == i.CapitalNumber)), "WorkerCapitalNumberId", "CapitalNumber");
+
             WorkerId = w.WorkerId;
             WeekNumber = w.WeekNumber;
             Year = w.Year;
@@ -50,7 +53,7 @@ namespace TimeSheet.Models
             SiteId = 0;
             WorkAreaId = 0;
             CustomerId = 0;
-            CapitalNumber = "";
+            CapitalNumberKey = "";
             ChargeAccount = ChargeTo.Cost_Center;
 
             var monday = FirstDateOfWeek(Year, WeekNumber);
@@ -66,6 +69,7 @@ namespace TimeSheet.Models
         private SelectList customers;
         private SelectList costCenters;
         private SelectList internalNumbers;
+        private SelectList capitalNumbers;
         private SelectList descriptions;
 
         public SelectList Partners { get { return partners; } }
@@ -75,6 +79,7 @@ namespace TimeSheet.Models
         public SelectList WorkAreas { get { return workAreas; } }
         public SelectList CostCenters { get { return costCenters; } }
         public SelectList InternalNumbers { get { return internalNumbers; } }
+        public SelectList CapitalNumbers { get { return capitalNumbers;  } }
         public SelectList Descriptions { get { return descriptions; } }
 
         [Range(1, int.MaxValue, ErrorMessage = "Select a Type of activity")]
@@ -92,6 +97,9 @@ namespace TimeSheet.Models
         [Required(ErrorMessage = "Select or Add an Internal Order")]
         public string InternalNumberAdd { get; set; }
 
+        [Required(ErrorMessage = "Select or Add a Capital Number")]
+        public string CapitalNumberAdd { get; set; }
+        
         public List<DateTime> Columns { get { return headers; } set { headers = value; } }
 
         public int WeekId { get; set; }
@@ -141,7 +149,7 @@ namespace TimeSheet.Models
         public int? CostCenterId { get; set; }
 
         [Required(ErrorMessage="Provide a Capital Account")]
-		public string CapitalNumber { get; set; } 		
+		public string CapitalNumberKey { get; set; } 		
 
         [Required(ErrorMessage="Select or Add a Customer")]
 		public int? CustomerId { get; set; }
@@ -184,7 +192,7 @@ namespace TimeSheet.Models
             InternalNumberId = b.InternalNumberId;
             WorkAreaId = b.WorkAreaId;
             CostCenterId = b.CostCenterId;
-            CapitalNumber = b.CapitalNumber;
+            CapitalNumberKey = b.CapitalNumber;
             WeekNumber = b.WeekNumber;
             AccountType = b.AccountType;
             Year = b.Year;
@@ -253,6 +261,18 @@ namespace TimeSheet.Models
                     };
                     _db.Save<WorkerCostCenter>(wcc);
                 }
+
+                if (!string.IsNullOrWhiteSpace(CapitalNumberAdd) && CapitalNumberKey == CapitalNumberAdd)
+                {
+                    WorkerCapitalNumber wcn = new WorkerCapitalNumber()
+                    {
+                        CapitalNumber = CapitalNumberAdd,
+                        WorkerId = WorkerId
+                    };
+                    _db.Save<WorkerCapitalNumber>(wcn);
+                }
+                else
+                    CapitalNumberKey = CapitalNumberAdd;
             }
         }
     }

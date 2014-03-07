@@ -84,7 +84,8 @@
   , transferAttributes: function() {
     this.options.placeholder = this.$source.attr('data-placeholder') || this.options.placeholder;
     this.$element.attr('placeholder', this.options.placeholder);
-    var addid = this.$source.prop('name').replace('Id', 'Add')
+    var addid = this.$source.prop('name').replace('Id', 'Add').replace('Key', 'Add');
+    console.log(addid);
     this.$element.prop('name', addid);
     this.$element.prop('id', addid);
     this.$element.attr('data-val-required', this.$source.attr('data-val-required'));
