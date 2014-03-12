@@ -127,6 +127,7 @@
         var week, sheet, $cust, $desc;
         var sunday = '@Model.sunday';
         var empid = '@Model.employee.WorkerId';
+        var isPartTime = ('@Model.employee.IsPartTime' == "True");
 
         function switchUI() {
             var selector = 'input[type="text"],input[type="hidden"],input[type="radio"],select';
@@ -235,7 +236,6 @@
         $intn = $('#InternalNumberId', '#weeksheet');
         $cost = $('#CostCenterId', '#weeksheet');
         $capt = $('#CapitalNumberKey', '#weeksheet');
-
         //var tst = tst32['four'];          create javascript error to test it logging to server
 
         $desc.combobox({ freeform: '#DescriptionAdd', selected: true });
@@ -258,6 +258,10 @@
         $("input").placeholder();
 
         resumHours();
+
+        $('.remover', '#weeksheet').on('click', function () {
+            alert('hello');
+        });
 
         $('tr.hourline input').on('blur', function (e) {
             var newt = $(this).val().replace(/_/g, '0').split(':');
@@ -480,7 +484,7 @@
                             }
                         }
                     });
-                } else if (total < 40 * 60) {
+                } else if (total < 40 * 60 && !isPartTime) {
                     $('#denyhours').text(getHours(0, total));
                     $('#dialog-deny-hours').show();
                     e.preventDefault();

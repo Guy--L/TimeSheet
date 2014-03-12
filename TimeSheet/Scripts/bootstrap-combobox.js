@@ -253,7 +253,8 @@
   }
   , clearElement: function () {
       this.$element.undo = this.$element.val();
-    this.$element.val('').focus();
+      this.$element.val('').focus();
+      this.$remover.hide();
   }
 
   , clearTarget: function () {
