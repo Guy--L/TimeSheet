@@ -30,6 +30,7 @@
     this.$element = this.$container.find('input[type=text]');
     this.$target = this.$container.find('input[type=hidden]');
     this.$button = this.$container.find('.dropdown-toggle');
+    this.$remover = this.$container.find('.remover');
     this.$menu = $(this.options.menu).appendTo('body');
     this.matcher = this.options.matcher || this.matcher;
     this.sorter = this.options.sorter || this.sorter;
@@ -59,7 +60,7 @@
         , selected = false
         , selectedValue = '';
       this.$source.find('option').each(function() {
-        var option = $(this);
+          var option = $(this);
         if (option.val() === '') {
           that.options.placeholder = option.text();
           return;
@@ -71,12 +72,15 @@
           selectedValue = option.val();
         }
       })
+      
       this.map = map;
+      this.$remover.hide();
       if (selected) {
         this.$element.val(selected);
         this.$target.val(selectedValue);
         this.$container.addClass('combobox-selected');
         this.selected = true;
+        this.$remover.show();
       }
       return source;
     }
@@ -108,6 +112,7 @@
       this.$target.val(this.map[val]).trigger('change');
       this.$container.addClass('combobox-selected');
       this.selected = true;
+      this.$remover.show();
       return this.hide();
     }
 
@@ -420,9 +425,14 @@
   };
 
   $.fn.combobox.defaults = {
-      template: '<div class="combobox-container input-group"><input type="text" autocomplete="off" class="form-control input-sm" /><input type="hidden" /><span class="input-group-addon btn dropdown-toggle" data-dropdown="dropdown"><span class="caret"/><span class="combobox-clear"><i class="icon-lock"/></span></span></div>'
-  , menu: '<ul class="typeahead typeahead-long dropdown-menu"></ul>'
-  , item: '<li><a href="#"></a></li>'
+  template: '<div class="combobox-container input-group">'+
+        '<span style="width: 20px;" class="input-group-addon btn remover" title="click to remove selection from dropdown list">' +
+        '<i class="icon-ban-circle"/></span><input type="text" autocomplete="off" class="form-control input-sm" />' +
+        '<input type="hidden" />' +
+        '<span class="input-group-addon btn dropdown-toggle" title="click to clear, then dropdown" data-dropdown="dropdown">'+
+        '<span class="caret"/><span class="combobox-clear"><i class="icon-lock"/></span></span></div>'
+        , menu: '<ul class="typeahead typeahead-long dropdown-menu"></ul>'
+        , item: '<li><a href="#"></a></li>'
   };
 
   $.fn.combobox.Constructor = Combobox;
