@@ -37,7 +37,7 @@
         <div class="col-xs-6">
             @using (Html.Bootstrap().Begin(new Table().Caption("Hours Summary").Condensed().Class("pull-right hoursum")))
             {
-                <tr><td>Demand [%]</td><td class="day">@Model.Stats[0] [@Model.Stats[11]]</td></tr>
+                <tr><td>Demand Hours / Demand %</td><td class="day">@Model.Stats[0] / @Model.Stats[11]</td></tr>
                 <tr><td>Non-Demand</td><td class="day">@Model.Stats[1]</td></tr>
                 <tr><td>Overtime</td><td class="day">@Model.Stats[2]</td></tr>
                 <tr><td><b>Total</b></td><td class="day"><b>@Model.Stats[3]</b></td></tr>
