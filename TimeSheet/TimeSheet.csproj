@@ -187,6 +187,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AttachmentHelper.cs" />
+    <Compile Include="Models\WorkerCapitalNumber.cs" />
     <Compile Include="Models\CostCenter.cs" />
     <Compile Include="Models\Export.cs" />
     <Compile Include="Models\InternalNumber.cs" />

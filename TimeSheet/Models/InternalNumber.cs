@@ -40,6 +40,11 @@ namespace TimeSheet.Models
                 );
         }
 
+        public static string Remove(int workerid, string ids)
+        {
+            return string.Format(rem_internalnumbers, workerid, ids.Substring(0, ids.Length - 1));
+        }
+
         public static string all = @"
             select i.internalnumberid
                 , i.internalorder
@@ -56,6 +61,11 @@ namespace TimeSheet.Models
             select @@newid = scope_identity()
             insert into workerinternalnumber (workerid, internalnumberid) values ({1}, @@newid)
             select @@newid
+            ";
+
+        private static string rem_internalnumbers = @"
+            delete from workerinternalnumber
+                where workerid = {0} and internalnumberid in ('{1}')
             ";
     }
 }

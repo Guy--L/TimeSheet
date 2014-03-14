@@ -29,5 +29,15 @@ namespace TimeSheet.Models
             select scope_identity()
             ";
 
+        public static string Remove(string ids)
+        {
+            return string.Format(rem_customer, ids.Substring(0,ids.Length-1));
+        }
+
+        private static string rem_customer = @"
+            update customer
+                set isactive = 0
+                where customerid in ('{0}')
+            ";
     }
 }

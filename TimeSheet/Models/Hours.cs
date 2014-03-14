@@ -108,6 +108,12 @@ namespace TimeSheet.Models
 		public int Year { get; set; } 		
 		public int WorkerId { get; set; }
 
+        public string csCustomer { get; set; }
+        public string csDescription { get; set; }
+        public string csCostCenter { get; set; }
+        public string csInternalNumber { get; set; }
+        public string csCapitalNumber { get; set; }
+
         [Required(ErrorMessage = "Select or Add a Description")]
 		public int DescriptionId { get; set; } 		
 		public string Comments { get; set; } 		
@@ -223,10 +229,16 @@ namespace TimeSheet.Models
             return result.AddDays(-3);
         }
         
-        public void AddIfNew()
+        public void UpdateCachedLists()
         {
             using (tsDB _db = new tsDB())
             {
+                if (!string.IsNullOrEmpty(csDescription)) _db.Execute(Models.Description.Remove(csDescription));
+                if (!string.IsNullOrEmpty(csCustomer)) _db.Execute(Models.Customer.Remove(csCustomer));
+                if (!string.IsNullOrEmpty(csInternalNumber)) _db.Execute(Models.InternalNumber.Remove(WorkerId, csInternalNumber));
+                if (!string.IsNullOrEmpty(csCostCenter)) _db.Execute(Models.CostCenter.Remove(WorkerId, csCostCenter));
+                if (!string.IsNullOrEmpty(csCapitalNumber)) _db.Execute(Models.WorkerCapitalNumber.Remove(WorkerId, csCapitalNumber));
+
                 if ((DescriptionId == null || DescriptionId == 0) && !string.IsNullOrWhiteSpace(DescriptionAdd))
                     DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(WorkerId, DescriptionAdd));
                 else

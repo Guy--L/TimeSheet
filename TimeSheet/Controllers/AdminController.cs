@@ -28,7 +28,7 @@ namespace TimeSheet.Controllers
 
             using (tsDB db = new tsDB())
             {
-                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);               // one error here on 3/14/14
                 p.IsAdmin = user.IsAdmin;
                 p.IsManager = user.IsManager;
                 var query = (user.IsManager && !user.IsAdmin) ? 

@@ -37,7 +37,7 @@
         <div class="col-xs-6">
             @using (Html.Bootstrap().Begin(new Table().Caption("Hours Summary").Condensed().Class("pull-right hoursum")))
             {
-                <tr><td>Demand</td><td class="day">@Model.Stats[0]</td></tr>
+                <tr><td>Demand [%]</td><td class="day">@Model.Stats[0] [@Model.Stats[11]]</td></tr>
                 <tr><td>Non-Demand</td><td class="day">@Model.Stats[1]</td></tr>
                 <tr><td>Overtime</td><td class="day">@Model.Stats[2]</td></tr>
                 <tr><td><b>Total</b></td><td class="day"><b>@Model.Stats[3]</b></td></tr>
@@ -259,10 +259,6 @@
 
         resumHours();
 
-        $('.remover', '#weeksheet').on('click', function () {
-            alert('hello');
-        });
-
         $('tr.hourline input').on('blur', function (e) {
             var newt = $(this).val().replace(/_/g, '0').split(':');
             var newhr = ($(this).val().charAt(1) == '_' && $(this).val().charAt(0) != '_') ? Number(newt[0].charAt(0)) : Number(newt[0]);
@@ -389,7 +385,7 @@
                 }
             }
             var $cn = $('input[name="CapitalNumber"]', '#weeksheet');
-            $cn.val(encodeURIComponent($cn.val().trim()));
+            $cn.val(encodeURIComponent($.trim($cn.val())));
 
             $('#weekline').modal('hide');
         });

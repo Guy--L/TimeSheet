@@ -100,5 +100,6 @@
     <None Include="ts.Worker.data.sql" />
     <None Include="TimeSheetDB.publish.xml" />
     <None Include="TimeSheetDB_2.publish.xml" />
+    <None Include="TimeSheetDB_3.publish.xml" />
   </ItemGroup>
 </Project>

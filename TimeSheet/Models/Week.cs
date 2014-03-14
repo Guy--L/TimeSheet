@@ -135,7 +135,7 @@ namespace TimeSheet.Models
                 else
                     dem += w.subTotal;
             }
-            return new string[11] { time2str(dem)
+            return new string[12] { time2str(dem)
                                    , time2str(non)
                                    , time2str(ovt)
                                    , time2str(dem+non+ovt)
@@ -146,6 +146,7 @@ namespace TimeSheet.Models
                                    ,time2str(fri)
                                    ,time2str(sat)
                                    ,time2str(sun)
+                                   ,((dem+ovt) * 100 / 40).ToString("0")
             };
         }
 
@@ -651,9 +652,9 @@ namespace TimeSheet.Models
         {
             using (tsDB db = new tsDB())
             {
-                descriptions = db.Fetch<Description>("where workerid = @0", worker);
+                descriptions = db.Fetch<Description>("where isactive = 1 and workerid = @0", worker);
                 descriptions.Add(new Description { DescriptionId = 0, _Description = "" });
-                customers = db.Fetch<Customer>("where workerid = @0 or workerid = 0", worker);
+                customers = db.Fetch<Customer>("where isactive = 1 and workerid = @0 or workerid = 0", worker);
                 customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = 0 });         // for RDSS time
                 customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = worker });    // normal customers
 

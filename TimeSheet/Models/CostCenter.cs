@@ -41,6 +41,11 @@ namespace TimeSheet.Models
                 );
         }
 
+        public static string Remove(int workerid, string ids)
+        {
+            return string.Format(rem_costcenters, workerid, ids.Substring(0, ids.Length - 1));
+        }
+
         public static string all = @"
             select i.costcenterid
                 , i.costcenter
@@ -57,6 +62,11 @@ namespace TimeSheet.Models
             select @@newid = scope_identity()
             insert into workercostcenter (costcenterid, workerid) values (@@newid, {1})
             select @@newid
+            ";
+
+        private static string rem_costcenters = @"
+            delete from workerinternalnumber
+                where workerid = {0} and internalnumberid in ('{1}')
             ";
 
     }

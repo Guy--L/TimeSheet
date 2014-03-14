@@ -151,6 +151,7 @@ namespace TimeSheet.Controllers
                 email.NonDemand = s.Stats[1];
                 email.OverTime = s.Stats[2];
                 email.Total = s.Stats[3];
+                email.Percent = s.Stats[11];
                 email.Send();
 
                 System.IO.File.Delete(named);
@@ -305,7 +306,7 @@ namespace TimeSheet.Controllers
         [HttpPost]
         public ActionResult Save(Hrs hours)
         {
-            hours.AddIfNew();           // add new records for Customer, Description, Cost Center or Internal Number
+            hours.UpdateCachedLists();           // add new records for Customer, Description, Cost Center or Internal Number
             dbExec(hours.Save());
             return RedirectToAction("Index", new { id = hours.WeekNumber });
         }

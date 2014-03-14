@@ -9,7 +9,7 @@
 	GenerateCommon = true;
 	ClassPrefix = "";
 	ClassSuffix = "";
-	TrackModifiedColumns = false;
+	TrackModifiedColumns = false; 
 	IncludeViews = true; 
 
     // Read schema

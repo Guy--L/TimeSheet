@@ -131,7 +131,8 @@ namespace TimeSheet.Models
     {		
 		[Column] public int CustomerId { get; set; } 		
 		[Column] public int WorkerId { get; set; } 		
-		[Column] public string CustomerName { get; set; } 	
+		[Column] public string CustomerName { get; set; } 		
+		[Column] public bool IsActive { get; set; } 	
 	}
 
 	[TableName("Description")]
