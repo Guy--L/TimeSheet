@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using NPoco;
 
 namespace TimeSheet.Models
 {
@@ -12,9 +13,9 @@ namespace TimeSheet.Models
 
     public partial class Customer
     {
-        public static string Save(int id, string customer)
+        public static NPoco.Sql Save(int id, string customer)
         {
-            return string.Format(ins_customer
+            return Sql.Builder.Append(ins_customer
                 , id
                 , customer
                 );
@@ -25,7 +26,7 @@ namespace TimeSheet.Models
                        ([WorkerId]
                        ,[CustomerName])
                  VALUES
-                       ({0}, '{1}')
+                       (@0, @1)
             select scope_identity()
             ";
 
