@@ -469,14 +469,14 @@ namespace TimeSheet.Models
             return string.Format(lock_week, DateTime.Now, worker, week);
         }
 
-        public string SaveWeek()
+        public NPoco.Sql SaveWeek()
         {
             if (WeekId == 0)
             {
                 if (subTotal <= 0)
-                    return "";
+                    return null;
 
-                return string.Format(ins_week
+                return Sql.Builder.Append(ins_week
                        , WeekNumber
                        , Year
                        , WorkerId
@@ -490,7 +490,7 @@ namespace TimeSheet.Models
                        , Friday ?? 0
                        , Saturday ?? 0
                        , Sunday ?? 0
-                       , Submitted == null ? "null" : Submitted.ToString()
+                       , Submitted == null ? null : Submitted.ToString()
                        , NewRequest ? 1 : 0
                        , SiteId
                        , WorkAreaId
@@ -499,10 +499,10 @@ namespace TimeSheet.Models
                        , CostCenterId
                        , CapitalNumber
                        , CustomerId ?? 0
-                       , AccountType == null ? "null" : AccountType.ToString()
+                       , AccountType == null ? null : AccountType.ToString()
                        );
             }
-            return string.Format(upd_week
+            return Sql.Builder.Append(upd_week
                        , WeekId
                        , WeekNumber
                        , Year
@@ -517,7 +517,7 @@ namespace TimeSheet.Models
                        , Friday ?? 0
                        , Saturday ?? 0
                        , Sunday ?? 0
-                       , Submitted == null ? "null" : Submitted.ToString()
+                       , Submitted == null ? null : Submitted.ToString()
                        , NewRequest ? 1 : 0
                        , SiteId
                        , WorkAreaId
@@ -526,7 +526,7 @@ namespace TimeSheet.Models
                        , CostCenterId
                        , CapitalNumber
                        , CustomerId ?? 0
-                       , AccountType == null ? "null" : AccountType.ToString()
+                       , AccountType == null ? null : AccountType.ToString()
                        );
         }
 
@@ -556,29 +556,29 @@ namespace TimeSheet.Models
                        ,[CustomerId]
                        ,[AccountType])
                  VALUES
-                       ({0} --<WeekNumber, int,>
-                       ,{1} --<Year, int,>
-                       ,{2} --<WorkerId, int,>
-                       ,{3} --<DescriptionId, int,>
-                       ,'{4}' --<Comments, nvarchar(max),>
-                       ,{5} --<IsOvertime, bit,>
-                       ,{6} --<Monday, money,>
-                       ,{7} --<Tuesday, money,>
-                       ,{8} --<Wednesday, money,>
-                       ,{9} --<Thursday, money,>
-                       ,{10} --<Friday, money,>
-                       ,{11} --<Saturday, money,>
-                       ,{12} --<Sunday, money,>
-                       ,{13} --<Submitted, datetime,>
-                       ,{14} --<NewRequest, bit,>
-                       ,{15} --<SiteId, int,>
-                       ,{16} --<WorkAreaId, int,>
-                       ,{17} --<PartnerId, int,>
-                       ,{18} --<InternalNumberId, int,>
-                       ,{19} --<CostCenterId, int,>
-                       ,'{20}' --<CapitalNumber, nvarchar(50),>
-                       ,{21} --<CustomerId, int,> 
-                       ,{22}) ";
+                       (@0 --<WeekNumber, int,>
+                       ,@1 --<Year, int,>
+                       ,@2 --<WorkerId, int,>
+                       ,@3 --<DescriptionId, int,>
+                       ,@4 --<Comments, nvarchar(max),>
+                       ,@5 --<IsOvertime, bit,>
+                       ,@6 --<Monday, money,>
+                       ,@7 --<Tuesday, money,>
+                       ,@8 --<Wednesday, money,>
+                       ,@9 --<Thursday, money,>
+                       ,@10 --<Friday, money,>
+                       ,@11 --<Saturday, money,>
+                       ,@12 --<Sunday, money,>
+                       ,@13 --<Submitted, datetime,>
+                       ,@14 --<NewRequest, bit,>
+                       ,@15 --<SiteId, int,>
+                       ,@16 --<WorkAreaId, int,>
+                       ,@17 --<PartnerId, int,>
+                       ,@18 --<InternalNumberId, int,>
+                       ,@19 --<CostCenterId, int,>
+                       ,@20 --<CapitalNumber, nvarchar(50),>
+                       ,@21 --<CustomerId, int,> 
+                       ,@22) ";
 
         private static string lock_week = @"
             update [week] set [submitted] = cast('{0}' as datetime)
@@ -592,30 +592,30 @@ namespace TimeSheet.Models
 
         private static string upd_week = @"
             UPDATE [TimeSheetDB].[dbo].[Week]
-               SET [WeekNumber]              = {1}
-                       ,[Year]               = {2}
-                       ,[WorkerId]           = {3}
-                       ,[DescriptionId]      = {4}
-                       ,[Comments]           = '{5}'
-                       ,[IsOvertime]         = {6}
-                       ,[Monday]             = {7}
-                       ,[Tuesday]            = {8}
-                       ,[Wednesday]          = {9}
-                       ,[Thursday]           = {10}
-                       ,[Friday]             = {11}
-                       ,[Saturday]           = {12}
-                       ,[Sunday]             = {13}
-                       ,[Submitted]          = {14}
-                       ,[NewRequest]         = {15}
-                       ,[SiteId]             = {16}
-                       ,[WorkAreaId]         = {17}
-                       ,[PartnerId]          = {18}
-                       ,[InternalNumberId]   = {19}
-                       ,[CostCenterId]       = {20}
-                       ,[CapitalNumber]      = '{21}'
-                       ,[CustomerId]         = {22}
-                       ,[AccountType]         = {23}
-             WHERE WeekId = {0} ";
+               SET [WeekNumber]              = @1
+                       ,[Year]               = @2
+                       ,[WorkerId]           = @3
+                       ,[DescriptionId]      = @4
+                       ,[Comments]           = @5
+                       ,[IsOvertime]         = @6
+                       ,[Monday]             = @7
+                       ,[Tuesday]            = @8
+                       ,[Wednesday]          = @9
+                       ,[Thursday]           = @10
+                       ,[Friday]             = @11
+                       ,[Saturday]           = @12
+                       ,[Sunday]             = @13
+                       ,[Submitted]          = @14
+                       ,[NewRequest]         = @15
+                       ,[SiteId]             = @16
+                       ,[WorkAreaId]         = @17
+                       ,[PartnerId]          = @18
+                       ,[InternalNumberId]   = @19
+                       ,[CostCenterId]       = @20
+                       ,[CapitalNumber]      = @21
+                       ,[CustomerId]         = @22
+                       ,[AccountType]        = @23
+             WHERE WeekId = @0 ";
 
         public static string get_hours = @" select * from week where weekid = {0} or weekid = {1} ";
 

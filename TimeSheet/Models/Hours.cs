@@ -43,7 +43,7 @@ namespace TimeSheet.Models
                             .Where(i => w.workCenters.Exists(n => n.CostCenterId == i.CostCenterId)), "CostCenterId", "_CostCenter", 0);
 
             capitalNumbers = new SelectList(w.workCapitals
-                            .Where(i => w.workCapitals.Exists(n => n.CapitalNumber == i.CapitalNumber)), "WorkerCapitalNumberId", "CapitalNumber");
+                            .Where(i => w.workCapitals.Exists(n => n.CapitalNumber == i.CapitalNumber)), "CapitalNumber", "CapitalNumber", 0);
 
             WorkerId = w.WorkerId;
             WeekNumber = w.WeekNumber;
@@ -177,13 +177,13 @@ namespace TimeSheet.Models
             }
         }
 
-        public string Save()
+        public NPoco.Sql Save()
         {
             CustomerId = (CustomerId == null || CustomerId == 0) ? TimeTypeId : CustomerId;
             WorkAreaId = WorkAreaId ?? 0;
             Week normal = new Week(this, true);
             Week overtime = new Week(this, false);
-            return normal.SaveWeek() + overtime.SaveWeek();
+            return normal.SaveWeek().Append( overtime.SaveWeek() );
         }
 
         public void CopyHeader(Week b)

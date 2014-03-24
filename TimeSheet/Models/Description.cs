@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using NPoco;
 
 namespace TimeSheet.Models
 {
     public partial class Description
     {
-        public static string Save(int id, string description)
+        public static NPoco.Sql Save(int id, string description)
         {
-            return string.Format(ins_description
+            return Sql.Builder.Append(ins_description
                 , id
                 , description
                 , ""
@@ -28,12 +29,12 @@ namespace TimeSheet.Models
                        ,[IsActive]
                        ,[DateLastUsed])
                  VALUES
-                       ({0}
-                       ,'{1}'
-                       ,'{2}'
-                       ,{3}
-                       ,{4}
-                       ,'{5}')
+                       (@0
+                       ,@1
+                       ,@2
+                       ,@3
+                       ,@4
+                       ,@5)
             select scope_identity()
             ";
 

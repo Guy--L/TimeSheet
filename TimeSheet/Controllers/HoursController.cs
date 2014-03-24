@@ -25,6 +25,19 @@ namespace TimeSheet.Controllers
             }
         }
 
+        private void dbExec(NPoco.Sql q)
+        {
+            try
+            {
+                _db.Execute(q);
+            }
+            catch (Exception e)
+            {
+                Exception frame = new Exception(q.SQL, e);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(frame);
+            }
+        }
+
         // GET api/hours
         public IEnumerable<string> Get()
         {

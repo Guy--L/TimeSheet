@@ -43,6 +43,28 @@ namespace TimeSheet.Controllers
         }
 
         /// <summary>
+        /// Convenience wrapper to run queries with initialization and error handling
+        /// </summary>
+        /// <param name="q">Sql statement</param>
+        private void dbExec(NPoco.Sql q)
+        {
+            if (q == null)
+                return;
+
+            tsDB db = new tsDB();
+
+            try
+            {
+                db.Execute(q);
+            }
+            catch (Exception e)
+            {
+                Exception frame = new Exception(q.SQL, e);
+                Elmah.ErrorSignal.FromCurrentContext().Raise(frame);
+            }
+        }
+
+        /// <summary>
         /// Static constructor to get static lists and set constants
         /// </summary>
         static HomeController()
