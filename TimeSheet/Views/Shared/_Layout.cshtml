@@ -1,7 +1,7 @@
 ﻿@{
     var assembly = ViewContext.Controller.GetType().Assembly;
     bool impersonating;
-    if (@Model != null && @Model.Impersonating == null) { 
+    if (@Model == null || @Model.Impersonating == null) { 
         impersonating = false;
     }
     else

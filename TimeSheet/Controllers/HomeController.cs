@@ -194,9 +194,16 @@ namespace TimeSheet.Controllers
             tsDB db = new tsDB();
 
             string usr = Session["user"] as string;
+            var modeluser = new UserBase() {
+                  User = usr
+                , Impersonating = false
+                , IsAdmin = false
+                , Reports = ""
+            };
+
             string who = "where w.ionname = @0";
             if (string.IsNullOrWhiteSpace(usr))
-                return RedirectToAction("Contact", "User was not found");
+                return RedirectToAction("Contact", new UserBase() { User = usr, Impersonating = false, IsAdmin = false });
 
             if (char.IsDigit(usr[0]))
                 who = "where w.workerid = @0";
@@ -207,7 +214,7 @@ namespace TimeSheet.Controllers
             }
             Worker emp = db.FirstOrDefault<Worker>(Worker.worker + who, usr);
             if (emp == null)
-                return RedirectToAction("Contact", "User was not found");
+                return RedirectToAction("Contact", new UserBase() { User = usr, Impersonating = false, IsAdmin = false });
 
             Session["WorkerId"] = emp.WorkerId;
 
