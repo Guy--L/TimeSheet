@@ -147,7 +147,8 @@ namespace TimeSheet.Models
 		[Column] public string AccountNumber { get; set; } 		
 		[Column] public int HashCode { get; set; } 		
 		[Column] public bool IsActive { get; set; } 		
-		[Column] public DateTime? DateLastUsed { get; set; } 	
+		[Column] public DateTime? DateLastUsed { get; set; } 		
+		[Column] public bool IsSelectable { get; set; } 	
 	}
 
 	[TableName("Facility")]

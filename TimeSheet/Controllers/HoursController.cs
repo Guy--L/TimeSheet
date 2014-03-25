@@ -57,11 +57,13 @@ namespace TimeSheet.Controllers
 
             if (!string.IsNullOrWhiteSpace(id.DescriptionAdd))
             {
-                id.DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(id.WorkerId, id.DescriptionAdd));
+                var d = new Description();
+                id.DescriptionId = _db.ExecuteScalar<int>(d.Save(id.WorkerId, id.DescriptionAdd));
             }
             if (!string.IsNullOrWhiteSpace(id.CustomerAdd))
             {
-                id.CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(id.WorkerId, id.CustomerAdd));
+                var c = new Customer();
+                id.CustomerId = _db.ExecuteScalar<int>(c.Save(id.WorkerId, id.CustomerAdd));
             }
 
             dbExec(id.Save());

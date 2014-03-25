@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using NPoco;
 
 namespace TimeSheet.Models
 {
@@ -9,12 +10,14 @@ namespace TimeSheet.Models
     {
         private static string rem_capitalnumbers = @"
             delete from workercapitalnumber
-                where workerid = {0} and workercapitalnumberid in ('{1}')
+                where workerid = @workerid and capitalnumber in (@caps)
             ";
 
-        public static string Remove(int workerid, string ids)
+        public NPoco.Sql Remove(int workerid, string ids)
         {
-            return string.Format(rem_capitalnumbers, workerid, ids.Substring(0, ids.Length - 1));
+            var caps = ids.Split(',');
+            var sql = new Sql();
+            return sql.Append(rem_capitalnumbers, new { workerid, caps });
         }
     }
 }

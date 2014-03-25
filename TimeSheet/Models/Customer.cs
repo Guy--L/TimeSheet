@@ -13,9 +13,10 @@ namespace TimeSheet.Models
 
     public partial class Customer
     {
-        public static NPoco.Sql Save(int id, string customer)
+        public NPoco.Sql Save(int id, string customer)
         {
-            return Sql.Builder.Append(ins_customer
+            var sql = new Sql();
+            return sql.Append(ins_customer
                 , id
                 , customer
                 );

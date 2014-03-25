@@ -6,5 +6,6 @@
     [AccountNumber] NCHAR(10) NULL, 
     [HashCode] INT NOT NULL, 
     [IsActive] BIT NOT NULL, 
-    [DateLastUsed] DATETIME NULL
+    [DateLastUsed] DATETIME NULL, 
+    [IsSelectable] BIT NOT NULL DEFAULT 1
 )

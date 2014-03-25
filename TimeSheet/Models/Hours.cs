@@ -36,8 +36,8 @@ namespace TimeSheet.Models
                                 .Where(i=>w.workNumbers.Exists(n=>n.InternalNumberId == i.InternalNumberId)), "InternalNumberId", "InternalOrder", 0);
 
             times = new SelectList(w.customers.Where(c => c.WorkerId == 0), "CustomerId", "CustomerName");
-            customers = new SelectList(w.customers.Where(c => c.WorkerId != 0), "CustomerId", "CustomerName");
-            descriptions = new SelectList(w.descriptions, "DescriptionId", "_Description", 0);
+            customers = new SelectList(w.customers.Where(c => c.WorkerId != 0 && c.IsActive), "CustomerId", "CustomerName");
+            descriptions = new SelectList(w.descriptions.Where(d => d.IsSelectable), "DescriptionId", "_Description", 0);
             
             costCenters = new SelectList(w.costCenters
                             .Where(i => w.workCenters.Exists(n => n.CostCenterId == i.CostCenterId)), "CostCenterId", "_CostCenter", 0);
@@ -183,7 +183,9 @@ namespace TimeSheet.Models
             WorkAreaId = WorkAreaId ?? 0;
             Week normal = new Week(this, true);
             Week overtime = new Week(this, false);
-            return normal.SaveWeek().Append( overtime.SaveWeek() );
+            var n = normal.SaveWeek();
+            var o = overtime.SaveWeek();
+            return n.Append( o );
         }
 
         public void CopyHeader(Week b)
@@ -233,21 +235,31 @@ namespace TimeSheet.Models
         {
             using (tsDB _db = new tsDB())
             {
-                if (!string.IsNullOrEmpty(csDescription)) _db.Execute(Models.Description.Remove(csDescription));
+                if (!string.IsNullOrEmpty(csDescription)) _db.Execute(Models.Description.UnSelectable(csDescription));
                 if (!string.IsNullOrEmpty(csCustomer)) _db.Execute(Models.Customer.Remove(csCustomer));
                 if (!string.IsNullOrEmpty(csInternalNumber)) _db.Execute(Models.InternalNumber.Remove(WorkerId, csInternalNumber));
                 if (!string.IsNullOrEmpty(csCostCenter)) _db.Execute(Models.CostCenter.Remove(WorkerId, csCostCenter));
-                if (!string.IsNullOrEmpty(csCapitalNumber)) _db.Execute(Models.WorkerCapitalNumber.Remove(WorkerId, csCapitalNumber));
+                if (!string.IsNullOrEmpty(csCapitalNumber))
+                {
+                    var w = new WorkerCapitalNumber();
+                    _db.Execute(w.Remove(WorkerId, csCapitalNumber));
+                }
 
                 if ((DescriptionId == null || DescriptionId == 0) && !string.IsNullOrWhiteSpace(DescriptionAdd))
-                    DescriptionId = _db.ExecuteScalar<int>(Models.Description.Save(WorkerId, DescriptionAdd));
+                {
+                    var d = new Description();
+                    DescriptionId = _db.ExecuteScalar<int>(d.Save(WorkerId, DescriptionAdd));
+                }
                 else
                 {
                     _db.Execute(Models.Description.Activate(DescriptionId));
                 }
 
                 if ((CustomerId == null || CustomerId == 0) && !string.IsNullOrWhiteSpace(CustomerAdd))
-                    CustomerId = _db.ExecuteScalar<int>(Models.Customer.Save(WorkerId, CustomerAdd));
+                {
+                    var c = new Customer();
+                    CustomerId = _db.ExecuteScalar<int>(c.Save(WorkerId, CustomerAdd));
+                }
 
                 if ((InternalNumberId == null || InternalNumberId == 0) && !string.IsNullOrWhiteSpace(InternalNumberAdd))
                     InternalNumberId = _db.ExecuteScalar<int>(Models.InternalNumber.SaveInPassing(InternalNumberAdd, WorkerId));

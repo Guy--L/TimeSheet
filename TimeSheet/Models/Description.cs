@@ -8,9 +8,10 @@ namespace TimeSheet.Models
 {
     public partial class Description
     {
-        public static NPoco.Sql Save(int id, string description)
+        public NPoco.Sql Save(int id, string description)
         {
-            return Sql.Builder.Append(ins_description
+            var sql = new Sql();
+            return sql.Append(ins_description
                 , id
                 , description
                 , ""
@@ -38,40 +39,38 @@ namespace TimeSheet.Models
             select scope_identity()
             ";
 
-        private static string rem_description = @"
+        private static string select_description = @"
             update description 
-                set isactive = 0,
-                datelastused = '{1}'
-                where descriptionid in ('{0}')
+                set isselectable = {0},
+                datelastused = '{2}'
+                where descriptionid in ({1})
             ";
 
-        public static string Remove(string ids)
+        public static string UnSelectable(string ids)
         {
-            return string.Format(rem_description, ids.Substring(0, ids.Length - 1));
+            return string.Format(select_description, 0, ids.Substring(0, ids.Length - 1), DateTime.Now.ToString("d"));
+        }
+
+        public static string ReSelectable(string ids)
+        {
+            return string.Format(select_description, 1, ids.Substring(0, ids.Length - 1), DateTime.Now.ToString("d"));
         }
 
         public static string InActivate(int id)
         {
-            return string.Format(inactivate, id, DateTime.Now.ToShortDateString());
+            return string.Format(active_description, id, DateTime.Now.ToShortDateString(), 0);
         }
-
-        private static string inactivate = @"
-            update description 
-                set isactive = 0,
-                datelastused = '{1}'
-                where descriptionid =  {0}
-            ";
 
         public static string Activate(int id)
         {
-            return string.Format(activate, id, DateTime.Now.ToShortDateString());
+            return string.Format(active_description, id, DateTime.Now.ToShortDateString(), 1);
         }
 
-        private static string activate = @"
+        private static string active_description = @"
             update description 
-                set isactive = 1,
+                set isactive = {2},
                 datelastused = '{1}'
-                where descriptionid =  {0}
+                where descriptionid = {0}
             ";
 
     }

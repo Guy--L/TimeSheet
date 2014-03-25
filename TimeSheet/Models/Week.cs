@@ -471,12 +471,13 @@ namespace TimeSheet.Models
 
         public NPoco.Sql SaveWeek()
         {
+            var sql = new Sql();
+
             if (WeekId == 0)
             {
                 if (subTotal <= 0)
                     return null;
-
-                return Sql.Builder.Append(ins_week
+                return sql.Append(ins_week
                        , WeekNumber
                        , Year
                        , WorkerId
@@ -502,7 +503,7 @@ namespace TimeSheet.Models
                        , AccountType == null ? null : AccountType.ToString()
                        );
             }
-            return Sql.Builder.Append(upd_week
+            return sql.Append(upd_week
                        , WeekId
                        , WeekNumber
                        , Year
@@ -556,30 +557,53 @@ namespace TimeSheet.Models
                        ,[CustomerId]
                        ,[AccountType])
                  VALUES
-                       (@0 --<WeekNumber, int,>
-                       ,@1 --<Year, int,>
-                       ,@2 --<WorkerId, int,>
-                       ,@3 --<DescriptionId, int,>
-                       ,@4 --<Comments, nvarchar(max),>
-                       ,@5 --<IsOvertime, bit,>
-                       ,@6 --<Monday, money,>
-                       ,@7 --<Tuesday, money,>
-                       ,@8 --<Wednesday, money,>
-                       ,@9 --<Thursday, money,>
-                       ,@10 --<Friday, money,>
-                       ,@11 --<Saturday, money,>
-                       ,@12 --<Sunday, money,>
-                       ,@13 --<Submitted, datetime,>
-                       ,@14 --<NewRequest, bit,>
-                       ,@15 --<SiteId, int,>
-                       ,@16 --<WorkAreaId, int,>
-                       ,@17 --<PartnerId, int,>
-                       ,@18 --<InternalNumberId, int,>
-                       ,@19 --<CostCenterId, int,>
-                       ,@20 --<CapitalNumber, nvarchar(50),>
-                       ,@21 --<CustomerId, int,> 
+                       (@0 
+                       ,@1 
+                       ,@2 
+                       ,@3 
+                       ,@4 
+                       ,@5 
+                       ,@6 
+                       ,@7 
+                       ,@8 
+                       ,@9 
+                       ,@10
+                       ,@11
+                       ,@12
+                       ,@13
+                       ,@14
+                       ,@15
+                       ,@16
+                       ,@17
+                       ,@18
+                       ,@19
+                       ,@20
+                       ,@21
                        ,@22) ";
 
+        //--<WeekNumber, int,>
+        //--<Year, int,>
+        //--<WorkerId, int,>
+        //--<DescriptionId, int,>
+        //--<Comments, nvarchar(max),>
+        //--<IsOvertime, bit,>
+        //--<Monday, money,>
+        //--<Tuesday, money,>
+        //--<Wednesday, money,>
+        //--<Thursday, money,>
+        // --<Friday, money,>
+        // --<Saturday, money,>
+        // --<Sunday, money,>
+        // --<Submitted, datetime,>
+        // --<NewRequest, bit,>
+        // --<SiteId, int,>
+        // --<WorkAreaId, int,>
+        // --<PartnerId, int,>
+        // --<InternalNumberId, int,>
+        // --<CostCenterId, int,>
+        // --<CapitalNumber, nvarchar(50),>
+        // --<CustomerId, int,> 
+        
         private static string lock_week = @"
             update [week] set [submitted] = cast('{0}' as datetime)
             where [workerid] = {1} and [weeknumber] = {2}
@@ -652,9 +676,9 @@ namespace TimeSheet.Models
         {
             using (tsDB db = new tsDB())
             {
-                descriptions = db.Fetch<Description>("where isactive = 1 and workerid = @0", worker);
+                descriptions = db.Fetch<Description>("where workerid = @0", worker);
                 descriptions.Add(new Description { DescriptionId = 0, _Description = "" });
-                customers = db.Fetch<Customer>("where isactive = 1 and workerid = @0 or workerid = 0", worker);
+                customers = db.Fetch<Customer>("where workerid = @0 or workerid = 0", worker);
                 customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = 0 });         // for RDSS time
                 customers.Add(new Customer { CustomerId = 0, CustomerName = "", WorkerId = worker });    // normal customers
 
