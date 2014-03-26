@@ -36,8 +36,8 @@ namespace TimeSheet.Models
                                 .Where(i=>w.workNumbers.Exists(n=>n.InternalNumberId == i.InternalNumberId)), "InternalNumberId", "InternalOrder", 0);
 
             times = new SelectList(w.customers.Where(c => c.WorkerId == 0), "CustomerId", "CustomerName");
-            customers = new SelectList(w.customers.Where(c => c.WorkerId != 0 && c.IsActive), "CustomerId", "CustomerName");
-            descriptions = new SelectList(w.descriptions.Where(d => d.IsSelectable), "DescriptionId", "_Description", 0);
+            customers = new SelectList(w.customers.Where(c => c.WorkerId != 0 && (c.IsActive || c.CustomerId == 0)), "CustomerId", "CustomerName");
+            descriptions = new SelectList(w.descriptions.Where(d => d.IsSelectable || d.DescriptionId == 0), "DescriptionId", "_Description", 0);
             
             costCenters = new SelectList(w.costCenters
                             .Where(i => w.workCenters.Exists(n => n.CostCenterId == i.CostCenterId)), "CostCenterId", "_CostCenter", 0);
@@ -185,7 +185,7 @@ namespace TimeSheet.Models
             Week overtime = new Week(this, false);
             var n = normal.SaveWeek();
             var o = overtime.SaveWeek();
-            return n.Append( o );
+            return n==null?o:n.Append( o );
         }
 
         public void CopyHeader(Week b)
@@ -205,6 +205,7 @@ namespace TimeSheet.Models
             AccountType = b.AccountType;
             Year = b.Year;
             NewRequest = b.NewRequest;
+            Submitted = b.Submitted;
         }
 
         /// <summary>

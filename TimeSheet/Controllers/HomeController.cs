@@ -418,8 +418,6 @@ namespace TimeSheet.Controllers
                 if (id == 0)
                     return PartialView("_Hours", hrs);
 
-                // prior description selected
-
                 tsDB db = new tsDB();
                 
                 var prior = db.Fetch<Week>(string.Format(Week.get_prior, workerid.Value, id)).SingleOrDefault();

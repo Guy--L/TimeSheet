@@ -88,6 +88,7 @@ namespace TimeSheet.Models
             CostCenterId = b.CostCenterId??0;
             CapitalNumber = b.CapitalNumberKey;
             AccountType = b.AccountType;
+            Submitted = b.Submitted;
 
             IsOvertime = !isNormal;
 

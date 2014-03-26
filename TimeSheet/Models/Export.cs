@@ -96,13 +96,15 @@ namespace TimeSheet.Models
                         if (cc?(x.cc.LegalEntity == "0"):string.IsNullOrWhiteSpace(x.ino.LegalEntity)) 
                             sheet.Range(rowy, 2, rowy, 12).Style.Fill.BackgroundColor = XLColor.Pink;
                         else
-                            sheet.Cell(rowy, 2).Value = (cc ? x.cc.LegalEntity : x.ino.LegalEntity);
+                            sheet.Cell(rowy, 2).SetValue<string>(cc ? x.cc.LegalEntity : x.ino.LegalEntity);
 
                         sheet.Cell(rowy, 3).Value = 40;          
                         sheet.Cell(rowy, 4).Value = num;
                         sheet.Cell(rowy, (cc ? 6 : 5)).Value = (cc ? x.cc._CostCenter : x.ino.InternalOrder);
                         sheet.Cell(rowy, 7).Value = charge.ToString("0.00");
-                        sheet.Cell(rowy, 11).Value = x.CustomerName + " / " + x.LastName + " / " + x.desc._Description;
+                        var tx = (x.CustomerName + "/" + x.LastName + "/" + x.desc._Description); //.Replace("@","").Replace("'","");
+                        int ln = tx.Length < 29 ? tx.Length: 29;
+                        sheet.Cell(rowy, 12).Value = tx.Substring(0, ln);
 
                         rowy++;
                     }
@@ -154,11 +156,13 @@ namespace TimeSheet.Models
 
                         sheet.Cell(rowy, 2).Value = rowy - 23;
                         sheet.Cell(rowy, 3).Value = 40;
-                        sheet.Cell(rowy, 4).Value = "001";
+                        sheet.Cell(rowy, 4).SetValue<string>("001");
                         sheet.Cell(rowy, 6).Value = num;
                         sheet.Cell(rowy, 7).Value = capcharge.ToString("0.00");
                         sheet.Cell(rowy, 10).Value = c;
-                        sheet.Cell(rowy, 11).Value = ((custr == null) ? "" : custr) + " / " + ((lastn == null) ? "" : lastn) + " / " + descr;
+                        var tx = ((custr == null) ? "" : custr) + "/" + ((lastn == null) ? "" : lastn) + " / " + descr;  //.Replace("@","").Replace("'","");
+                        int ln = tx.Length < 29 ? tx.Length : 29;
+                        sheet.Cell(rowy, 11).Value = tx.Substring(0, ln);
 
                         rowy++;
                     }
