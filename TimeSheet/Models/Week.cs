@@ -302,7 +302,7 @@ namespace TimeSheet.Models
         public static string lst_week = @"
             select b.WeekId PairId, a.* from week a
                 left join week b 
-                    on a.CapitalNumber = b.CapitalNumber 
+                    on coalesce(a.CapitalNumber,'') = coalesce(b.CapitalNumber, '')  
                     and a.CostCenterId = b.CostCenterId
                     and a.CustomerId = b.CustomerId
                     and a.DescriptionId = b.DescriptionId
