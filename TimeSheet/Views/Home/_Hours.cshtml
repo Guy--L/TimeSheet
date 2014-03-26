@@ -105,7 +105,7 @@
             using (modal.BeginFooter())
             {
                 @(form.FormGroup().CustomControls(
-                    Html.Bootstrap().SubmitButton().Text("Delete").Id("deletehrs").Style(ButtonStyle.Danger),
+                    Html.Bootstrap().Button().Text("Delete").Id("deletehrs").Style(ButtonStyle.Danger),
                     Html.Bootstrap().SubmitButton().Text("Save").Id("savehrs").Style(ButtonStyle.Success),
                     Html.Bootstrap().Button().Data(new { dismiss = "modal" }).Text("Cancel"))
                 )

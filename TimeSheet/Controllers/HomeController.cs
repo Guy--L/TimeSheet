@@ -453,9 +453,9 @@ namespace TimeSheet.Controllers
             return RedirectToAction("Index", new { id = weekNumber });
         }
 
-        public ActionResult Contact(string id)
+        public ActionResult Contact(UserBase ub)
         {
-            return View(id);
+            return View(ub);
         }
 
         public ActionResult Report()

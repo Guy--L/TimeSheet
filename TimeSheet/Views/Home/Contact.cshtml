@@ -1,16 +1,16 @@
-﻿@{
+﻿@model TimeSheet.Models.UserBase
+@{
     ViewBag.Title = "Session not available";
-    Layout = "";
 }
 
 <hgroup class="title">
-    <h1>@ViewBag.Title.</h1>
+    <h2>@ViewBag.Title.</h2>
     <h2>@ViewBag.Message</h2>
 </hgroup>
 
 <section class="contact">
     <header>
-        <h3>Your identity is not in the RDSS Timesheet database or current session.</h3>
+        <h3>Your identity @Model.User is not in the RDSS Timesheet database or current session.</h3>
         <h4>Please try closing and opening your browser to reestablish a session.  (Make sure you are logged in.)</h4>
     </header>
 </section>
