@@ -266,7 +266,11 @@ namespace TimeSheet.Controllers
             ts.Submitted = ts.hours.Any(d => d.Submitted.HasValue);
 
             var idsEntered = ts.hours.Select(d => d.DescriptionId);
+            Debug.WriteLine("idsEntered: "+string.Join(",", idsEntered.Select(x => x.ToString()).ToArray()));
             var idsPrior = ts.hours[0].descriptions.Where(d => !idsEntered.Contains(d.DescriptionId) && d.IsActive);
+            Debug.WriteLine("idsindescriptions: " + string.Join(",", ts.hours[0].descriptions.Select(x => x.DescriptionId.ToString()).ToArray()));
+            Debug.WriteLine("idsPrior: " + string.Join(",", idsPrior.Select(x => x.DescriptionId.ToString()).ToArray()));
+
             ts.CarryOver = idsPrior.Select(d => db.Fetch<Week>(string.Format(Week.get_prior, emp.WorkerId, d.DescriptionId)).SingleOrDefault()).ToList();
             ts.CarryOver.ForEach(c => { 
                 if (c == null) return; 
@@ -276,7 +280,7 @@ namespace TimeSheet.Controllers
                 c.internalNumbers = ts.hours[0].internalNumbers;
                 c.costCenters = ts.hours[0].costCenters;
             });
-
+            Debug.WriteLine("carryover: " + ts.CarryOver.Count);
             int nextSunday = init.DayOfWeek == DayOfWeek.Sunday ? 0 : (7 - (int) init.DayOfWeek);
             init = init.AddDays(nextSunday);
             ts.sunday = init.ToString("MM/dd/yyyy");
@@ -421,7 +425,8 @@ namespace TimeSheet.Controllers
                 tsDB db = new tsDB();
                 
                 var prior = db.Fetch<Week>(string.Format(Week.get_prior, workerid.Value, id)).SingleOrDefault();
-                
+
+                prior.Submitted = null;
                 hrs.CopyHeader(prior);
                 hrs.WeekNumber = weekno.Value;                  // stay on currently viewed week not the prior
                 hrs.Year = year.Value;
