@@ -200,6 +200,8 @@ namespace TimeSheet.Models
             InternalNumberId = b.InternalNumberId;
             WorkAreaId = b.WorkAreaId;
             CostCenterId = b.CostCenterId;
+            TimeTypeId = b.CustomerId==null?0:b.CustomerId.Value;
+            
             CapitalNumberKey = b.CapitalNumber;
             WeekNumber = b.WeekNumber;
             AccountType = b.AccountType;
