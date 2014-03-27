@@ -49,6 +49,7 @@
     function attachDT() {
         q = $('#emps').dataTable({
             "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
+            "oSearch": {"sSearch": "active"},
             "bPaginate": false,
             "oLanguage": {
                 "sInfo": "_TOTAL_ employee(s)",
@@ -62,8 +63,6 @@
     }
     $(function () {
         attachDT();
-        $('#emps_filter input').val('active');      // set up default filter on active employees
-        q.fnFilter('active', 11);                   // run the filter
         @if (Model.IsAdmin) {
             <text>
                 $('#emps tbody').on('click', 'tr', function () {
