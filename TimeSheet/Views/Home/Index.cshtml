@@ -231,23 +231,21 @@
         //}
     }
     function popuploaded() {
-        $cust = $('#CustomerId', '#weeksheet');
-        $desc = $('#DescriptionId', '#weeksheet');
-        $intn = $('#InternalNumberId', '#weeksheet');
-        $cost = $('#CostCenterId', '#weeksheet');
-        $capt = $('#CapitalNumberKey', '#weeksheet');
+        $cust = $('#CustomerId',        '#weeksheet');
+        $desc = $('#DescriptionId',     '#weeksheet');
+        $intn = $('#InternalNumberId',  '#weeksheet');
+        $cost = $('#CostCenterId',      '#weeksheet');
+        $capt = $('#CapitalNumberKey',  '#weeksheet');
         //var tst = tst32['four'];          create javascript error to test it logging to server
 
-        $desc.combobox({ freeform: '#DescriptionAdd', selected: true });
-        $cust.combobox({ freeform: '#CustomerAdd', selected: true });
-        $intn.combobox({ freeform: '#InternalNumberAdd', selected: true });
-        $cost.combobox({ freeform: '#CostCenterAdd', selected: true });
-        $capt.combobox({ freeform: '#CapitalNumberAdd', selected: true });
+        $desc.combobox({ freeform: '#DescriptionAdd',       selected: true });
+        $cust.combobox({ freeform: '#CustomerAdd',          selected: true });
+        $intn.combobox({ freeform: '#InternalNumberAdd',    selected: true });
+        $cost.combobox({ freeform: '#CostCenterAdd',        selected: true });
+        $capt.combobox({ freeform: '#CapitalNumberAdd',     selected: true });
 
         if ($('#WeekId', '#weeksheet').val() == '0' && $('#oWeekId', '#weeksheet').val() == '0') {
             $('#modaltitle').html('Add Hours to week ' + $('#WeekNumber').val());
-            //$('input[name="InternalNumberId"]', '#weeksheet').val(0);
-            //$('input[name="CostCenterId"]', '#weeksheet').val(0);
         }
         else
             $('#modaltitle').html('Edit Hours in week ' + $('#WeekNumber').val());
@@ -384,10 +382,14 @@
                     return;
                 }
             }
-            var $cn = $('input[name="CapitalNumber"]', '#weeksheet');
-            $cn.val(encodeURIComponent($.trim($cn.val())));
+            if ($capt.val() != $cap.val()) {
+                var $cn = $('input[name="CapitalNumberKey"]', '#weeksheet');
+                $cn.val($capt.val());
+            }
+            $cap.val($.trim($cap.val()));
 
             $('#weekline').modal('hide');
+
         });
         $('#deletehrs').on('click', function (e) {
             var normal = parseInt($('#WeekId').val());
@@ -417,6 +419,7 @@
                 $('#newreq input').val('true');
             }
         });
+
         $('#weekline').modal('show');
         switchUI();
         $.validator.unobtrusive.parse("#weeksheet");

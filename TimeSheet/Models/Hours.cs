@@ -208,6 +208,18 @@ namespace TimeSheet.Models
             Year = b.Year;
             NewRequest = b.NewRequest;
             Submitted = b.Submitted;
+
+            if (AccountType == (int)ChargeTo.Capital_Number)
+            {
+                List<SelectListItem> items = capitalNumbers.ToList();
+                SelectListItem exists = items.FirstOrDefault(i => i.Value == CapitalNumberKey);
+                if (exists == null)
+                {
+                    var stub = new SelectListItem() { Value = CapitalNumberKey, Text = CapitalNumberKey };
+                    items.Add(stub);
+                    capitalNumbers = new SelectList(items, "Value", "Text", 0);
+                }
+            }
         }
 
         /// <summary>
@@ -289,7 +301,7 @@ namespace TimeSheet.Models
                     _db.Save<WorkerCostCenter>(wcc);
                 }
 
-                if (!string.IsNullOrWhiteSpace(CapitalNumberAdd) && CapitalNumberKey == CapitalNumberAdd)
+                if (CapitalNumberAdd != CapitalNumberKey)
                 {
                     WorkerCapitalNumber wcn = new WorkerCapitalNumber()
                     {
@@ -298,8 +310,8 @@ namespace TimeSheet.Models
                     };
                     _db.Save<WorkerCapitalNumber>(wcn);
                 }
-                else
-                    CapitalNumberKey = CapitalNumberAdd;
+                
+                CapitalNumberKey = CapitalNumberAdd;
             }
         }
     }

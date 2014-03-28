@@ -15,7 +15,7 @@ namespace TimeSheet.Models
 
         public NPoco.Sql Remove(int workerid, string ids)
         {
-            var caps = ids.Split(',');
+            var caps = ids.Split(',').Where(s => s != "");
             var sql = new Sql();
             return sql.Append(rem_capitalnumbers, new { workerid, caps });
         }
