@@ -301,7 +301,7 @@ namespace TimeSheet.Models
                     _db.Save<WorkerCostCenter>(wcc);
                 }
 
-                if (CapitalNumberAdd != CapitalNumberKey)
+                if (AccountType==(int)ChargeTo.Capital_Number && CapitalNumberAdd != CapitalNumberKey && string.IsNullOrWhiteSpace(CapitalNumberAdd))
                 {
                     WorkerCapitalNumber wcn = new WorkerCapitalNumber()
                     {
