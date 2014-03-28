@@ -40,9 +40,10 @@ namespace TimeSheet.Models
                 );
         }
 
-        public static string Remove(int workerid, string ids)
+        public NPoco.Sql Remove(int workerid, string ids)
         {
-            return string.Format(rem_internalnumbers, workerid, ids.Substring(0, ids.Length - 1));
+            var internals = ids.Split(',').Where(s => s != "");
+            return new NPoco.Sql(rem_internalnumbers, new { worker = workerid, internals });
         }
 
         public static string all = @"
@@ -65,7 +66,7 @@ namespace TimeSheet.Models
 
         private static string rem_internalnumbers = @"
             delete from workerinternalnumber
-                where workerid = {0} and internalnumberid in ('{1}')
+                where workerid = @worker and internalnumberid in (@internals)
             ";
     }
 }

@@ -250,15 +250,11 @@ namespace TimeSheet.Models
         {
             using (tsDB _db = new tsDB())
             {
-                if (!string.IsNullOrEmpty(csDescription)) _db.Execute(Models.Description.UnSelectable(csDescription));
-                if (!string.IsNullOrEmpty(csCustomer)) _db.Execute(Models.Customer.Remove(csCustomer));
-                if (!string.IsNullOrEmpty(csInternalNumber)) _db.Execute(Models.InternalNumber.Remove(WorkerId, csInternalNumber));
-                if (!string.IsNullOrEmpty(csCostCenter)) _db.Execute(Models.CostCenter.Remove(WorkerId, csCostCenter));
-                if (!string.IsNullOrEmpty(csCapitalNumber))
-                {
-                    var w = new WorkerCapitalNumber();
-                    _db.Execute(w.Remove(WorkerId, csCapitalNumber));
-                }
+                if (!string.IsNullOrEmpty(csDescription))       _db.Execute(Models.Description.UnSelectable(csDescription));
+                if (!string.IsNullOrEmpty(csCustomer))          { var c = new Customer(); _db.Execute(c.Remove(csCustomer));}
+                if (!string.IsNullOrEmpty(csInternalNumber))    { var i = new InternalNumber(); _db.Execute(i.Remove(WorkerId, csInternalNumber)); }
+                if (!string.IsNullOrEmpty(csCostCenter))        { var c = new CostCenter(); _db.Execute(c.Remove(WorkerId, csCostCenter)); }
+                if (!string.IsNullOrEmpty(csCapitalNumber))     { var w = new WorkerCapitalNumber(); _db.Execute(w.Remove(WorkerId, csCapitalNumber)); }
 
                 if ((DescriptionId == null || DescriptionId == 0) && !string.IsNullOrWhiteSpace(DescriptionAdd))
                 {
@@ -301,7 +297,9 @@ namespace TimeSheet.Models
                     _db.Save<WorkerCostCenter>(wcc);
                 }
 
-                if (AccountType==(int)ChargeTo.Capital_Number && CapitalNumberAdd != CapitalNumberKey && string.IsNullOrWhiteSpace(CapitalNumberAdd))
+                if (AccountType==(int)ChargeTo.Capital_Number && 
+                    CapitalNumberAdd != CapitalNumberKey && 
+                    string.IsNullOrWhiteSpace(CapitalNumberAdd))
                 {
                     WorkerCapitalNumber wcn = new WorkerCapitalNumber()
                     {

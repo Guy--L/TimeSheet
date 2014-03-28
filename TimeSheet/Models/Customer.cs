@@ -31,15 +31,16 @@ namespace TimeSheet.Models
             select scope_identity()
             ";
 
-        public static string Remove(string ids)
+        public NPoco.Sql Remove(string ids)
         {
-            return string.Format(rem_customer, ids.Substring(0,ids.Length-1));
+            var custs = ids.Split(',').Where(s => s != "");
+            return new Sql(rem_customers, new { custs });
         }
 
-        private static string rem_customer = @"
+        private static string rem_customers = @"
             update customer
                 set isactive = 0
-                where customerid in ('{0}')
+                where customerid in (@custs)
             ";
     }
 }
