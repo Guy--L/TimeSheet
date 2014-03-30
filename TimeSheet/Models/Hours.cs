@@ -299,7 +299,7 @@ namespace TimeSheet.Models
 
                 if (AccountType==(int)ChargeTo.Capital_Number && 
                     CapitalNumberAdd != CapitalNumberKey && 
-                    string.IsNullOrWhiteSpace(CapitalNumberAdd))
+                    !string.IsNullOrWhiteSpace(CapitalNumberAdd))
                 {
                     WorkerCapitalNumber wcn = new WorkerCapitalNumber()
                     {
