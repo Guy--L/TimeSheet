@@ -68,13 +68,17 @@
                             {
                                 @Html.Hidden("WorkerId", Model.employee.WorkerId)
                                 @Html.HiddenFor(m => m.weekNumber)
+                                if (Model.Impersonating && Model.hours[0].Submitted.HasValue)
+                                {
+                                    @Html.Bootstrap().Button().Text("UnSubmit").Id("unsubmit").Style(ButtonStyle.Primary).PrependIcon("icon-refresh icon-white").Class("pull-right")
+                                }
                                 @Html.Bootstrap().SubmitButton().Text("Submit").Style(ButtonStyle.Danger).PrependIcon("icon-power-off icon-white").Class("pull-right")
                             }
                         }
                         if (Model.Submitted || (Model.Impersonating && Model.hours[0].Submitted.HasValue))
                         {
                             <div class="text-danger pull-right">
-                                <i class="icon-lock"></i> @Model.hours[0].Submitted.ToString()
+                                <i class="icon-lock"></i> @Model.hours[0].Submitted.ToString() &nbsp;
                             </div>
                         }
                     }

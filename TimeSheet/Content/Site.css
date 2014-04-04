@@ -971,3 +971,7 @@ a.dellink
 .remover i {
     color: red;
 }
+
+#unsubmit {
+    margin-left: 8px;
+}

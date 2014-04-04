@@ -159,10 +159,13 @@ namespace TimeSheet.Controllers
                     rowy++;
                 }
 
-                var named = Path.Combine(Server.MapPath(@"~/App_Data"), "ts" + w.LastName + ".xls");
-                wb.SaveAs(named);
+                //var named = Path.Combine(Server.MapPath(@"~/App_Data"), "ts" + w.LastName + ".xls");
 
-                var timesheet = new Attachment(named);
+                MemoryStream ms = new MemoryStream();
+                wb.SaveAs(ms);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                var timesheet = AttachmentHelper.CreateAttachment(ms, "ts" + w.LastName + ".xls", TransferEncoding.Base64);
                 dynamic email = new Email("TimeSheet");
                 email.Attach(timesheet);
                 email.From = ConfigurationManager.AppSettings["sentfrom"];
@@ -175,8 +178,6 @@ namespace TimeSheet.Controllers
                 email.Total = s.Stats[3];
                 email.Percent = s.Stats[11];
                 email.Send();
-
-                System.IO.File.Delete(named);
             }
             catch(Exception e)
             {
