@@ -445,9 +445,9 @@ namespace TimeSheet.Controllers
         }
 
         [HttpPost]
-        public ActionResult Submit(int WorkerId, int weekNumber)
+        public ActionResult Submit(int WorkerId, int weekNumber, int year)
         {
-            dbExec(Week.Submit(WorkerId, weekNumber));
+            dbExec(Week.Submit(WorkerId, weekNumber, year));
             TempData["submit"] = true;
             return RedirectToAction("Index", new { id = weekNumber });
         }

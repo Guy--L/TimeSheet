@@ -274,6 +274,27 @@ namespace TimeSheet.Controllers
             return RedirectToAction("Levels");
         }
 
+        [HttpPost]
+        public ActionResult UnSubmit(int WorkerId, int weekNumber, int year)
+        {
+            tsDB _db = new tsDB();
+            _db.Execute(Week.UnSubmit(WorkerId, weekNumber, year));
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public ActionResult Move(int fromweek, int toweek, int fromyear, int toyear)
+        {
+            string usr = Session["user"] as string;
+            if (!char.IsDigit(usr[0]))
+                return RedirectToAction("Index", "Home");
+
+            var sql = "update [week] set weeknumber = @0, year = @1 where workerid = @2 and weeknumber = @3 and year = @4";
+            tsDB _db = new tsDB();
+            _db.Execute(sql, toweek, toyear, usr, fromweek, fromyear);
+            return RedirectToAction("Index", "Home");
+        }
+
         public ActionResult Missing()
         {
             Missing ms = new Missing();

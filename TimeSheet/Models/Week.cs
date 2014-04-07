@@ -465,9 +465,14 @@ namespace TimeSheet.Models
                 b.Copy(this);
         }
 
-        public static string Submit(int worker, int week)
+        public static string UnSubmit(int worker, int week, int year)
         {
-            return string.Format(lock_week, DateTime.Now, worker, week);
+            return string.Format(unlock_week, DateTime.Now, worker, week, year);
+        }
+
+        public static string Submit(int worker, int week, int year)
+        {
+            return string.Format(lock_week, DateTime.Now, worker, week, year);
         }
 
         public NPoco.Sql SaveWeek()
@@ -607,12 +612,12 @@ namespace TimeSheet.Models
         
         private static string lock_week = @"
             update [week] set [submitted] = cast('{0}' as datetime)
-            where [workerid] = {1} and [weeknumber] = {2}
+            where [workerid] = {1} and [weeknumber] = {2} and [year] = {3}
         ";
 
         private static string unlock_week = @"
             update [week] set [submitted] = null
-            where [workerid] = {1} and [weeknumber] = {2}            
+            where [workerid] = {1} and [weeknumber] = {2} and [year] = {3}           
         ";
 
         private static string upd_week = @"

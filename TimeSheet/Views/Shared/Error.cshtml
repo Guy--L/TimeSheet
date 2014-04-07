@@ -1,0 +1,18 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = "An error was caught!";
+}
+
+<h2>An error report has been sent to developer.  Please restart at <a href="http://rdss.pg.com/Hours">the home page of TimeSheet</a></h2>
+
+@if (Model != null)
+{
+    <h3>@Model.Exception.GetType().Name</h3>
+    <pre>
+        @Model.Exception.ToString()
+    </pre>
+    <p>
+        thrown in @Model.ControllerName @Model.ActionName
+    </p>
+}

@@ -70,11 +70,11 @@ namespace TimeSheet.Controllers
         }
 
         // PUT api/hours/5/32
-        public void Put(int id, int week)
+        public void Put(int id, int week, int year)
         {
             using (_db = new tsDB())
             {
-                dbExec(Week.Submit(id, week));
+                dbExec(Week.Submit(id, week, year));
             }
         }
 

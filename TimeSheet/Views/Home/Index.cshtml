@@ -17,17 +17,46 @@
                     <span style="visibility:hidden;">*</span></label>
                     <div class="col-xs-4">
                     <table class="weekmover">
-                        <thead><tr><th>
+                        <thead>
+                            <tr>
+                                <th>
                                     <button class="btn btn-success btn-small" id="priorsheet">
                                         <i class="icon-step-backward icon-large"></i>
                                     </button>
-                                </th><th>
+                                </th>
+                                <th>
                                     <div id="weeknumber" class="form-control-static">@Model.weekNumber</div>
-                                </th><th>
+                                </th>
+                                <th>
                                     <button class="btn btn-success btn-small" id="nextsheet">
                                         <i class="icon-step-forward icon-large"></i>
                                     </button>
-                                </th></tr>
+                                </th>
+                            </tr>
+                            @if (Model.Stats[3] != "" && Model.Impersonating)
+                            {
+                            <tr>
+                                <th>
+                                    <button class="btn btn-warning btn-small" id="priormove">
+                                        <i class="icon-step-backward icon-large"></i>
+                                    </button>
+                                </th>
+                                <th>
+                                    <div id="weekmove" class="form-control-static" title="destination week">@Model.weekNumber</div>
+                                </th>
+                                <th>
+                                    <button class="btn btn-warning btn-small" id="nextmove">
+                                        <i class="icon-step-forward icon-large"></i>
+                                    </button>
+                                </th>
+                                <th>
+                                    &nbsp;
+                                    <button class="btn btn-warning btn-small" id="moveweek">
+                                        <i class="icon-move"></i> Move Hours
+                                    </button>
+                                </th>
+                            </tr>
+                            }
                         </thead>
                     </table>
                     </div>
@@ -68,6 +97,7 @@
                             {
                                 @Html.Hidden("WorkerId", Model.employee.WorkerId)
                                 @Html.HiddenFor(m => m.weekNumber)
+                                @Html.HiddenFor(m => m.year)
                                 if (Model.Impersonating && Model.hours[0].Submitted.HasValue)
                                 {
                                     @Html.Bootstrap().Button().Text("UnSubmit").Id("unsubmit").Style(ButtonStyle.Primary).PrependIcon("icon-refresh icon-white").Class("pull-right")
@@ -130,6 +160,7 @@
     <script type="text/javascript">
         var week, sheet, $cust, $desc;
         var sunday = '@Model.sunday';
+        var sundaymove;
         var empid = '@Model.employee.WorkerId';
         var isPartTime = ('@Model.employee.IsPartTime' == "True");
 
@@ -176,7 +207,14 @@
         var m = parseInt(part[1]);
         return (isNaN(h) ? 0 : h) * 60 + (isNaN(m) ? 0 : m);
     }
-
+    function newMove(next) {
+        var days = next ? 7 : -7;
+        var thissunday = sundaymove==null?sunday:sundaymove;
+        var newSunday = new Date(thissunday);
+        newSunday.setDate(newSunday.getDate() + days);
+        sundaymove = (newSunday.getMonth()+1) + '/' + newSunday.getDate() + '/' + newSunday.getFullYear();
+        return $.datepicker.iso8601Week(newSunday);
+    }
     function newWeek(next) {
         var days = next ? 7 : -7;
         var newSunday = new Date(sunday);
@@ -440,6 +478,42 @@
                 location.href = '@Url.Action("PickDate", "Home", null, Request.Url.Scheme)/' + $.datepicker.formatDate('yy-mm-dd', test);
             }
         });
+        @if (Model.Stats[3] != "" && Model.Impersonating)
+        {
+            <text>
+            $('#weekmove').html(newMove(false))
+            $('#priormove').on('click', function (e) {
+                e.preventDefault();
+                $('#weekmove').html(newMove(false));
+            });
+            $('#nextmove').on('click', function (e) {
+                e.preventDefault();
+                $('#weekmove').html(newMove(true));
+            });
+            $('#moveweek').on('click', function (e) {
+                var fromsun = new Date(sunday);
+                var tosun = new Date(sundaymove);
+
+                if (fromsun - tosun === 0)
+                    return;
+
+                $.post(
+                    '@Url.Action("Move", "Admin", null, Request.Url.Scheme)',
+                    {
+                        fromweek: $.datepicker.iso8601Week(fromsun), 
+                        toweek: $.datepicker.iso8601Week(tosun),
+                        fromyear: fromsun.getFullYear(),
+                        toyear: tosun.getFullYear()
+                    }
+                    );
+            });
+            $('#unsubmit').on('click', function(e) {
+                e.preventDefault();
+                $('#submitsheet').prop('action', '@Url.Action("UnSubmit", "Admin", null, Request.Url.Scheme)');
+                $('#submitsheet').submit();
+            });
+            </text>
+        }
         $('#priorsheet').on('click', function (e) {
             e.preventDefault();
             newWeek(false);
@@ -515,7 +589,7 @@
 
                 var pairid = $(this).data('pairid');
                 pairid = (pairid != '') ? pairid : 0;
-
+                
                 $.get('@Url.Action("Edit","Home",null,Request.Url.Scheme)/' + id + '/' + pairid, function (data) {
                     $('#weekline').replaceWith(data);
                     popuploaded();

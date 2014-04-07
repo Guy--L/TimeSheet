@@ -914,7 +914,7 @@ table.weekmover {
     padding-top: 13px;
 }
 
-#weeknumber 
+#weeknumber, #weekmove
 {
     padding: 0 5px;
     font-size: 20px;
