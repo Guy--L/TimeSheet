@@ -160,6 +160,7 @@
     <script type="text/javascript">
         var week, sheet, $cust, $desc;
         var sunday = '@Model.sunday';
+        console.log(sunday);
         var sundaymove;
         var empid = '@Model.employee.WorkerId';
         var isPartTime = ('@Model.employee.IsPartTime' == "True");
@@ -221,9 +222,7 @@
         var thisSunday = new Date(sunday);
         newSunday.setDate(newSunday.getDate() + days);
         week = $.datepicker.iso8601Week(newSunday);
-        if (newSunday.getFullYear() > thisSunday.getFullYear())
-            week += 100;
-        if (newSunday.getFullYear() < thisSunday.getFullYear())
+        if (!next && week >= 52)
             week = -week;
         var url = '@Url.Action("Index", "Home", new { id = -1 })';
         location.href = url.replace('-1', week);

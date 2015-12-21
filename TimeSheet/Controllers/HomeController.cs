@@ -239,11 +239,6 @@ namespace TimeSheet.Controllers
 
             if (id.HasValue)
             {
-                if (id.Value > 100)
-                {
-                    ts.year++;
-                    id -= 100;
-                }
                 if (id.Value < 0)
                 {
                     ts.year--;
