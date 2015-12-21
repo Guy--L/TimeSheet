@@ -231,8 +231,8 @@ namespace TimeSheet.Controllers
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
             DateTime init = DateTime.Today;
 
-            if (!id.HasValue)
-                id = Session["CurrentWeek"] as int?;
+            //if (!id.HasValue)
+            //    id = Session["CurrentWeek"] as int?;
 
             Session["CurrentYear"] = Session["CurrentYear"] ?? DateTime.Today.Year;         // problems at year boundaries
             ts.year = (int)Session["CurrentYear"];
