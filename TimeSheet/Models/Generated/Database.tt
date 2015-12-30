@@ -1,5 +1,5 @@
 <#@ include file="PetaPoco.Core.ttinclude" #>
-<#
+<# 
 	// Settings
     ConnectionStringName = "ts";			// Uses last connection string in config if not specified
     Namespace = "TimeSheet.Models";
@@ -12,7 +12,7 @@
 	TrackModifiedColumns = false; 
 	IncludeViews = true;
 
-    // Read schema
+    // Read schema 
 	var tables = LoadTables();
 
 	/* 

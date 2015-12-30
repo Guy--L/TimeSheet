@@ -98,9 +98,16 @@ namespace TimeSheet.Controllers
             try
             {
                 var newday = DateTime.Parse(id);
+<<<<<<< Updated upstream
                 var wk = new ISO_8601(newday);
                 var newmon = wk.week;
                 return RedirectToAction("Index", new { id = newmon });
+=======
+                var newmon = calendar.GetWeekOfYear(newday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                Session["CurrentYear"] = newday.Year;
+                Session["CurrentSunday"] = newday.AddDays(newday.DayOfWeek == DayOfWeek.Sunday ? 0 : (7 - (int)newday.DayOfWeek));
+                return RedirectToAction("Index");
+>>>>>>> Stashed changes
             }
             catch(Exception e)
             {
@@ -115,6 +122,7 @@ namespace TimeSheet.Controllers
             }
         }
 
+<<<<<<< Updated upstream
         public void SubmitEmail(Worker w, Sheet s)
         {
             if (string.IsNullOrWhiteSpace(w.ManagerIon))
@@ -185,6 +193,8 @@ namespace TimeSheet.Controllers
             }
         }
 
+=======
+>>>>>>> Stashed changes
         /// <summary>
         /// "Landing" page for timesheet
         /// </summary>
@@ -204,7 +214,11 @@ namespace TimeSheet.Controllers
 
             string who = "where w.ionname = @0";
             if (string.IsNullOrWhiteSpace(usr))
+<<<<<<< Updated upstream
                 return RedirectToAction("Contact", new UserBase() { User = usr, Impersonating = false, IsAdmin = false });
+=======
+                return RedirectToAction("User was not found", "Contact");
+>>>>>>> Stashed changes
 
             if (char.IsDigit(usr[0]))
                 who = "where w.workerid = @0";
@@ -215,13 +229,17 @@ namespace TimeSheet.Controllers
             }
             Worker emp = db.FirstOrDefault<Worker>(Worker.worker + who, usr);
             if (emp == null)
+<<<<<<< Updated upstream
                 return RedirectToAction("Contact", new UserBase() { User = usr, Impersonating = false, IsAdmin = false });
+=======
+                return RedirectToAction("User was not found", "Contact");
+>>>>>>> Stashed changes
 
             Session["WorkerId"] = emp.WorkerId;
 
-            Sheet ts = new Sheet() { 
-                employee = emp, 
-                User = Session["user"].ToString(), 
+            Sheet ts = new Sheet() {
+                employee = emp,
+                User = Session["user"].ToString(),
                 IsAdmin = emp.IsAdmin,
                 IsManager = emp.IsManager,
                 Impersonating = (Session["admin"] != null),
@@ -229,16 +247,21 @@ namespace TimeSheet.Controllers
             };
 
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+<<<<<<< Updated upstream
             DateTime init = DateTime.Today;
 
             //if (!id.HasValue)
             //    id = Session["CurrentWeek"] as int?;
+=======
+            DateTime init = (Session["CurrentSunday"] as DateTime?)?? DateTime.Today;
+>>>>>>> Stashed changes
 
             Session["CurrentYear"] = Session["CurrentYear"] ?? DateTime.Today.Year;         // problems at year boundaries
             ts.year = (int)Session["CurrentYear"];
 
             if (id.HasValue)
             {
+<<<<<<< Updated upstream
                 if (id.Value > 100)
                 {
                     ts.year++;
@@ -251,6 +274,10 @@ namespace TimeSheet.Controllers
                 }
                 init = Hrs.FirstDateOfWeek(ts.year, id.Value);
                 ts.weekNumber = id.Value;
+=======
+                init.AddDays(id.Value > 0 ? 7 : -7);
+                ts.weekNumber = 
+>>>>>>> Stashed changes
             }
             else
             {
@@ -285,6 +312,7 @@ namespace TimeSheet.Controllers
 
             Session["CurrentWeek"] = ts.weekNumber;
             Session["CurrentYear"] = init.Year;
+            Session["CurrentSunday"] = init;
 
             var submitted = TempData["submit"] as bool?;
             if (submitted.HasValue && submitted.Value)
@@ -404,15 +432,17 @@ namespace TimeSheet.Controllers
                 if (!workerid.HasValue)
                     throw new Exception("No workerid when creating blank hours from description");
 
+                var sunday = Session["CurrentSunday"] as DateTime?;
+
                 var weekno = Session["CurrentWeek"] as int?;
                 if (!weekno.HasValue)
                     throw new Exception("No week in Home.Create");
 
-                var year = Session["CurrentYear"] as int?;
-                if (!year.HasValue)
+                if (!sunday.HasValue)
                     throw new Exception("No year in Home.Create");
 
-                Week wk = new Week(workerid.Value, weekno.Value, year.Value);
+                var year = sunday.Value.Year;
+                Week wk = new Week(workerid.Value, weekno.Value, year);
                 Hrs hrs = new Hrs(wk);
 
                 if (id == 0)
