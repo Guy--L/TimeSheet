@@ -224,7 +224,6 @@ namespace TimeSheet.Controllers
             if (emp == null)
                 return RedirectToAction("Contact", new UserBase() { User = usr, Impersonating = false, IsAdmin = false });
 
-
             Session["WorkerId"] = emp.WorkerId;
 
             Sheet ts = new Sheet() {
@@ -246,6 +245,7 @@ namespace TimeSheet.Controllers
 
             var iso = new ISO_8601(sunday.Value);
             ts.year = sunday.Value.Year;
+            ts.year -= iso.week == 53 ? 1 : 0;
             ts.weekNumber = iso.week;
 
             ts.hours = Week.Get(emp.WorkerId, ts.weekNumber, ts.year);
@@ -271,6 +271,8 @@ namespace TimeSheet.Controllers
             ts.sunday = sunday.Value.ToString("MM/dd/yyyy");
             ts.Headers = Enumerable.Range(-6, 7).Select(n => sunday.Value.AddDays(n)).ToList();
 
+            TempData["WeekHeaders"] = ts.Headers;
+            Debug.WriteLine("WeekHeaders saved");
             Session["CurrentSunday"] = sunday.Value;
 
             var submitted = TempData["submit"] as bool?;
@@ -342,6 +344,7 @@ namespace TimeSheet.Controllers
                 Week overtime = sheet.Where(a => a.IsOvertime).SingleOrDefault();
 
                 Hrs hrs = new Hrs(normal??overtime);
+                hrs.Columns = TempData["WeekHeaders"] as List<DateTime>;
 
                 hrs.WorkerId = workerid.Value;
                 hrs.CopyHeader(normal??overtime);
@@ -393,11 +396,11 @@ namespace TimeSheet.Controllers
 
                 var sunday = Session["CurrentSunday"] as DateTime?;
                 sunday = sunday ?? endSunday(DateTime.Today);
-                var weekno = new ISO_8601(sunday.Value);
+                var weekno = new ISO_8601(sunday.Value);            // sundays are never in iso week 53
 
-                var year = sunday.Value.Year;
-                Week wk = new Week(workerid.Value, weekno.week, year);
+                Week wk = new Week(workerid.Value, weekno.week, weekno.year);
                 Hrs hrs = new Hrs(wk);
+                hrs.Columns = TempData["WeekHeaders"] as List<DateTime>;
 
                 if (id == 0)
                     return PartialView("_Hours", hrs);
@@ -408,7 +411,7 @@ namespace TimeSheet.Controllers
                 prior.Submitted = null;
                 hrs.CopyHeader(prior);
                 hrs.WeekNumber = weekno.week;                  // stay on currently viewed week not the prior
-                hrs.Year = year;
+                hrs.Year = weekno.year;
                 hrs.NewRequest = false;
                 if (prior == null) hrs.DescriptionId = id;
                 return PartialView("_Hours", hrs);

@@ -55,9 +55,6 @@ namespace TimeSheet.Models
             CustomerId = 0;
             CapitalNumberKey = "";
             ChargeAccount = ChargeTo.Cost_Center;
-
-            var monday = FirstDateOfWeek(Year, WeekNumber);
-            Columns = Enumerable.Range(0, 7).Select(n => monday.AddDays(n)).ToList();
         }
 
         private static List<DateTime> headers;
