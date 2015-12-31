@@ -72,7 +72,6 @@ namespace TimeSheet.Controllers
             Week.GetLists();
         }
 
-
         /// <summary>
         /// Touchup '0:00' to '00:00' and '' to '00:00'
         /// </summary>
@@ -85,6 +84,10 @@ namespace TimeSheet.Controllers
             return timespan;    // not compleat
         }
 
+        private DateTime endSunday(DateTime day)
+        {
+            return day.AddDays(day.DayOfWeek == DayOfWeek.Sunday ? 0 : (7 - (int)day.DayOfWeek));
+        }
 
         /// <summary>
         /// If user types in date or clicks the week rewind or advance buttons, find week and recall it
@@ -95,34 +98,30 @@ namespace TimeSheet.Controllers
         {
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
 
+            var newday = DateTime.Today;
             try
             {
-                var newday = DateTime.Parse(id);
-<<<<<<< Updated upstream
-                var wk = new ISO_8601(newday);
-                var newmon = wk.week;
-                return RedirectToAction("Index", new { id = newmon });
-=======
-                var newmon = calendar.GetWeekOfYear(newday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                Session["CurrentYear"] = newday.Year;
-                Session["CurrentSunday"] = newday.AddDays(newday.DayOfWeek == DayOfWeek.Sunday ? 0 : (7 - (int)newday.DayOfWeek));
-                return RedirectToAction("Index");
->>>>>>> Stashed changes
+                newday = DateTime.Parse(id);
+                //var newmon = calendar.GetWeekOfYear(newday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                //Session["CurrentYear"] = newday.Year;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("PickDate threw up", e));
-                var week = Session["CurrentWeek"] as int?;
-                if (!week.HasValue)
-                {
-                    var wk = new ISO_8601(DateTime.Today);
-                    week = wk.week;
-                }
-                return RedirectToAction("Index", new { id = week });
+                //var week = Session["CurrentWeek"] as int?;
+                //if (!week.HasValue)
+                //{
+                //    var wk = new ISO_8601(DateTime.Today);
+                //    week = wk.week;
+                //}
             }
+            finally
+            {
+                Session["CurrentSunday"] = endSunday(newday);
+            }
+            return RedirectToAction("Index");
         }
 
-<<<<<<< Updated upstream
         public void SubmitEmail(Worker w, Sheet s)
         {
             if (string.IsNullOrWhiteSpace(w.ManagerIon))
@@ -148,15 +147,15 @@ namespace TimeSheet.Controllers
                 int rowy = 8;
                 foreach (var hr in s.hours)
                 {
-                    sheet.Cell(rowy,  1).Value = hr.IsOvertime ? "Y" : "";
-                    sheet.Cell(rowy,  2).Value = hr.Description;
-                    sheet.Cell(rowy,  3).Value = hr.ChargNumber;
-                    sheet.Cell(rowy,  4).Value = hr.Mon;
-                    sheet.Cell(rowy,  5).Value = hr.Tue;
-                    sheet.Cell(rowy,  6).Value = hr.Wed;
-                    sheet.Cell(rowy,  7).Value = hr.Thu;
-                    sheet.Cell(rowy,  8).Value = hr.Fri;
-                    sheet.Cell(rowy,  9).Value = hr.Sat;
+                    sheet.Cell(rowy, 1).Value = hr.IsOvertime ? "Y" : "";
+                    sheet.Cell(rowy, 2).Value = hr.Description;
+                    sheet.Cell(rowy, 3).Value = hr.ChargNumber;
+                    sheet.Cell(rowy, 4).Value = hr.Mon;
+                    sheet.Cell(rowy, 5).Value = hr.Tue;
+                    sheet.Cell(rowy, 6).Value = hr.Wed;
+                    sheet.Cell(rowy, 7).Value = hr.Thu;
+                    sheet.Cell(rowy, 8).Value = hr.Fri;
+                    sheet.Cell(rowy, 9).Value = hr.Sat;
                     sheet.Cell(rowy, 10).Value = hr.Sun;
                     sheet.Cell(rowy, 11).Value = hr.SubTotal;
                     sheet.Cell(rowy, 12).Value = hr.NewRequest ? "Y" : "";
@@ -187,14 +186,12 @@ namespace TimeSheet.Controllers
                 email.Percent = s.Stats[11];
                 email.Send();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Submission email: ", e));
             }
         }
 
-=======
->>>>>>> Stashed changes
         /// <summary>
         /// "Landing" page for timesheet
         /// </summary>
@@ -206,7 +203,7 @@ namespace TimeSheet.Controllers
 
             string usr = Session["user"] as string;
             var modeluser = new UserBase() {
-                  User = usr
+                User = usr
                 , Impersonating = false
                 , IsAdmin = false
                 , Reports = ""
@@ -214,11 +211,7 @@ namespace TimeSheet.Controllers
 
             string who = "where w.ionname = @0";
             if (string.IsNullOrWhiteSpace(usr))
-<<<<<<< Updated upstream
                 return RedirectToAction("Contact", new UserBase() { User = usr, Impersonating = false, IsAdmin = false });
-=======
-                return RedirectToAction("User was not found", "Contact");
->>>>>>> Stashed changes
 
             if (char.IsDigit(usr[0]))
                 who = "where w.workerid = @0";
@@ -229,11 +222,8 @@ namespace TimeSheet.Controllers
             }
             Worker emp = db.FirstOrDefault<Worker>(Worker.worker + who, usr);
             if (emp == null)
-<<<<<<< Updated upstream
                 return RedirectToAction("Contact", new UserBase() { User = usr, Impersonating = false, IsAdmin = false });
-=======
-                return RedirectToAction("User was not found", "Contact");
->>>>>>> Stashed changes
+
 
             Session["WorkerId"] = emp.WorkerId;
 
@@ -246,44 +236,17 @@ namespace TimeSheet.Controllers
                 Reports = ConfigurationManager.AppSettings["ReportServerURL"]
             };
 
-            Calendar calendar = CultureInfo.InvariantCulture.Calendar;
-<<<<<<< Updated upstream
-            DateTime init = DateTime.Today;
-
-            //if (!id.HasValue)
-            //    id = Session["CurrentWeek"] as int?;
-=======
-            DateTime init = (Session["CurrentSunday"] as DateTime?)?? DateTime.Today;
->>>>>>> Stashed changes
-
-            Session["CurrentYear"] = Session["CurrentYear"] ?? DateTime.Today.Year;         // problems at year boundaries
-            ts.year = (int)Session["CurrentYear"];
+            var sunday = Session["CurrentSunday"] as DateTime?;
+            sunday = sunday ?? endSunday(DateTime.Today);
 
             if (id.HasValue)
             {
-<<<<<<< Updated upstream
-                if (id.Value > 100)
-                {
-                    ts.year++;
-                    id -= 100;
-                }
-                if (id.Value < 0)
-                {
-                    ts.year--;
-                    id = -id;
-                }
-                init = Hrs.FirstDateOfWeek(ts.year, id.Value);
-                ts.weekNumber = id.Value;
-=======
-                init.AddDays(id.Value > 0 ? 7 : -7);
-                ts.weekNumber = 
->>>>>>> Stashed changes
+                sunday = sunday.Value.AddDays(id.Value < 0 ? -7 : 7);
             }
-            else
-            {
-                var week = new ISO_8601(DateTime.Today);
-                ts.weekNumber = week.week;
-            }
+
+            var iso = new ISO_8601(sunday.Value);
+            ts.year = sunday.Value.Year;
+            ts.weekNumber = iso.week;
 
             ts.hours = Week.Get(emp.WorkerId, ts.weekNumber, ts.year);
             ts.Stats = Week.Stats(ts.hours);
@@ -305,14 +268,10 @@ namespace TimeSheet.Controllers
                 c.internalNumbers = ts.hours[0].internalNumbers;
                 c.costCenters = ts.hours[0].costCenters;
             });
-            int nextSunday = init.DayOfWeek == DayOfWeek.Sunday ? 0 : (7 - (int) init.DayOfWeek);
-            init = init.AddDays(nextSunday);
-            ts.sunday = init.ToString("MM/dd/yyyy");
-            ts.Headers = Enumerable.Range(-6, 7).Select(n => init.AddDays(n)).ToList();
+            ts.sunday = sunday.Value.ToString("MM/dd/yyyy");
+            ts.Headers = Enumerable.Range(-6, 7).Select(n => sunday.Value.AddDays(n)).ToList();
 
-            Session["CurrentWeek"] = ts.weekNumber;
-            Session["CurrentYear"] = init.Year;
-            Session["CurrentSunday"] = init;
+            Session["CurrentSunday"] = sunday.Value;
 
             var submitted = TempData["submit"] as bool?;
             if (submitted.HasValue && submitted.Value)
@@ -340,7 +299,7 @@ namespace TimeSheet.Controllers
         public ActionResult InActivate(int id, int id2)
         {
             dbExec(string.Format(Description.InActivate(id)));
-            return RedirectToAction("Index", new { id = id2 });
+            return RedirectToAction("Index");
         }
 
         /// <summary>
@@ -352,7 +311,7 @@ namespace TimeSheet.Controllers
         public ActionResult Activate(int id, int id2)
         {
             dbExec(string.Format(Description.Activate(id)));
-            return RedirectToAction("Index", new { id = id2 });
+            return RedirectToAction("Index");
         }
 
         /// <summary>
@@ -365,7 +324,7 @@ namespace TimeSheet.Controllers
         {
             hours.UpdateCachedLists();           // add new records for Customer, Description, Cost Center or Internal Number
             dbExec(hours.Save());
-            return RedirectToAction("Index", new { id = hours.WeekNumber });
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -433,29 +392,23 @@ namespace TimeSheet.Controllers
                     throw new Exception("No workerid when creating blank hours from description");
 
                 var sunday = Session["CurrentSunday"] as DateTime?;
-
-                var weekno = Session["CurrentWeek"] as int?;
-                if (!weekno.HasValue)
-                    throw new Exception("No week in Home.Create");
-
-                if (!sunday.HasValue)
-                    throw new Exception("No year in Home.Create");
+                sunday = sunday ?? endSunday(DateTime.Today);
+                var weekno = new ISO_8601(sunday.Value);
 
                 var year = sunday.Value.Year;
-                Week wk = new Week(workerid.Value, weekno.Value, year);
+                Week wk = new Week(workerid.Value, weekno.week, year);
                 Hrs hrs = new Hrs(wk);
 
                 if (id == 0)
                     return PartialView("_Hours", hrs);
 
                 tsDB db = new tsDB();
-                
                 var prior = db.Fetch<Week>(string.Format(Week.get_prior, workerid.Value, id)).SingleOrDefault();
 
                 prior.Submitted = null;
                 hrs.CopyHeader(prior);
-                hrs.WeekNumber = weekno.Value;                  // stay on currently viewed week not the prior
-                hrs.Year = year.Value;
+                hrs.WeekNumber = weekno.week;                  // stay on currently viewed week not the prior
+                hrs.Year = year;
                 hrs.NewRequest = false;
                 if (prior == null) hrs.DescriptionId = id;
                 return PartialView("_Hours", hrs);
@@ -471,7 +424,7 @@ namespace TimeSheet.Controllers
         public ActionResult Delete(int id, int id2)
         {
             dbExec(Week.Delete(id) + Week.Delete(id2));
-            return RedirectToAction("Index", new { id = Session["CurrentWeek"] });
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -479,7 +432,7 @@ namespace TimeSheet.Controllers
         {
             dbExec(Week.Submit(WorkerId, weekNumber, year));
             TempData["submit"] = true;
-            return RedirectToAction("Index", new { id = weekNumber });
+            return RedirectToAction("Index");
         }
 
         public ActionResult Contact(UserBase ub)
@@ -503,13 +456,12 @@ namespace TimeSheet.Controllers
             Calendar calendar = CultureInfo.InvariantCulture.Calendar;
 
             Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception(string.Format("Client side error--{0}", errmsg)));
-            var week = Session["CurrentWeek"] as int?;
-            if (!week.HasValue)
+            var sunday = Session["CurrentSunday"] as DateTime?;
+            if (!sunday.HasValue)
             {
-                var wk = new ISO_8601(DateTime.Today);
-                week = wk.week;
+                Session["CurrentSunday"] = endSunday(DateTime.Today);
             }
-            return RedirectToAction("Index", new { id = week });
+            return RedirectToAction("Index");
         }
     }
 }

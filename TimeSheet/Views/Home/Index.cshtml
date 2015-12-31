@@ -216,17 +216,8 @@
         return $.datepicker.iso8601Week(newSunday);
     }
     function newWeek(next) {
-        var days = next ? 7 : -7;
-        var newSunday = new Date(sunday);
-        var thisSunday = new Date(sunday);
-        newSunday.setDate(newSunday.getDate() + days);
-        oldweek = $.datepicker.iso8601Week(thisSunday);
-        week = $.datepicker.iso8601Week(newSunday);
-        if (!next && week >= 51 && (newSunday.getYear() < thisSunday.getYear() || week > oldweek+20))
-            week = -week;
         var url = '@Url.Action("Index", "Home", new { id = -1 })';
-        location.href = url.replace('-1', week);
-        console.log('wk: ' + week + ', sunday: ' + sunday + ', newweek: ' + week + ', oldweek: ' + oldweek);
+        location.href = url.replace('-1', next?'1':'-1');
     }
 
     function resumHours()
@@ -264,7 +255,6 @@
             (x >= 35 && x <= 39)) {                                     // let it happen, don't do anything
             return;
         }
-<<<<<<< Updated upstream
         //else {                                                           // Ensure that it is a number and stop the keypress
         //    var ln = $(this).val().length;
         //    if (event.shiftKey || (x < 48 || x > 57) && (x < 96 || x > 105 ) || ln > 9) {
@@ -272,14 +262,6 @@
         //        $(this).attr('placeholder', '10 digits only');
         //    }   
         //}
-=======
-        else {                                                           // Ensure that it is a number and stop the keypress
-            if (event.shiftKey || (x < 48 || x > 57) && (x < 96 || x > 105 )) {
-                event.preventDefault();
-                $(this).attr('placeholder', 'numbers only');
-            }
-        }
->>>>>>> Stashed changes
     }
     function popuploaded() {
         $cust = $('#CustomerId',        '#weeksheet');
@@ -393,15 +375,7 @@
                     $('#weeksheet').submit();
                     $('#weekline').modal('hide');
                     return;
-<<<<<<< Updated upstream
                 }
-=======
-
-                $('input[name="InternalNumberId"]', '#weeksheet').val(0);
-                $('#weeksheet').submit();
-                $('#weekline').modal('hide');
-                return;
->>>>>>> Stashed changes
             }
 
             if (choice == "costc") {
