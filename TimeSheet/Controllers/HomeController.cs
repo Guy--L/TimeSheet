@@ -432,7 +432,7 @@ namespace TimeSheet.Controllers
         {
             dbExec(Week.Submit(WorkerId, weekNumber, year));
             TempData["submit"] = true;
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { id = 1 });
         }
 
         public ActionResult Contact(UserBase ub)
