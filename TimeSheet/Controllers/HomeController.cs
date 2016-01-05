@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net.Mail;
 using System.Net.Mime;
-using System.Runtime.InteropServices;
-using System.Web;
 using System.Web.Mvc;
 using Postal;
 using TimeSheet.Models;
-using ClosedXML;
 using ClosedXML.Excel;
 
 namespace TimeSheet.Controllers
@@ -240,12 +234,11 @@ namespace TimeSheet.Controllers
 
             if (id.HasValue)
             {
-                sunday = sunday.Value.AddDays(id.Value < 0 ? -7 : 7);
+                sunday = sunday.Value.AddDays(id.Value * 7);
             }
 
             var iso = new ISO_8601(sunday.Value);
-            ts.year = sunday.Value.Year;
-            ts.year -= iso.week == 53 ? 1 : 0;
+            ts.year = iso.year;
             ts.weekNumber = iso.week;
 
             ts.hours = Week.Get(emp.WorkerId, ts.weekNumber, ts.year);
@@ -272,7 +265,6 @@ namespace TimeSheet.Controllers
             ts.Headers = Enumerable.Range(-6, 7).Select(n => sunday.Value.AddDays(n)).ToList();
 
             TempData["WeekHeaders"] = ts.Headers;
-            Debug.WriteLine("WeekHeaders saved");
             Session["CurrentSunday"] = sunday.Value;
 
             var submitted = TempData["submit"] as bool?;

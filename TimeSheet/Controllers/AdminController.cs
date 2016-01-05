@@ -8,6 +8,7 @@ using TimeSheet.Models;
 using System.Runtime.InteropServices;
 using ClosedXML;
 using ClosedXML.Excel;
+using System.Diagnostics;
 
 namespace TimeSheet.Controllers
 {
@@ -283,16 +284,26 @@ namespace TimeSheet.Controllers
         }
 
         [HttpPost]
-        public ActionResult Move(int fromweek, int toweek, int fromyear, int toyear)
+        public ActionResult Move(int offset)
         {
             string usr = Session["user"] as string;
             if (!char.IsDigit(usr[0]))
-                return RedirectToAction("Index", "Home");
+                return Json(Url.Action("Index", "Home"));
+
+            var sunday = Session["CurrentSunday"] as DateTime?;
+            if (!sunday.HasValue)
+                return Json(Url.Action("Index", "Home"));
+
+            var newsunday = sunday.Value.AddDays(7 * offset);
+            Session["CurrentSunday"] = newsunday;
+
+            var old = new ISO_8601(sunday.Value);
+            var newk = new ISO_8601(newsunday);
 
             var sql = "update [week] set weeknumber = @0, year = @1 where workerid = @2 and weeknumber = @3 and year = @4";
             tsDB _db = new tsDB();
-            _db.Execute(sql, toweek, toyear, usr, fromweek, fromyear);
-            return RedirectToAction("Index", "Home");
+            _db.Execute(sql, newk.week, newk.year, usr, old.week, old.year);
+            return Json(Url.Action("Index", "Home"));
         }
 
         public ActionResult Missing()

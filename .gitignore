@@ -18,6 +18,7 @@ Thumbs.db
 *.ilk
 *.log
 *.dbmdl
+*/*.dbmdl
 [Bb]in
 [Dd]ebug*/
 *.lib

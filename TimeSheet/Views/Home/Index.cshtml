@@ -42,7 +42,7 @@
                                     </button>
                                 </th>
                                 <th>
-                                    <div id="weekmove" class="form-control-static" title="destination week">@Model.weekNumber</div>
+                                    <div id="weekmove" class="form-control-static" title="offset to destination week">-1</div>
                                 </th>
                                 <th>
                                     <button class="btn btn-warning btn-small" id="nextmove">
@@ -161,7 +161,7 @@
         var week, sheet, $cust, $desc;
         var sunday = '@Model.sunday';
         console.log(sunday);
-        var sundaymove;
+        var sundaymove = -1;
         var empid = '@Model.employee.WorkerId';
         var isPartTime = ('@Model.employee.IsPartTime' == "True");
 
@@ -460,6 +460,7 @@
     }
     // Page loaded document ready
     $(function () {
+        history.pushState(null, null, '@Url.Action("Index", new { id = UrlParameter.Optional })');
         $('.datepicker').datepicker({
             beforeShowDay: function (date) { return [date.getDay() == 0, ""] }
             , firstDay: 1
@@ -471,31 +472,31 @@
         @if (Model.Stats[3] != "" && Model.Impersonating)
         {
             <text>
-            $('#weekmove').html(newMove(false))
+            $('#weekmove').html(sundaymove);
             $('#priormove').on('click', function (e) {
                 e.preventDefault();
-                $('#weekmove').html(newMove(false));
+                sundaymove = sundaymove - 1;
+                if (sundaymove==0) sundaymove = sundaymove - 1;
+                $('#weekmove').html(sundaymove);
             });
             $('#nextmove').on('click', function (e) {
                 e.preventDefault();
-                $('#weekmove').html(newMove(true));
+                sundaymove = sundaymove + 1;
+                if (sundaymove==0) sundaymove = sundaymove + 1;
+                $('#weekmove').html(sundaymove);
             });
             $('#moveweek').on('click', function (e) {
-                var fromsun = new Date(sunday);
-                var tosun = new Date(sundaymove);
-
-                if (fromsun - tosun === 0)
-                    return;
-
                 $.post(
                     '@Url.Action("Move", "Admin", null, Request.Url.Scheme)',
                     {
-                        fromweek: $.datepicker.iso8601Week(fromsun), 
-                        toweek: $.datepicker.iso8601Week(tosun),
-                        fromyear: fromsun.getFullYear(),
-                        toyear: tosun.getFullYear()
-                    }
-                    );
+                        offset: sundaymove
+                    },
+                    function(data) {
+                        console.log(data);
+                        location.href = data;
+                    },
+                    'json'
+                );
             });
             $('#unsubmit').on('click', function(e) {
                 e.preventDefault();
