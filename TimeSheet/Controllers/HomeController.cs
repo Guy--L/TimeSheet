@@ -273,6 +273,8 @@ namespace TimeSheet.Controllers
                 try
                 {
                     SubmitEmail(emp, ts);
+                    TempData["submit"] = false;
+                    return RedirectToAction("Index", new { id = 1 });
                 }
                 catch (Exception e)
                 {
@@ -427,7 +429,7 @@ namespace TimeSheet.Controllers
         {
             dbExec(Week.Submit(WorkerId, weekNumber, year));
             TempData["submit"] = true;
-            return RedirectToAction("Index", new { id = 1 });
+            return RedirectToAction("Index", new { id = 0 });
         }
 
         public ActionResult Contact(UserBase ub)
