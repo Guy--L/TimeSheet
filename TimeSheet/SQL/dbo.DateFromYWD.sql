@@ -5,30 +5,19 @@
 -- =============================================
 CREATE FUNCTION [dbo].[DateFromYWD] 
 (
-	-- Add the parameters for the function here
-	@Year int,
-	@Week int,
-	@DOW int
+@Year INT,
+@Week INT,
+@Weekday INT
 )
-RETURNS DateTime
+RETURNS DATETIME
 AS
 BEGIN
-	-- Declare the return variable here
-	DECLARE @Result DateTime,
-		@StartDate DateTime,
-	    @FirstDayOfYear DATETIME,
-	    @FirstMondayOfYear DATETIME
-
-	-- Get the first day of the provided year.
-	SET @FirstDayOfYear = CAST('1/1/' + CAST(@Year AS VARCHAR) AS DATETIME)
-
-	-- Get the first monday of the year, then add the number of weeks.
-	SET @FirstMondayOfYear = DATEADD(WEEK, DATEDIFF(WEEK, 0, DATEADD(DAY, 6 - DATEPART(DAY, @FirstDayOfYear), @FirstDayOfYear)), 0)
-
-	SET @StartDate = DATEADD(week, @Week - 2, @FirstMondayOfYear)			-- I don't trust these two lines
-	set @Result = DateAdd(day, @DOW-2, @StartDate)
-
-	-- Return the result of the function
-	RETURN @Result
-
+RETURN CASE
+WHEN @Year < 1900 OR @Year > 9999 THEN NULL
+WHEN @Week < 1 OR @Week > 53 THEN NULL
+WHEN @Weekday < 1 OR @Weekday > 7 THEN NULL
+WHEN @Year = 9999 AND @Week = 52 And @Weekday > 5 THEN NULL
+WHEN DATEPART(YEAR, DATEADD(DAY, 7 * @Week + DATEDIFF(DAY, 4, DATEADD(YEAR, @Year - 1900, 7)) / 7 * 7, -4)) <> @Year THEN NULL
+ELSE DATEADD(DAY, 7 * @Week + DATEDIFF(DAY, 4, DATEADD(YEAR, @Year - 1900, 7)) / 7 * 7, @Weekday - 8)
+END
 END
