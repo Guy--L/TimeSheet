@@ -28,6 +28,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>4.0</OldToolsVersion>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -380,6 +381,7 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\timesheet.js" />
     <Content Include="Scripts\TwitterBootstrapMvcJs.js" />
+    <Content Include="SQL\dbo.DateFromYWD.sql" />
     <Content Include="Views\Admin\InternalNumbers.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
