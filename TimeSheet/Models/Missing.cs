@@ -10,8 +10,7 @@ namespace TimeSheet.Models
         internal static int YearWeek(DateTime d)
         {
             var wk = new ISO_8601(d);
-            int week = wk.week;
-            return d.Year * 100 + week;
+            return wk.year * 100 + wk.week;
         }
 
         private static string notsubmitted = @"
