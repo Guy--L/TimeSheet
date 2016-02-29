@@ -247,13 +247,19 @@ namespace TimeSheet.Models
         {
             using (tsDB _db = new tsDB())
             {
-                if (!string.IsNullOrEmpty(csDescription))       _db.Execute(Models.Description.UnSelectable(csDescription));
-                if (!string.IsNullOrEmpty(csCustomer))          { var c = new Customer(); _db.Execute(c.Remove(csCustomer));}
-                if (!string.IsNullOrEmpty(csInternalNumber))    { var i = new InternalNumber(); _db.Execute(i.Remove(WorkerId, csInternalNumber)); }
-                if (!string.IsNullOrEmpty(csCostCenter))        { var c = new CostCenter(); _db.Execute(c.Remove(WorkerId, csCostCenter)); }
-                if (!string.IsNullOrEmpty(csCapitalNumber))     { var w = new WorkerCapitalNumber(); _db.Execute(w.Remove(WorkerId, csCapitalNumber)); }
+                try {
+                    if (!string.IsNullOrEmpty(csDescription)) _db.Execute(Models.Description.UnSelectable(csDescription));
+                    if (!string.IsNullOrEmpty(csCustomer)) { var c = new Customer(); _db.Execute(c.Remove(csCustomer)); }
+                    if (!string.IsNullOrEmpty(csInternalNumber)) { var i = new InternalNumber(); _db.Execute(i.Remove(WorkerId, csInternalNumber)); }
+                    if (!string.IsNullOrEmpty(csCostCenter)) { var c = new CostCenter(); _db.Execute(c.Remove(WorkerId, csCostCenter)); }
+                    if (!string.IsNullOrEmpty(csCapitalNumber)) { var w = new WorkerCapitalNumber(); _db.Execute(w.Remove(WorkerId, csCapitalNumber)); }
+                }
+                catch (Exception e)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Last SQL: "+_db.LastSQL+"\n", e));
+                }
 
-                if ((DescriptionId == null || DescriptionId == 0) && !string.IsNullOrWhiteSpace(DescriptionAdd))
+                if ((DescriptionId == 0) && !string.IsNullOrWhiteSpace(DescriptionAdd))
                 {
                     var d = new Description();
                     DescriptionId = _db.ExecuteScalar<int>(d.Save(WorkerId, DescriptionAdd));

@@ -1,3 +1,10 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    var model = ViewContext.Controller.ViewData.Model;
+    if (model is System.Web.Mvc.HandleErrorInfo)
+    {
+        Layout = "";
+    }
+    else {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }

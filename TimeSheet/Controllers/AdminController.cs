@@ -29,7 +29,9 @@ namespace TimeSheet.Controllers
 
             using (tsDB db = new tsDB())
             {
-                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);               // one error here on 3/14/14
+                var user = db.SingleOrDefault<Worker>("where workerid = @0", Session["WorkerId"]);               // one error here on 3/14/14
+                if (user == null)
+                    return RedirectToAction("Index", "Home");
                 p.IsAdmin = user.IsAdmin;
                 p.IsManager = user.IsManager;
                 var query = (user.IsManager && !user.IsAdmin) ? 
@@ -89,7 +91,9 @@ namespace TimeSheet.Controllers
             i.User = Session["user"].ToString();
             using (tsDB db = new tsDB())
             {
-                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                var user = db.SingleOrDefault<Worker>("where workerid = @0", Session["WorkerId"]);
+                if (user == null)
+                    return RedirectToAction("Index", "Home");
                 i.IsAdmin = user.IsAdmin;
                 i.IsManager = user.IsManager;
                 i.list = db.Fetch<InternalNumber>(string.Format(Models.InternalNumber.all, (int)ChargeTo.Internal_Order));
@@ -124,7 +128,9 @@ namespace TimeSheet.Controllers
             i.User = Session["user"].ToString();
             using (tsDB db = new tsDB())
             {
-                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                var user = db.SingleOrDefault<Worker>("where workerid = @0", Session["WorkerId"]);
+                if (user == null)
+                    return RedirectToAction("Index", "Home");
                 i.IsAdmin = user.IsAdmin;
                 i.IsManager = user.IsManager;
                 i.list = db.Fetch<WorkArea>(string.Format(Models.WorkArea.all));
@@ -153,7 +159,9 @@ namespace TimeSheet.Controllers
             i.User = Session["user"].ToString();
             using (tsDB db = new tsDB())
             {
-                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                var user = db.SingleOrDefault<Worker>("where workerid = @0", Session["WorkerId"]);
+                if (user == null)
+                    return RedirectToAction("Index", "Home");
                 i.IsAdmin = user.IsAdmin;
                 i.IsManager = user.IsManager;
                 i.list = db.Fetch<Site>(string.Format(Models.Site.all));
@@ -182,7 +190,9 @@ namespace TimeSheet.Controllers
             i.User = Session["user"].ToString();
             using (tsDB db = new tsDB())
             {
-                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                var user = db.SingleOrDefault<Worker>("where workerid = @0", Session["WorkerId"]);
+                if (user == null)
+                    return RedirectToAction("Index", "Home");
                 i.IsAdmin = user.IsAdmin;
                 i.IsManager = user.IsManager;
                 i.list = db.Fetch<Partner>(string.Format(Models.Partner.all));
@@ -211,7 +221,9 @@ namespace TimeSheet.Controllers
             i.User = Session["user"].ToString();
             using (tsDB db = new tsDB())
             {
-                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                var user = db.SingleOrDefault<Worker>("where workerid = @0", Session["WorkerId"]);
+                if (user == null)
+                    return RedirectToAction("Index", "Home");
                 i.IsAdmin = user.IsAdmin;
                 i.IsManager = user.IsManager;
                 i.list = db.Fetch<CostCenter>(string.Format(Models.CostCenter.all, (int)ChargeTo.Cost_Center));
@@ -246,7 +258,9 @@ namespace TimeSheet.Controllers
             i.User = Session["user"].ToString();
             using (tsDB db = new tsDB())
             {
-                var user = db.Single<Worker>("where workerid = @0", Session["WorkerId"]);
+                var user = db.SingleOrDefault<Worker>("where workerid = @0", Session["WorkerId"]);
+                if (user == null)
+                    return RedirectToAction("Index", "Home");
                 i.IsAdmin = user.IsAdmin;
                 i.IsManager = user.IsManager;
                 i.list = db.Fetch<Level>(string.Format(Models.Level.all));
